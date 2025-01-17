@@ -6,14 +6,15 @@ import (
 )
 
 func setupWebsocket(app *fiber.App) {
-	app.Use("/ws", func(c *fiber.Ctx) error {
+	app.Use("/api/v1/ws", func(c *fiber.Ctx) error {
 		// IsWebSocketUpgrade returns true if the client
 		// requested upgrade to the WebSocket protocol.
 		if websocket.IsWebSocketUpgrade(c) {
 			c.Locals("allowed", true)
-			return c.Next()
+
+			return ProtectedRoute()(c)
 		}
 		return fiber.ErrUpgradeRequired
 	})
-	
+
 }

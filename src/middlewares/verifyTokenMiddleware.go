@@ -1,24 +1,11 @@
-package services
+package middlewares
 
 import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/hamzapro305/GoLangChatApp/src/services"
 )
-
-func GetToken(c *fiber.Ctx) (string, error) {
-	// Extract the token from the Authorization header
-	authHeader := c.Get("Authorization")
-
-	// Check if the header is present and properly formatted
-	if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
-		return "", nil
-	}
-
-	// Extract the token part, removing "Bearer " prefix
-	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
-	return tokenString, nil
-}
 
 func ProtectedRoute() fiber.Handler {
 	return func(c *fiber.Ctx) error {
@@ -36,7 +23,7 @@ func ProtectedRoute() fiber.Handler {
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 
 		// Verify the token using VerifyToken function
-		claims, err := VerifyToken(tokenString)
+		claims, err := services.VerifyToken(tokenString)
 		if err != nil {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"error": "Invalid or expired token",

@@ -7,5 +7,5 @@ import (
 )
 
 func webSocketRoute(webRoute fiber.Router) {
-	webRoute.Get("/ws", websocket.New(controllers.HandleWebSocket))
+	webRoute.Get("/ws/:id", websocket.New(controllers.HandleWebSocket))
 }
