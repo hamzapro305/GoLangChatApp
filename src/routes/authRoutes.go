@@ -1,9 +1,11 @@
 package routes
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/hamzapro305/GoLangChatApp/src/controllers"
+)
 
-func setupAuthRoutes(app *fiber.App) {
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
-	})
+func setupAuthRoutes(auth fiber.Router) {
+	auth.Post("/register", controllers.Register)
+	auth.Post("/login", controllers.Login)
 }
