@@ -8,7 +8,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func GetUserByEmail(email string) (*models.User, error) {
+type userRepo struct{}
+
+var UserRepo = &userRepo{}
+
+func (*userRepo) GetUserByEmail(email string) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), config.DatabaseTimeLimit)
 	defer cancel()
 
@@ -21,7 +25,7 @@ func GetUserByEmail(email string) (*models.User, error) {
 	return &user, nil
 }
 
-func CreateUser(user models.User) error {
+func (*userRepo) CreateUser(user models.User) error {
 	ctx, cancel := context.WithTimeout(context.Background(), config.DatabaseTimeLimit)
 	defer cancel()
 

@@ -23,7 +23,7 @@ func ProtectedRoute() fiber.Handler {
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 
 		// Verify the token using VerifyToken function
-		claims, err := services.VerifyToken(tokenString)
+		claims, err := services.JwtService.VerifyToken(tokenString)
 		if err != nil {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"error": "Invalid or expired token",

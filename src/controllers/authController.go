@@ -5,30 +5,37 @@ import (
 	"github.com/hamzapro305/GoLangChatApp/src/services"
 )
 
-type RegisterBody struct {
+type authController struct{}
+
+var AuthController = &authController{}
+
+type registerBody struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-func Register(c *fiber.Ctx) error {
+func (*authController) Register(c *fiber.Ctx) error {
 	// Parse JSON body into struct
-	var body RegisterBody
-	if err := c.BodyParser(&body); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": err.Error(),
-		})
+	body, parseError := services.ParseBody[registerBody](c)
+	if parseError != nil {
+		return parseError
 	}
 
-	_, err := services.GetUser(body.Email)
+	_, err := services.UserService.GetUser(body.Email)
 	if err == nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "User already exists",
 		})
 	}
 
-	services.AddUser(body.Email, body.Password)
+	newUser, err := services.UserService.AddUser(body.Email, body.Password)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Could not create user",
+		})
+	}
 
-	token, err := services.CreateToken(body.Email, body.Password)
+	token, err := services.JwtService.CreateToken(body.Email, body.Password, newUser)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Could not login",
@@ -40,23 +47,21 @@ func Register(c *fiber.Ctx) error {
 	})
 }
 
-func Login(c *fiber.Ctx) error {
+func (*authController) Login(c *fiber.Ctx) error {
 	// Parse JSON body into struct
-	var body RegisterBody
-	if err := c.BodyParser(&body); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": err.Error(),
-		})
+	body, parseError := services.ParseBody[registerBody](c)
+	if parseError != nil {
+		return parseError
 	}
-	_, err := services.ValidateUser(body.Email, body.Password)
+	user, err := services.ValidateUser(body.Email, body.Password)
 
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": err.Error(),
+			"error": "User Validation Failed",
 		})
 	}
 
-	token, err := services.CreateToken(body.Email, body.Password)
+	token, err := services.JwtService.CreateToken(body.Email, body.Password, user)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Could not login",

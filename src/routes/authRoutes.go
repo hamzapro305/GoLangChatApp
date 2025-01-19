@@ -6,6 +6,6 @@ import (
 )
 
 func setupAuthRoutes(auth fiber.Router) {
-	auth.Post("/register", controllers.Register)
-	auth.Post("/login", controllers.Login)
+	auth.Post("/register", controllers.AuthController.Register)
+	auth.Post("/login", controllers.AuthController.Login)
 }

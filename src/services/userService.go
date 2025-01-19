@@ -10,7 +10,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func AddUser(email string, password string) error {
+type userService struct{}
+
+var UserService = &userService{}
+
+func (*userService) AddUser(email string, password string) (*models.User, error) {
 	// encrupt pass
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
 	if err != nil {
@@ -25,12 +29,12 @@ func AddUser(email string, password string) error {
 		Name:      "",
 		CreatedAt: time.Now(),
 	}
-	err = repos.CreateUser(newUser)
-	return err
+	err = repos.UserRepo.CreateUser(newUser)
+	return &newUser, err
 }
 
-func GetUser(email string) (*models.User, error) {
-	user, err := repos.GetUserByEmail(email)
+func (*userService) GetUser(email string) (*models.User, error) {
+	user, err := repos.UserRepo.GetUserByEmail(email)
 	if err != nil {
 		return nil, fmt.Errorf("user not found")
 	}
@@ -40,7 +44,7 @@ func GetUser(email string) (*models.User, error) {
 
 func ValidateUser(email string, password string) (*models.User, error) {
 	// Fetch user by email
-	user, err := GetUser(email)
+	user, err := UserService.GetUser(email)
 	if err != nil {
 		return nil, fmt.Errorf("user not found") // Return an error, not an HTTP response
 	}

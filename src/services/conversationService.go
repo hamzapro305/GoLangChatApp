@@ -1,0 +1,42 @@
+package services
+
+import (
+	"time"
+
+	"github.com/hamzapro305/GoLangChatApp/src/models"
+	"github.com/hamzapro305/GoLangChatApp/src/repos"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
+type conversationService struct{}
+
+// ConversationService provides conversation-related operations
+var ConversationService = &conversationService{}
+
+func (*conversationService) CreateConversation(participantIDs []string, isGroup bool) (models.Conversation, error) {
+	var participants []models.Participant
+	for _, userID := range participantIDs {
+		uid, err := primitive.ObjectIDFromHex(userID)
+		if err != nil {
+			return models.Conversation{}, err
+		}
+		participants = append(participants, models.Participant{
+			UserID:   uid,
+			JoinedAt: time.Now(),
+		})
+	}
+
+	conv := models.Conversation{
+		ID:           primitive.NewObjectID(),
+		Participants: participants,
+		IsGroup:      isGroup,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
+	}
+
+	return conv, repos.ConversationRepo.CreateConversation(conv)
+}
+
+func (*conversationService) GetUserConversation(userId string) ([]models.Conversation, error) {
+	return repos.ConversationRepo.GetUserConversations(userId)
+}
