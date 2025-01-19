@@ -13,6 +13,7 @@ func HandleWebSocket(c *websocket.Conn) {
 	log.Println(c.Query("v"))         // 1.0
 	log.Println(c.Cookies("session")) // ""
 
+	log.Println(c)
 	// websocket.Conn bindings https://pkg.go.dev/github.com/fasthttp/websocket?tab=doc#pkg-index
 	var (
 		mt  int
