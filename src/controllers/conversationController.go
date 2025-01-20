@@ -32,7 +32,7 @@ func (*conversationController) CreateConversation(c *fiber.Ctx) error {
 		return err
 	}
 
-	services.ConversationWebSocketService.NotifyNewConversation(conv, claims.UserID)
+	services.ConversationWebSocketService.SendNewConversationMessage(conv, claims.UserID)
 
 	return c.JSON(fiber.Map{
 		"message": "Conversation created",

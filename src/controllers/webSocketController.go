@@ -16,20 +16,35 @@ func HandleWebSocket(c *websocket.Conn) {
 
 	// Add User Connection
 	services.ConversationWebSocketService.AddConnection(claims.UserID, c)
-	log.Println("User connected:", claims.UserID)
+	log.Println("User connected:", claims.Email)
 
 	defer func() {
 		services.ConversationWebSocketService.RemoveConnection(claims.UserID)
 		c.Close()
-		log.Println("User disconnected:", claims.UserID)
+		log.Println("User disconnected:", claims.Email)
 	}()
 
 	// Keep connection alive
 	for {
-		_, _, err := c.ReadMessage()
+		messageType, msg, err := c.ReadMessage()
 		if err != nil {
+			log.Println("Error reading message:", err)
 			break
 		}
+
+		log.Println("Received message:", string(msg))
+
+		// Handle message based on type (text, binary, etc.)
+		switch messageType {
+		case websocket.TextMessage:
+			log.Println("Received message type:", messageType)
+			// handleTextMessage(claims.UserID, msg)
+		case websocket.BinaryMessage:
+			log.Println("Binary messages are not supported")
+		default:
+			log.Println("Unsupported message type:", messageType)
+		}
+
 	}
 
 }

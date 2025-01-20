@@ -32,9 +32,6 @@ func ConnectDB() error {
 	// Set the conversation collection
 	models.ConversationCollection = Client.Database("conversation-db").Collection("conversations")
 
-	// Set Participant collection
-	models.ConversationCollection = Client.Database("conversation-db").Collection("conversations")
-
 	fmt.Println("Connected to MongoDB")
 	return nil
 }
