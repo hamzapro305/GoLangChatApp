@@ -25,7 +25,7 @@ func (*conversationRepo) CreateConversation(conv models.Conversation) error {
 	return err
 }
 
-func (*conversationRepo) GetConversationByID(conversationID string) (*models.Conversation, error) {
+func (*conversationRepo) GetConversationById(conversationID string) (*models.Conversation, error) {
 	// Get a conversation by ID
 	ctx, cancel := context.WithTimeout(context.Background(), config.DatabaseTimeLimit)
 	defer cancel()
@@ -119,7 +119,7 @@ func (*conversationRepo) AddParticipantToConversation(conversationID string, use
 
 func (*conversationRepo) IsUserInConversation(conversationID string, userID string) bool {
 	// Check if a user is in a conversation
-	conv, err := ConversationRepo.GetConversationByID(conversationID)
+	conv, err := ConversationRepo.GetConversationById(conversationID)
 	if err != nil {
 		return false
 	}

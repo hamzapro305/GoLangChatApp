@@ -31,7 +31,6 @@ func (*conversationService) CreateConversation(participantIDs []string, isGroup 
 		Participants: participants,
 		IsGroup:      isGroup,
 		CreatedAt:    time.Now(),
-		UpdatedAt:    time.Now(),
 		Leader:       createdBy,
 	}
 
@@ -40,4 +39,8 @@ func (*conversationService) CreateConversation(participantIDs []string, isGroup 
 
 func (*conversationService) GetUserConversation(userId string) ([]models.Conversation, error) {
 	return repos.ConversationRepo.GetUserConversations(userId)
+}
+
+func (*conversationService) GetConversationById(conversationId string) (*models.Conversation, error) {
+	return repos.ConversationRepo.GetConversationById(conversationId)
 }

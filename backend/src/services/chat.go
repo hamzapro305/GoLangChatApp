@@ -60,6 +60,38 @@ func (*conversationWebSocketService) SendNewConversationMessage(conv models.Conv
 	}
 }
 
+// Notify only the participants about the new message in conversation
+func (*conversationWebSocketService) SendNewMessageInConversationMessage(msg models.Message) {
+	message, err := json.Marshal(map[string]interface{}{
+		"type":         "new_message_in_conversation",
+		"conversation": msg,
+	})
+	if err != nil {
+		log.Println("Error marshalling notification:", err)
+		return
+	}
+
+	conv, err := ConversationService.GetConversationById(msg.ConversationID)
+
+	if err != nil {
+		log.Println("Error Getting Conversation:", err)
+		return
+	}
+
+	mu.Lock()
+	defer mu.Unlock()
+
+	for _, participant := range conv.Participants {
+		participantId := participant.UserID.Hex()
+		if conn, exists := activeConversationConnections[participantId]; exists {
+			if participantId != msg.SenderID {
+				log.Println("Notifying participant:", participantId, "About Message in Conversation:", conv.ID.Hex(), "Created")
+				conn.WriteMessage(websocket.TextMessage, message)
+			}
+		}
+	}
+}
+
 // Send initial conversation data to the user
 func (*conversationWebSocketService) SyncUserConversations(userID string, conn *websocket.Conn) {
 	conversations, err := repos.ConversationRepo.GetUserConversations(userID)

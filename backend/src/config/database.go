@@ -37,5 +37,8 @@ func ConnectDB() error {
 	// Set the conversation collection
 	models.ConversationCollection = Client.Database("conversation-db").Collection("conversations")
 
+	// Set the message collection
+	models.MessageCollection = Client.Database("conversation-db").Collection("messages")
+
 	return nil
 }

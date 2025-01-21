@@ -12,7 +12,6 @@ type Conversation struct {
 	Participants []Participant      `bson:"participants"`
 	IsGroup      bool               `bson:"isGroup"`
 	CreatedAt    time.Time          `bson:"createdAt"`
-	UpdatedAt    time.Time          `bson:"updatedAt"`
 	Leader       string             `bson:"leaderId"`
 }
 

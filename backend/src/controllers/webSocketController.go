@@ -29,6 +29,8 @@ func (*webSocketMessageHandler) WebSocketMessageHandler(
 	switch incomingMsg.Type {
 	case "create_conversation":
 		ConversationController.CreateConversation(c, userClaims, message)
+	case "create_message":
+		MessageContrller.CreateConversationMessages(c, userClaims, message)
 	default:
 		c.WriteJSON(map[string]interface{}{
 			"type":    "Error",
