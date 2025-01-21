@@ -13,6 +13,7 @@ type Conversation struct {
 	IsGroup      bool               `bson:"isGroup"`
 	CreatedAt    time.Time          `bson:"createdAt"`
 	UpdatedAt    time.Time          `bson:"updatedAt"`
+	Leader       string             `bson:"leaderId"`
 }
 
 type Participant struct {

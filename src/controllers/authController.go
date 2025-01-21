@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/hamzapro305/GoLangChatApp/src/services"
+	"github.com/hamzapro305/GoLangChatApp/src/utils"
 )
 
 type authController struct{}
@@ -16,7 +17,7 @@ type registerBody struct {
 
 func (*authController) Register(c *fiber.Ctx) error {
 	// Parse JSON body into struct
-	body, parseError := services.ParseBody[registerBody](c)
+	body, parseError := utils.ParseBody[registerBody](c)
 	if parseError != nil {
 		return parseError
 	}
@@ -49,7 +50,7 @@ func (*authController) Register(c *fiber.Ctx) error {
 
 func (*authController) Login(c *fiber.Ctx) error {
 	// Parse JSON body into struct
-	body, parseError := services.ParseBody[registerBody](c)
+	body, parseError := utils.ParseBody[registerBody](c)
 	if parseError != nil {
 		return parseError
 	}

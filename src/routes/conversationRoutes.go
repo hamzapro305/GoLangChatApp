@@ -6,6 +6,5 @@ import (
 )
 
 func SetupConversationRoutes(conversation fiber.Router) {
-	conversation.Post("/create", controllers.ConversationController.CreateConversation)
 	conversation.Post("/get", controllers.ConversationController.GetConversation)
 }

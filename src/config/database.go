@@ -3,10 +3,10 @@ package config
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/hamzapro305/GoLangChatApp/src/models"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -22,9 +22,14 @@ func ConnectDB() error {
 	// Create a new MongoDB client and connect to the database
 	Client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(mongoURI))
 	if err != nil {
-		log.Fatal(err)
-		return err
+		panic(err)
 	}
+
+	var result bson.M
+	if err := Client.Database("admin").RunCommand(context.TODO(), bson.D{{Key: "ping", Value: 1}}).Decode(&result); err != nil {
+		panic(err)
+	}
+	fmt.Println("Pinged your deployment. You successfully connected to MongoDB!")
 
 	// Set the user collection
 	models.UserCollection = Client.Database("auth-db").Collection("users")
@@ -32,6 +37,5 @@ func ConnectDB() error {
 	// Set the conversation collection
 	models.ConversationCollection = Client.Database("conversation-db").Collection("conversations")
 
-	fmt.Println("Connected to MongoDB")
 	return nil
 }

@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/hamzapro305/GoLangChatApp/src/services"
+	"github.com/hamzapro305/GoLangChatApp/src/utils"
 )
 
 type conversationController struct{}
@@ -14,27 +16,30 @@ type createConversationBody struct {
 	IsGroup      bool     `json:"isGroup"`
 }
 
-func (*conversationController) CreateConversation(c *fiber.Ctx) error {
-	body, parseError := services.ParseBody[createConversationBody](c)
+func (*conversationController) CreateConversation(
+	c *websocket.Conn,
+	userClaims services.UserClaims,
+	message []byte,
+) {
+	body, parseError := utils.ParseWebsocketMessage[createConversationBody](message)
 	if parseError != nil {
-		return parseError
+		c.WriteJSON(parseError)
+		return
 	}
 
-	conv, err := services.ConversationService.CreateConversation(body.Participants, body.IsGroup)
+	conv, err := services.ConversationService.CreateConversation(body.Participants, body.IsGroup, userClaims.UserID)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Could not create conversation",
+		c.WriteJSON(map[string]interface{}{
+			"type":    "error",
+			"message": "Could not create conversation",
 		})
+		return
 	}
 
-	claims, err := services.JwtService.GetClaims(c)
-	if err != nil {
-		return err
-	}
+	services.ConversationWebSocketService.SendNewConversationMessage(conv, userClaims.UserID)
 
-	services.ConversationWebSocketService.SendNewConversationMessage(conv, claims.UserID)
-
-	return c.JSON(fiber.Map{
+	c.WriteJSON(map[string]interface{}{
+		"type":    "conversation_creation_completed",
 		"message": "Conversation created",
 	})
 }
@@ -45,7 +50,7 @@ type getUserConversationsBody struct {
 
 func (*conversationController) GetConversation(c *fiber.Ctx) error {
 	// Parse JSON body into struct
-	body, parseError := services.ParseBody[getUserConversationsBody](c)
+	body, parseError := utils.ParseBody[getUserConversationsBody](c)
 	if parseError != nil {
 		return parseError
 	}

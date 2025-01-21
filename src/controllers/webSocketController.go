@@ -1,50 +1,40 @@
 package controllers
 
 import (
-	"log"
-
 	"github.com/gofiber/contrib/websocket"
 	"github.com/hamzapro305/GoLangChatApp/src/services"
+	"github.com/hamzapro305/GoLangChatApp/src/utils"
 )
 
-func HandleWebSocket(c *websocket.Conn) {
-	claims, err := services.JwtService.GetSocketClaims(c)
+type webSocketMessageHandler struct{}
+
+var WebSocketMessageHandler = &webSocketMessageHandler{}
+
+// Message structure for WebSocket communication
+type IncomingMessage struct {
+	Type string `json:"type"`
+}
+
+func (*webSocketMessageHandler) WebSocketMessageHandler(
+	c *websocket.Conn,
+	userClaims services.UserClaims,
+	message []byte,
+) {
+	// Parse the incoming JSON message
+	incomingMsg, err := utils.ParseWebsocketMessage[IncomingMessage](message)
 	if err != nil {
-		services.ConversationWebSocketService.RemoveConnection(claims.UserID)
-		c.Close()
+		c.WriteJSON(err)
+		return
 	}
-
-	// Add User Connection
-	services.ConversationWebSocketService.AddConnection(claims.UserID, c)
-	log.Println("User connected:", claims.Email)
-
-	defer func() {
-		services.ConversationWebSocketService.RemoveConnection(claims.UserID)
-		c.Close()
-		log.Println("User disconnected:", claims.Email)
-	}()
-
-	// Keep connection alive
-	for {
-		messageType, msg, err := c.ReadMessage()
-		if err != nil {
-			log.Println("Error reading message:", err)
-			break
-		}
-
-		log.Println("Received message:", string(msg))
-
-		// Handle message based on type (text, binary, etc.)
-		switch messageType {
-		case websocket.TextMessage:
-			log.Println("Received message type:", messageType)
-			// handleTextMessage(claims.UserID, msg)
-		case websocket.BinaryMessage:
-			log.Println("Binary messages are not supported")
-		default:
-			log.Println("Unsupported message type:", messageType)
-		}
-
+	switch incomingMsg.Type {
+	case "create_conversation":
+		ConversationController.CreateConversation(c, userClaims, message)
+	default:
+		c.WriteJSON(map[string]interface{}{
+			"type":    "Error",
+			"message": "Invalid Message type",
+		})
+		return
 	}
 
 }

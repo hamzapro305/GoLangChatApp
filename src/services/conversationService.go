@@ -13,7 +13,7 @@ type conversationService struct{}
 // ConversationService provides conversation-related operations
 var ConversationService = &conversationService{}
 
-func (*conversationService) CreateConversation(participantIDs []string, isGroup bool) (models.Conversation, error) {
+func (*conversationService) CreateConversation(participantIDs []string, isGroup bool, createdBy string) (models.Conversation, error) {
 	var participants []models.Participant
 	for _, userID := range participantIDs {
 		uid, err := primitive.ObjectIDFromHex(userID)
@@ -32,6 +32,7 @@ func (*conversationService) CreateConversation(participantIDs []string, isGroup 
 		IsGroup:      isGroup,
 		CreatedAt:    time.Now(),
 		UpdatedAt:    time.Now(),
+		Leader:       createdBy,
 	}
 
 	return conv, repos.ConversationRepo.CreateConversation(conv)
