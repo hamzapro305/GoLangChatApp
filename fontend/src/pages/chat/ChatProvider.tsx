@@ -1,12 +1,10 @@
-"use client";
-import useLocalStorage from "@/Hooks/useLocalStorage";
-import { useAppDispatch } from "@/Redux/Hooks";
-import { GlobalVarsActions } from "@/Redux/slices/GlobalVars";
-import GetLayout from "@/utils/GetLayout";
-import { WebSocketInComingMessageHanlder } from "@/utils/WebScoketMessageHandler";
-import { useEffect } from "react";
+import { FC, ReactNode, useEffect } from "react";
+import { useAppDispatch } from "../../Redux/Hooks";
+import useLocalStorage from "../../Hooks/useLocalStorage";
+import { GlobalVarsActions } from "../../Redux/slices/GlobalVars";
+import { WebSocketInComingMessageHanlder } from "../../utils/WebScoketMessageHandler";
 
-const layout = GetLayout<"children">(({ children }) => {
+const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const dispatch = useAppDispatch();
     const [token, _] = useLocalStorage<string | null>("token", null);
     useEffect(() => {
@@ -38,6 +36,6 @@ const layout = GetLayout<"children">(({ children }) => {
     }, [token]);
 
     return children;
-});
+};
 
-export default layout;
+export default ChatProvider;

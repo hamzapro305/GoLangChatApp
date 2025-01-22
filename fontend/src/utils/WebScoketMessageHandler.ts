@@ -1,6 +1,6 @@
-import { WebSocketMessage, ConversationCreationCompleteMessage, SyncConversationMessage, NewMessageInConversationMessage } from "@/@types/chat";
-import { ChatActions } from "@/Redux/slices/ChatSlice";
-import { AppDispatch } from "@/Redux/store";
+import { AppDispatch } from "../Redux/store";
+import { ChatActions } from "../Redux/slices/ChatSlice";
+import { ConversationCreationCompleteMessage, NewMessageInConversationMessage, SyncConversationMessage, WebSocketMessage } from "../@types/chat";
 
 export class WebSocketInComingMessageHanlder {
     static BasicMessageHandler(message: WebSocketMessage, dispatch: AppDispatch) {

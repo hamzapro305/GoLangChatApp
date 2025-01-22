@@ -1,8 +1,7 @@
-"use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import "./style.scss";
-import { Auth } from "@/utils/Auth";
-import useLocalStorage from "@/Hooks/useLocalStorage";
+import useLocalStorage from "../../Hooks/useLocalStorage";
+import { Auth } from "../../utils/Auth";
 
 const page = () => {
     const [email, setEmail] = useState("");
