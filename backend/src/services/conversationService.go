@@ -44,3 +44,7 @@ func (*conversationService) GetUserConversation(userId string) ([]models.Convers
 func (*conversationService) GetConversationById(conversationId string) (*models.Conversation, error) {
 	return repos.ConversationRepo.GetConversationById(conversationId)
 }
+
+func (*conversationService) AddParticipantToConversation(convId string, userId string) error {
+	return repos.ConversationRepo.AddParticipantToConversation(convId, userId)
+}

@@ -6,6 +6,9 @@ services:
             - "27017:27017"
         expose:
             - "27017"
+        volumes:
+            - ./data-mongo/:/data/db
+
         environment:
             - MONGO_INITDB_ROOT_USERNAME=admin
             - MONGO_INITDB_ROOT_PASSWORD=admin
