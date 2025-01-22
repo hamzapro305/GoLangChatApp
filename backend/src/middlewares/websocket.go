@@ -12,7 +12,7 @@ func setupWebsocket(app *fiber.App) {
 		if websocket.IsWebSocketUpgrade(c) {
 			c.Locals("allowed", true)
 
-			return ProtectedRoute()(c)
+			return ProtectedRouteForWebsocket()(c)
 		}
 		return fiber.ErrUpgradeRequired
 	})

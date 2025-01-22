@@ -8,17 +8,17 @@ import (
 )
 
 type Conversation struct {
-	ID           primitive.ObjectID `bson:"_id,omitempty"`
-	Participants []Participant      `bson:"participants"`
-	IsGroup      bool               `bson:"isGroup"`
-	CreatedAt    time.Time          `bson:"createdAt"`
-	Leader       string             `bson:"leaderId"`
+	ID           primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	Participants []Participant      `bson:"participants" json:"participants"`
+	IsGroup      bool               `bson:"isGroup" json:"isGroup"`
+	CreatedAt    time.Time          `bson:"createdAt" json:"createdAt"`
+	Leader       string             `bson:"leaderId" json:"leaderId"`
 }
 
 type Participant struct {
-	UserID   string    `bson:"userId"`
-	JoinedAt time.Time `bson:"joinedAt"`
-	LeftAt   time.Time `bson:"leftAt,omitempty"`
+	UserID   string    `bson:"userId" json:"userId"`
+	JoinedAt time.Time `bson:"joinedAt" json:"joinedAt"`
+	LeftAt   time.Time `bson:"leftAt,omitempty" json:"leftAt,omitempty"`
 }
 
 var ConversationCollection *mongo.Collection

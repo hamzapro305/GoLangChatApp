@@ -7,7 +7,7 @@ import useLocalStorage from "@/Hooks/useLocalStorage";
 const page = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [token, setToken] = useLocalStorage<string | null>("token", null);
+    const [_, setToken] = useLocalStorage<string | null>("token", null);
     const SubmitLogin = async () => {
         try {
             const data = await Auth.Login(email, password);

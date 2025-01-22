@@ -8,11 +8,11 @@ import (
 )
 
 type Message struct {
-	ID             primitive.ObjectID `bson:"_id,omitempty"`
-	ConversationID string             `bson:"conversationId"`
-	SenderID       string             `bson:"senderId"`
-	Content        string             `bson:"content"`
-	CreatedAt      time.Time          `bson:"createdAt"`
+	ID             primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	ConversationID string             `bson:"conversationId" json:"conversationId"`
+	SenderID       string             `bson:"senderId" json:"senderId"`
+	Content        string             `bson:"content" json:"content"`
+	CreatedAt      time.Time          `bson:"createdAt" json:"createdAt"`
 }
 
 var MessageCollection *mongo.Collection

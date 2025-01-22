@@ -50,13 +50,7 @@ func (*conversationRepo) GetUserConversations(userID string) ([]models.Conversat
 	ctx, cancel := context.WithTimeout(context.Background(), config.DatabaseTimeLimit)
 	defer cancel()
 
-	uid, err := primitive.ObjectIDFromHex(userID)
-	if err != nil {
-		fmt.Println("Error converting userID:", err)
-		return nil, err
-	}
-
-	filter := bson.M{"participants.userId": uid}
+	filter := bson.M{"participants.userId": userID}
 	cursor, err := models.ConversationCollection.Find(ctx, filter)
 	if err != nil {
 		fmt.Println("Error finding conversations:", err)

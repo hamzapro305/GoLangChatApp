@@ -2,10 +2,12 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 type initGlobalVars = {
     token: string | null
+    ws: WebSocket | null
 };
 
 const initialState: initGlobalVars = {
     token: null,
+    ws: null
 };
 
 export const Slice = createSlice({
@@ -17,6 +19,12 @@ export const Slice = createSlice({
             { payload }: PayloadAction<initGlobalVars["token"]>
         ) => {
             state.token = payload;
+        },
+        setWebsocket: (
+            state,
+            { payload }: PayloadAction<initGlobalVars["ws"]>
+        ) => {
+            state.ws = payload;
         },
     },
 });

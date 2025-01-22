@@ -9,7 +9,7 @@ import (
 
 func ProtectedRoute() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// Extract the token from the Authorization header
+		// Extract the Authorization token from the headers
 		authHeader := c.Get("Authorization")
 
 		// Check if the header is present and properly formatted
@@ -24,6 +24,27 @@ func ProtectedRoute() fiber.Handler {
 
 		// Verify the token using VerifyToken function
 		claims, err := services.JwtService.VerifyToken(tokenString)
+		if err != nil {
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error": "Invalid or expired token",
+			})
+		}
+
+		// If token is valid, store claims in Locals for further use in routes
+		c.Locals("userClaims", claims)
+
+		// Continue to the next middleware or handler
+		return c.Next()
+	}
+}
+
+func ProtectedRouteForWebsocket() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		// Extract the Authorization token from the headers
+		token := c.Query("token")
+
+		// Verify the token using VerifyToken function
+		claims, err := services.JwtService.VerifyToken(token)
 		if err != nil {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"error": "Invalid or expired token",

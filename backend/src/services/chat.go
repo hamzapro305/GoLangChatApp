@@ -78,8 +78,8 @@ func (*conversationWebSocketService) SendNewConversationMessage(conv models.Conv
 // Notify only the participants about the new message in conversation
 func (*conversationWebSocketService) SendNewMessageInConversationMessage(msg models.Message) {
 	message, err := json.Marshal(map[string]interface{}{
-		"type":         "new_message_in_conversation",
-		"conversation": msg,
+		"type":    "new_message_in_conversation",
+		"message": msg,
 	})
 	if err != nil {
 		log.Println("Error marshalling notification:", err)
