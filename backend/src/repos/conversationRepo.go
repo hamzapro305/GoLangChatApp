@@ -91,13 +91,8 @@ func (*conversationRepo) AddParticipantToConversation(conversationID string, use
 		return err
 	}
 
-	uid, err := primitive.ObjectIDFromHex(userID)
-	if err != nil {
-		return err
-	}
-
 	newParticipant := models.Participant{
-		UserID:   uid,
+		UserID:   userID,
 		JoinedAt: time.Now(),
 	}
 
@@ -125,7 +120,7 @@ func (*conversationRepo) IsUserInConversation(conversationID string, userID stri
 	}
 
 	for _, participant := range conv.Participants {
-		if participant.UserID.String() == userID {
+		if participant.UserID == userID {
 			return true
 		}
 	}

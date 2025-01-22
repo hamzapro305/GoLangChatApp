@@ -46,18 +46,33 @@ func (*conversationWebSocketService) SendNewConversationMessage(conv models.Conv
 		return
 	}
 
-	mu.Lock()
-	defer mu.Unlock()
+	var wg sync.WaitGroup // Wait group to track Goroutines
 
 	for _, participant := range conv.Participants {
-		participantId := participant.UserID.Hex()
-		if conn, exists := activeConversationConnections[participantId]; exists {
-			if participantId != createdByParticipantId {
+		participantId := participant.UserID
+
+		if participantId == createdByParticipantId {
+			continue // Skip sender
+		}
+
+		mu.Lock()
+		conn, exists := activeConversationConnections[participantId]
+		mu.Unlock()
+
+		if exists {
+			wg.Add(1) // Increment wait group for each Goroutine
+
+			go func(participantId string, conn *websocket.Conn) {
+				// Mark this Goroutine as completed
+				defer wg.Done()
+
 				log.Println("Notifying participant:", participantId, "About Conversation:", conv.ID.Hex(), "Created")
 				conn.WriteMessage(websocket.TextMessage, message)
-			}
+
+			}(participantId, conn)
 		}
 	}
+	wg.Wait()
 }
 
 // Notify only the participants about the new message in conversation
@@ -78,18 +93,28 @@ func (*conversationWebSocketService) SendNewMessageInConversationMessage(msg mod
 		return
 	}
 
-	mu.Lock()
-	defer mu.Unlock()
+	var wg sync.WaitGroup
 
 	for _, participant := range conv.Participants {
-		participantId := participant.UserID.Hex()
-		if conn, exists := activeConversationConnections[participantId]; exists {
-			if participantId != msg.SenderID {
+		participantId := participant.UserID
+		if participantId == msg.SenderID {
+			continue
+		}
+
+		mu.Lock()
+		conn, exists := activeConversationConnections[participantId]
+		mu.Unlock()
+
+		if exists {
+			wg.Add(1)
+			go func(participantId string, conn *websocket.Conn) {
+				defer wg.Done()
 				log.Println("Notifying participant:", participantId, "About Message in Conversation:", conv.ID.Hex(), "Created")
 				conn.WriteMessage(websocket.TextMessage, message)
-			}
+			}(participantId, conn)
 		}
 	}
+	wg.Wait()
 }
 
 // Send initial conversation data to the user

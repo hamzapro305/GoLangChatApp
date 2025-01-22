@@ -31,21 +31,21 @@ func (*messageRepo) GetConversationMessages(conversationId string, userId string
 	convId, err := primitive.ObjectIDFromHex(conversationId)
 	if err != nil {
 		fmt.Println("Error converting conversationId:", err)
-		return nil, err
+		return []models.Message{}, err
 	}
 
 	filter := bson.M{"conversationId": convId}
 	cursor, err := models.ConversationCollection.Find(ctx, filter)
 	if err != nil {
 		fmt.Println("Error finding conversations messages:", err)
-		return nil, err
+		return []models.Message{}, err
 	}
 	defer cursor.Close(ctx)
 
 	var messages []models.Message
 	if err = cursor.All(ctx, &messages); err != nil {
 		fmt.Println("Error decoding messages:", err)
-		return nil, err
+		return []models.Message{}, err
 	}
 
 	// Ensure we return an empty slice instead of nil

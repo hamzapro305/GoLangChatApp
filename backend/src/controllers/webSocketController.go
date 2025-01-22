@@ -31,6 +31,10 @@ func (*webSocketMessageHandler) WebSocketMessageHandler(
 		ConversationController.CreateConversation(c, userClaims, message)
 	case "create_message":
 		MessageContrller.CreateConversationMessages(c, userClaims, message)
+	case "open_conversation":
+		ConversationController.OpenConversation(c, userClaims, message)
+	case "add_participant_to_conversation":
+		ParticipantController.AddParticipantToConversation(c, userClaims, message)
 	default:
 		c.WriteJSON(map[string]interface{}{
 			"type":    "Error",

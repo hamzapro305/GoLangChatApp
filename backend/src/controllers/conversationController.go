@@ -36,12 +36,26 @@ func (*conversationController) CreateConversation(
 		return
 	}
 
-	services.ConversationWebSocketService.SendNewConversationMessage(conv, userClaims.UserID)
+	go services.ConversationWebSocketService.SendNewConversationMessage(conv, userClaims.UserID)
 
 	c.WriteJSON(map[string]interface{}{
-		"type":    "conversation_creation_completed",
-		"message": "Conversation created",
+		"type":         "conversation_creation_completed",
+		"message":      "Conversation created",
+		"conversation": conv,
 	})
+}
+
+type openConversationBody struct {
+	ConversationId string `json:"conversationId"`
+	
+}
+
+func (*conversationController) OpenConversation(
+	c *websocket.Conn,
+	userClaims services.UserClaims,
+	message []byte,
+) {
+
 }
 
 type getUserConversationsBody struct {

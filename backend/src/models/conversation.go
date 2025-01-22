@@ -16,9 +16,9 @@ type Conversation struct {
 }
 
 type Participant struct {
-	UserID   primitive.ObjectID `bson:"userId"`
-	JoinedAt time.Time          `bson:"joinedAt"`
-	LeftAt   time.Time          `bson:"leftAt,omitempty"`
+	UserID   string    `bson:"userId"`
+	JoinedAt time.Time `bson:"joinedAt"`
+	LeftAt   time.Time `bson:"leftAt,omitempty"`
 }
 
 var ConversationCollection *mongo.Collection

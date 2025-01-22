@@ -16,12 +16,8 @@ var ConversationService = &conversationService{}
 func (*conversationService) CreateConversation(participantIDs []string, isGroup bool, createdBy string) (models.Conversation, error) {
 	var participants []models.Participant
 	for _, userID := range participantIDs {
-		uid, err := primitive.ObjectIDFromHex(userID)
-		if err != nil {
-			return models.Conversation{}, err
-		}
 		participants = append(participants, models.Participant{
-			UserID:   uid,
+			UserID:   userID,
 			JoinedAt: time.Now(),
 		})
 	}

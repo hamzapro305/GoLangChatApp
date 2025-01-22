@@ -49,7 +49,7 @@ func (*participantController) AddParticipantToConversation(
 
 	// Check if user is part of conversation already
 	for _, participant := range conv.Participants {
-		participantId := participant.UserID.Hex()
+		participantId := participant.UserID
 		if participantId == body.ParticipantId {
 			c.WriteJSON(map[string]interface{}{
 				"type":       "error",
@@ -59,7 +59,7 @@ func (*participantController) AddParticipantToConversation(
 			return
 		}
 	}
-	
+
 }
 
 func (*participantController) RemoveParticipantFromConversation(
