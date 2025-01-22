@@ -18,6 +18,11 @@ func SetupRoutes(app *fiber.App) {
 	conversation.Use(middlewares.ProtectedRoute())
 	SetupConversationRoutes(conversation)
 
+	// Setup User Routes
+	userRoutes := v1.Group("/user")
+	userRoutes.Use(middlewares.ProtectedRoute())
+	SetupUserRoutes(userRoutes)
+
 	webSocketRoute(v1)
 	setupAuthRoutes(v1)
 }

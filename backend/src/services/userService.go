@@ -42,6 +42,14 @@ func (*userService) GetUser(email string) (*models.User, error) {
 
 }
 
+func (*userService) GetAllUsers() ([]models.User, error) {
+	users, err := repos.UserRepo.GetAllUsers()
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
 func ValidateUser(email string, password string) (*models.User, error) {
 	// Fetch user by email
 	user, err := UserService.GetUser(email)
