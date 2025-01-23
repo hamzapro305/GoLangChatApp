@@ -13,7 +13,6 @@ var ConversationController = &conversationController{}
 
 type createConversationBody struct {
 	Participants []string `json:"participants"`
-	IsGroup      bool     `json:"isGroup"`
 }
 
 func (*conversationController) CreateConversation(
@@ -27,7 +26,7 @@ func (*conversationController) CreateConversation(
 		return
 	}
 
-	conv, err := services.ConversationService.CreateConversation(body.Participants, body.IsGroup, userClaims.UserID)
+	conv, err := services.ConversationService.CreateConversation(body.Participants, userClaims.UserID)
 	if err != nil {
 		c.WriteJSON(map[string]interface{}{
 			"type":    "error",
@@ -45,17 +44,38 @@ func (*conversationController) CreateConversation(
 	})
 }
 
-type openConversationBody struct {
-	ConversationId string `json:"conversationId"`
-	
+type createGrupConversationBody struct {
+	Participants []string `json:"participants"`
+	GroupName    string   `json:"groupName"`
 }
 
-func (*conversationController) OpenConversation(
+func (*conversationController) CreateGroupConversation(
 	c *websocket.Conn,
 	userClaims services.UserClaims,
 	message []byte,
 ) {
+	body, parseError := utils.ParseWebsocketMessage[createGrupConversationBody](message)
+	if parseError != nil {
+		c.WriteJSON(parseError)
+		return
+	}
 
+	conv, err := services.ConversationService.CreateGroupConversation(body.Participants, userClaims.UserID, body.GroupName)
+	if err != nil {
+		c.WriteJSON(map[string]interface{}{
+			"type":    "error",
+			"message": "Could not create conversation",
+		})
+		return
+	}
+
+	go services.ConversationWebSocketService.SendNewGroupConversationMessage(conv, userClaims.UserID)
+
+	c.WriteJSON(map[string]interface{}{
+		"type":         "conversation_creation_completed",
+		"message":      "Conversation created",
+		"conversation": conv,
+	})
 }
 
 type getUserConversationsBody struct {

@@ -15,6 +15,15 @@ type Conversation struct {
 	Leader       string             `bson:"leaderId" json:"leaderId"`
 }
 
+type GroupConversation struct {
+	ID           primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	Participants []Participant      `bson:"participants" json:"participants"`
+	CreatedAt    time.Time          `bson:"createdAt" json:"createdAt"`
+	Leader       string             `bson:"leaderId" json:"leaderId"`
+	IsGroup      bool               `bson:"isGroup" json:"isGroup"`
+	GroupName    string             `bson:"groupName" json:"groupName"`
+}
+
 type Participant struct {
 	UserID   string    `bson:"userId" json:"userId"`
 	JoinedAt time.Time `bson:"joinedAt" json:"joinedAt"`

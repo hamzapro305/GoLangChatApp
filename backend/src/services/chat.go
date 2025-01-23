@@ -45,34 +45,24 @@ func (*conversationWebSocketService) SendNewConversationMessage(conv models.Conv
 		log.Println("Error marshalling notification:", err)
 		return
 	}
+	go ConversationWebSocketService.SendMessageToParticipants(message, conv.Participants, func(participantId string) bool {
+		return participantId == createdByParticipantId
+	})
+}
 
-	var wg sync.WaitGroup // Wait group to track Goroutines
-
-	for _, participant := range conv.Participants {
-		participantId := participant.UserID
-
-		if participantId == createdByParticipantId {
-			continue // Skip sender
-		}
-
-		mu.Lock()
-		conn, exists := activeConversationConnections[participantId]
-		mu.Unlock()
-
-		if exists {
-			wg.Add(1) // Increment wait group for each Goroutine
-
-			go func(participantId string, conn *websocket.Conn) {
-				// Mark this Goroutine as completed
-				defer wg.Done()
-
-				log.Println("Notifying participant:", participantId, "About Conversation:", conv.ID.Hex(), "Created")
-				conn.WriteMessage(websocket.TextMessage, message)
-
-			}(participantId, conn)
-		}
+// Notify only the participants about the new group conversation
+func (*conversationWebSocketService) SendNewGroupConversationMessage(conv models.GroupConversation, createdByParticipantId string) {
+	message, err := json.Marshal(map[string]interface{}{
+		"type":         "new_conversation",
+		"conversation": conv,
+	})
+	if err != nil {
+		log.Println("Error marshalling notification:", err)
+		return
 	}
-	wg.Wait()
+	go ConversationWebSocketService.SendMessageToParticipants(message, conv.Participants, func(participantId string) bool {
+		return participantId == createdByParticipantId
+	})
 }
 
 // Notify only the participants about the new message in conversation
@@ -139,4 +129,27 @@ func (*conversationWebSocketService) SyncUserConversations(userID string, conn *
 		conn.WriteMessage(websocket.TextMessage, message)
 	}
 	mu.Unlock()
+}
+
+// Send Participant Message
+func (*conversationWebSocketService) SendMessageToParticipants(message []byte, participants []models.Participant, skipMMessage func(participantId string) bool) {
+	var wg sync.WaitGroup // Wait group to track Goroutines
+	for _, participant := range participants {
+		participantId := participant.UserID
+		if skipMMessage(participantId) {
+			continue
+		}
+		mu.Lock()
+		conn, exists := activeConversationConnections[participantId]
+		mu.Unlock()
+
+		if exists {
+			wg.Add(1) // Increment wait group for each Goroutine
+			go func(participantId string, conn *websocket.Conn) {
+				defer wg.Done()
+				conn.WriteMessage(websocket.TextMessage, message)
+			}(participantId, conn)
+		}
+	}
+	wg.Wait()
 }

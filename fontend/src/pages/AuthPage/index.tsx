@@ -3,7 +3,7 @@ import "./style.scss";
 import useLocalStorage from "../../Hooks/useLocalStorage";
 import { Auth } from "../../utils/Auth";
 
-const page = () => {
+const AuthPage = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [_, setToken] = useLocalStorage<string | null>("token", null);
@@ -34,4 +34,4 @@ const page = () => {
     );
 };
 
-export default page;
+export default AuthPage;

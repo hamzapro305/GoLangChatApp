@@ -24,6 +24,14 @@ func (*conversationRepo) CreateConversation(conv models.Conversation) error {
 	_, err := models.ConversationCollection.InsertOne(ctx, conv)
 	return err
 }
+func (*conversationRepo) CreateGroupConversation(conv models.GroupConversation) error {
+	// Create a new conversation
+	ctx, cancel := context.WithTimeout(context.Background(), config.DatabaseTimeLimit)
+	defer cancel()
+
+	_, err := models.ConversationCollection.InsertOne(ctx, conv)
+	return err
+}
 
 func (*conversationRepo) GetConversationById(conversationID string) (*models.Conversation, error) {
 	// Get a conversation by ID

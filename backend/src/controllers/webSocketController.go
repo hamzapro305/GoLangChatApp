@@ -29,10 +29,12 @@ func (*webSocketMessageHandler) WebSocketMessageHandler(
 	switch incomingMsg.Type {
 	case "create_conversation":
 		ConversationController.CreateConversation(c, userClaims, message)
+	case "create_group_conversation":
+		ConversationController.CreateGroupConversation(c, userClaims, message)
 	case "create_message":
 		MessageContrller.CreateConversationMessages(c, userClaims, message)
-	case "open_conversation":
-		ConversationController.OpenConversation(c, userClaims, message)
+	// case "open_conversation":
+	// 	ConversationController.OpenConversation(c, userClaims, message)
 	case "add_participant_to_conversation":
 		ParticipantController.AddParticipantToConversation(c, userClaims, message)
 	default:

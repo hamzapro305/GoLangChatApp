@@ -13,7 +13,7 @@ type conversationService struct{}
 // ConversationService provides conversation-related operations
 var ConversationService = &conversationService{}
 
-func (*conversationService) CreateConversation(participantIDs []string, isGroup bool, createdBy string) (models.Conversation, error) {
+func (*conversationService) CreateConversation(participantIDs []string, createdBy string) (models.Conversation, error) {
 	var participants []models.Participant
 	for _, userID := range participantIDs {
 		participants = append(participants, models.Participant{
@@ -25,12 +25,37 @@ func (*conversationService) CreateConversation(participantIDs []string, isGroup 
 	conv := models.Conversation{
 		ID:           primitive.NewObjectID(),
 		Participants: participants,
-		IsGroup:      isGroup,
 		CreatedAt:    time.Now(),
 		Leader:       createdBy,
+		IsGroup:      false,
 	}
 
 	return conv, repos.ConversationRepo.CreateConversation(conv)
+}
+
+func (*conversationService) CreateGroupConversation(
+	participantIDs []string,
+	createdBy string,
+	groupName string,
+) (models.GroupConversation, error) {
+	var participants []models.Participant
+	for _, userID := range participantIDs {
+		participants = append(participants, models.Participant{
+			UserID:   userID,
+			JoinedAt: time.Now(),
+		})
+	}
+
+	conv := models.GroupConversation{
+		ID:           primitive.NewObjectID(),
+		Participants: participants,
+		GroupName:    groupName,
+		CreatedAt:    time.Now(),
+		Leader:       createdBy,
+		IsGroup:      true,
+	}
+
+	return conv, repos.ConversationRepo.CreateGroupConversation(conv)
 }
 
 func (*conversationService) GetUserConversation(userId string) ([]models.Conversation, error) {
