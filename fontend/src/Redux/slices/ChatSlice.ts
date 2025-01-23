@@ -1,5 +1,5 @@
-import { ChatMessage, Conversation } from "@/@types/chat";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { ChatMessage, Conversation } from "../../@types/chat";
 
 type initChatSlice = {
     conversations: {

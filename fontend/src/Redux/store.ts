@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
-import GlobalVars from "@/Redux/slices/GlobalVars";
 import UserSlice from "./slices/UserSlice";
 import ChatSlice from "./slices/ChatSlice";
+import GlobalVars from "./slices/GlobalVars";
 
 export const makeStore = () => {
     return configureStore({

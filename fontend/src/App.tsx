@@ -8,7 +8,7 @@ const App = () => {
         <div className="">
             <Router>
                 <Routes>
-                    <Route path="/auth" element={<AuthPage />} />
+                    <Route path="/" element={<AuthPage />} />
                     <Route
                         path="/chat"
                         element={
@@ -17,7 +17,6 @@ const App = () => {
                             </ChatProvider>
                         }
                     />
-                    <Route path="/">Home</Route>
                 </Routes>
             </Router>
         </div>

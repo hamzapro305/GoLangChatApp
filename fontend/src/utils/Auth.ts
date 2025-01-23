@@ -1,4 +1,5 @@
 import apiClient from "./Axios"
+import UserService from "./UserService"
 
 const Login = async (email: string, password: string): Promise<{ token: string }> => {
     const body = JSON.stringify({
@@ -9,6 +10,7 @@ const Login = async (email: string, password: string): Promise<{ token: string }
         try {
             const response = await apiClient.post("/auth/login", body)
             const data: { token: string } = JSON.parse(response.data)
+
             console.log(response.data)
             res(data)
         } catch (error) {

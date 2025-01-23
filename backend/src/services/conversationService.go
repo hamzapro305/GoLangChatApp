@@ -58,11 +58,11 @@ func (*conversationService) CreateGroupConversation(
 	return conv, repos.ConversationRepo.CreateGroupConversation(conv)
 }
 
-func (*conversationService) GetUserConversation(userId string) ([]models.Conversation, error) {
+func (*conversationService) GetUserConversation(userId string) ([]models.GroupConversation, error) {
 	return repos.ConversationRepo.GetUserConversations(userId)
 }
 
-func (*conversationService) GetConversationById(conversationId string) (*models.Conversation, error) {
+func (*conversationService) GetConversationById(conversationId string) (*models.GroupConversation, error) {
 	return repos.ConversationRepo.GetConversationById(conversationId)
 }
 

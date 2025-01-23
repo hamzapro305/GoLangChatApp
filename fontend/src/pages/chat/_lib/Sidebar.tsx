@@ -1,10 +1,17 @@
 "use client";
 
-import { useAppSelector } from "@/Redux/Hooks";
-import React from "react";
+import { Conversation } from "../../../@types/chat";
+import { useAppSelector } from "../../../Redux/Hooks";
 
 const Sidebar = () => {
     const conversations = useAppSelector((s) => s.Chat.conversations);
+    const user = useAppSelector((s) => s.GlobalVars.user);
+    const GetName = (conv: Conversation) => {
+        if (conv.isGroup) {
+            return conv.groupName;
+        }
+        return "Someone";
+    };
     return (
         <div className="left-bar">
             <div className="actions">action</div>
@@ -12,7 +19,7 @@ const Sidebar = () => {
                 {conversations.map((conv) => {
                     return (
                         <div className="con" key={conv.conversation.id}>
-                            {conv.conversation.leaderId}
+                            {GetName(conv.conversation)}
                         </div>
                     );
                 })}

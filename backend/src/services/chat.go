@@ -115,9 +115,11 @@ func (*conversationWebSocketService) SyncUserConversations(userID string, conn *
 		return
 	}
 
+	transformedConversations := ConversationArrayTransformation(conversations)
+
 	message, err := json.Marshal(map[string]interface{}{
 		"type":          "sync_conversations",
-		"conversations": conversations,
+		"conversations": transformedConversations,
 	})
 	if err != nil {
 		log.Println("Error marshalling conversation data:", err)
@@ -152,4 +154,26 @@ func (*conversationWebSocketService) SendMessageToParticipants(message []byte, p
 		}
 	}
 	wg.Wait()
+}
+
+func ConversationArrayTransformation(conversations []models.GroupConversation) []interface{} {
+	var convs []interface{}
+	for _, conv := range conversations {
+		// Create a map to hold the common fields
+		convInfo := map[string]interface{}{
+			"id":           conv.ID,
+			"participants": conv.Participants,
+			"createdAt":    conv.CreatedAt,
+			"leader":       conv.Leader,
+			"isGroup":      conv.IsGroup,
+		}
+
+		// Add GroupName only if it's a group conversation
+		if conv.IsGroup {
+			convInfo["groupName"] = conv.GroupName // `bson:"groupName" json:"groupName"`
+		}
+
+		convs = append(convs, convInfo)
+	}
+	return convs
 }

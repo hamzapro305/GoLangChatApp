@@ -4,13 +4,22 @@ type Participant = {
     leftAt: string
 }
 
-type Conversation = {
+type SimpleConversation = {
     id: string
     participants: Participant[]
-    isGroup: boolean,
+    isGroup: false,
     createdAt: string
-    leaderId: string
+    leader: string
 }
+type GroupConversation = {
+    id: string
+    participants: Participant[]
+    isGroup: true,
+    createdAt: string
+    leader: string
+    groupName: string
+}
+type Conversation = SimpleConversation | GroupConversation
 
 type SyncConversationMessage = {
     type: "sync_conversations";

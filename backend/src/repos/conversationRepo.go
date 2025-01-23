@@ -33,7 +33,7 @@ func (*conversationRepo) CreateGroupConversation(conv models.GroupConversation) 
 	return err
 }
 
-func (*conversationRepo) GetConversationById(conversationID string) (*models.Conversation, error) {
+func (*conversationRepo) GetConversationById(conversationID string) (*models.GroupConversation, error) {
 	// Get a conversation by ID
 	ctx, cancel := context.WithTimeout(context.Background(), config.DatabaseTimeLimit)
 	defer cancel()
@@ -44,7 +44,7 @@ func (*conversationRepo) GetConversationById(conversationID string) (*models.Con
 	}
 
 	filter := bson.M{"_id": convID}
-	var conversation models.Conversation
+	var conversation models.GroupConversation
 	err = models.ConversationCollection.FindOne(ctx, filter).Decode(&conversation)
 	if err != nil {
 		return nil, err
@@ -53,7 +53,7 @@ func (*conversationRepo) GetConversationById(conversationID string) (*models.Con
 	return &conversation, nil
 }
 
-func (*conversationRepo) GetUserConversations(userID string) ([]models.Conversation, error) {
+func (*conversationRepo) GetUserConversations(userID string) ([]models.GroupConversation, error) {
 	// Get all conversations for a user ID
 	ctx, cancel := context.WithTimeout(context.Background(), config.DatabaseTimeLimit)
 	defer cancel()
@@ -66,7 +66,7 @@ func (*conversationRepo) GetUserConversations(userID string) ([]models.Conversat
 	}
 	defer cursor.Close(ctx)
 
-	var conversations []models.Conversation
+	var conversations []models.GroupConversation
 	if err = cursor.All(ctx, &conversations); err != nil {
 		fmt.Println("Error decoding conversations:", err)
 		return nil, err
@@ -74,7 +74,7 @@ func (*conversationRepo) GetUserConversations(userID string) ([]models.Conversat
 
 	// Ensure we return an empty slice instead of nil
 	if conversations == nil {
-		return []models.Conversation{}, nil
+		return []models.GroupConversation{}, nil
 	}
 
 	return conversations, nil

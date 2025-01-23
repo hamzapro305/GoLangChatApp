@@ -3,6 +3,7 @@ import { useAppDispatch } from "../../Redux/Hooks";
 import useLocalStorage from "../../Hooks/useLocalStorage";
 import { GlobalVarsActions } from "../../Redux/slices/GlobalVars";
 import { WebSocketInComingMessageHanlder } from "../../utils/WebScoketMessageHandler";
+import UserService from "../../utils/UserService";
 
 const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const dispatch = useAppDispatch();
@@ -34,7 +35,19 @@ const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
             };
         }
     }, [token]);
-
+    useEffect(() => {
+        if (token) {
+            const Something = async () => {
+                const user = await UserService.GetCurrentUser(token);
+                dispatch(
+                    GlobalVarsActions.setUser(
+                        user
+                    )
+                )                
+            };
+            Something();
+        }
+    }, [token]);
     return children;
 };
 
