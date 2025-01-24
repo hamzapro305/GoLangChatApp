@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ChatActions, SingleChatT } from "../../../Redux/slices/ChatSlice";
 import MessageService from "../../../utils/MessageService";
 import useToken from "../../../Hooks/useToken";
+import { motion } from "motion/react";
 
 const Sidebar = () => {
     const conversations = useAppSelector((s) => s.Chat.conversations);
@@ -49,13 +50,10 @@ const Sidebar = () => {
             </div>
             <div className="conversations">
                 {conversations.map((conv) => {
+                    const isSelectedChat = selectedChat == conv.conversation.id;
                     return (
                         <div
-                            className={`conv ${
-                                selectedChat == conv.conversation.id
-                                    ? "active"
-                                    : ""
-                            }`}
+                            className={`conv ${isSelectedChat ? "active" : ""}`}
                             key={conv.conversation.id}
                             onClick={() => SelectChat(conv)}
                         >
@@ -63,6 +61,7 @@ const Sidebar = () => {
                                 key={conv.conversation.id}
                                 conversation={conv.conversation}
                             />
+                            {isSelectedChat && <motion.div layoutId="active-conversation-indicator" className="active-indicator" />}
                         </div>
                     );
                 })}

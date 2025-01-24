@@ -1,16 +1,42 @@
-import React from "react";
+import React, { useState } from "react";
 import { useAppSelector } from "../../../Redux/Hooks";
 import { User } from "../../../Redux/slices/GlobalVars";
+import { motion } from "motion/react";
+
+const Routes = [
+    {
+        title: "Inbox",
+        path: "/inbox",
+    },
+    {
+        title: "Test",
+        path: "/test",
+    },
+];
 
 const ChatHeader = () => {
+    const [currentRoute, setCurrentRoute] = useState("/inbox");
     const CurrentUser = useAppSelector((s) => s.GlobalVars.user) as User;
     return (
         <div className="chat-page-header">
             <div className="logo">Logo</div>
             <nav>
                 <ul>
-                    <li>Inbox</li>
-                    <li>Test</li>
+                    {Routes.map((r) => (
+                        <li
+                            className="route"
+                            key={r.path}
+                            onClick={() => setCurrentRoute(r.path)}
+                        >
+                            <span>{r.title}</span>
+                            {currentRoute === r.path && (
+                                <motion.div
+                                    layoutId="underline"
+                                    className="underline"
+                                />
+                            )}
+                        </li>
+                    ))}
                 </ul>
             </nav>
             <div className="user-profile">

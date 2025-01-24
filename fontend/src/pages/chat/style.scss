@@ -19,15 +19,25 @@
         }
         nav {
             flex: 3;
+            height: 100%;
             ul {
                 display: flex;
                 gap: 30px;
+                height: 100%;
                 li {
                     list-style: none;
                     font-family: $font;
                     padding: 20px 10px;
                     padding-bottom: 10px;
-                    border-bottom: 6px solid $purple;
+                    position: relative;
+                    .underline {
+                        position: absolute;
+                        height: 5px;
+                        bottom: 0;
+                        left: 0;
+                        width: 100%;
+                        background-color: red;
+                    }
                 }
             }
         }
@@ -92,9 +102,16 @@
                     padding: 20px;
                     cursor: pointer;
                     font-family: $font;
-                    &.active {
+                    position: relative;
+
+                    .active-indicator {
+                        position: absolute;
                         @include background();
-                        color: white;
+                        top: 0;
+                        right: 0;
+                        height: 100%;
+                        width: 6px;
+                        z-index: 123;
                     }
                 }
             }
@@ -106,18 +123,50 @@
                 height: 100%;
                 flex-direction: column;
                 .current-chat-head {
-                    padding: 10px;
+                    padding: 20px;
                     border-bottom: 1px solid black;
+                    display: flex;
+                    justify-content: space-between;
+                    gap: 10px;
+                    align-items: center;
+                    .user {
+                        display: flex;
+                        gap: 10px;
+                        align-items: center;
+                        .profile {
+                            img {
+                                width: 40px;
+                                height: 40px;
+                                border-radius: 50%;
+                                box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+                            }
+                        }
+                        .content {
+                            font-family: $font;
+                            .name {
+                                font-weight: 700;
+                            }
+                            .desc {
+                                font-size: 12px;
+                            }
+                        }
+                    }
+                    .icon{
+                        font-size: 20px;
+                    }
                 }
                 .chat-body {
                     flex: 1;
-                    padding: 10px 20px;
-                    overflow-y: scroll;
-                    max-height: calc(100vh - 60px - 40px - 150px);
+                    height: calc(100vh - 60px - 85px - 151px);
+                    position: relative;
                     .messages {
                         display: flex;
                         flex-direction: column;
                         gap: 50px;
+                        height: calc(100vh - 60px - 85px - 151px);
+                        overflow-y: scroll;
+                        overflow-x: hidden;
+                        padding: 20px 0;
                         .msg {
                             position: relative;
                             background-color: white;
@@ -150,6 +199,37 @@
                                 font-size: 12px;
                             }
                         }
+                    }
+                    .underline {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        height: 3px;
+                        width: 100%;
+                        z-index: 123;
+                        transform-origin: 0 0;
+                        @include background();
+                    }
+                    .down-arrow-to-bottom {
+                        z-index: 123;
+                        position: absolute;
+
+                        bottom: 20px;
+                        right: 50px;
+
+                        background-color: white;
+
+                        font-size: 20px;
+                        padding: 10px;
+
+                        border-radius: 50%;
+                        cursor: pointer;
+
+                        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
                     }
                 }
                 .chat-foot {
