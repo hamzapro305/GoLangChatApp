@@ -1,25 +1,25 @@
 type Participant = {
-    userId: string
-    joinedAt: string
-    leftAt: string
-}
+    userId: string;
+    joinedAt: string;
+    leftAt: string;
+};
 
 export type SimpleConversation = {
-    id: string
-    participants: Participant[]
-    isGroup: false,
-    createdAt: string
-    leader: string
-}
+    id: string;
+    participants: Participant[];
+    isGroup: false;
+    createdAt: string;
+    leader: string;
+};
 export type GroupConversation = {
-    id: string
-    participants: Participant[]
-    isGroup: true,
-    createdAt: string
-    leader: string
-    groupName: string
-}
-type Conversation = SimpleConversation | GroupConversation
+    id: string;
+    participants: Participant[];
+    isGroup: true;
+    createdAt: string;
+    leader: string;
+    groupName: string;
+};
+type Conversation = SimpleConversation | GroupConversation;
 
 type SyncConversationMessage = {
     type: "sync_conversations";
@@ -34,28 +34,35 @@ type ConversationCreationCompleteMessage = {
 };
 
 type NewMessageInConversationMessage = {
-    type: "new_message_in_conversation"
-    message: ChatMessage
-}
+    type: "new_message_in_conversation";
+    message: ChatMessage;
+};
+type MessageCreationDoneMessage = {
+    type: "action_message_creation_done";
+    message: ChatMessage;
+};
 
 type ChatMessage = {
-    id: string
-    conversationId: string
-    senderId: string
-    content: string
-    createdAt: string
-}
+    id: string;
+    conversationId: string;
+    senderId: string;
+    content: string;
+    createdAt: string;
+};
 
-type WebSocketMessage = SyncConversationMessage | ConversationCreationCompleteMessage | NewMessageInConversationMessage
+type WebSocketMessage =
+    | MessageCreationDoneMessage
+    | SyncConversationMessage
+    | ConversationCreationCompleteMessage
+    | NewMessageInConversationMessage;
 
 export {
     ChatMessage,
-
     Conversation,
     Participant,
-
     WebSocketMessage,
     SyncConversationMessage,
     ConversationCreationCompleteMessage,
-    NewMessageInConversationMessage
-}
+    NewMessageInConversationMessage,
+    MessageCreationDoneMessage,
+};

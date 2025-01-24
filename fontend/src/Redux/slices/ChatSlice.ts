@@ -1,15 +1,20 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { ChatMessage, Conversation } from "../../@types/chat";
 
+export type SingleChatT = {
+    conversation: Conversation;
+    messages: ChatMessage[];
+    isMessageFetched: boolean;
+};
+
 type initChatSlice = {
-    conversations: {
-        conversation: Conversation,
-        messages: ChatMessage[]
-    }[]
+    conversations: SingleChatT[];
+    selectedChat: string | null;
 };
 
 const initialState: initChatSlice = {
-    conversations: []
+    conversations: [],
+    selectedChat: null,
 };
 
 export const Slice = createSlice({
@@ -26,18 +31,41 @@ export const Slice = createSlice({
             state,
             { payload }: PayloadAction<initChatSlice["conversations"][0]>
         ) => {
-            state.conversations.push(payload)
+            state.conversations.push(payload);
         },
-        newMessage: (
-            state,
-            { payload }: PayloadAction<ChatMessage>
-        ) => {
-            state.conversations.forEach(conv => {
+        setSelectedChat: (state, { payload }: PayloadAction<string>) => {
+            state.selectedChat = payload;
+        },
+        newMessage: (state, { payload }: PayloadAction<ChatMessage>) => {
+            state.conversations.forEach((conv) => {
                 if (conv.conversation.id == payload.conversationId) {
-                    conv.messages.push(payload)
+                    const isMessageAlreadyInIt = conv.messages.find(
+                        (msg) => msg.id == payload.id
+                    );
+                    if (isMessageAlreadyInIt == undefined) {
+                        conv.messages.push(payload);
+                    }
                 }
-            })
-        }
+            });
+        },
+        setMessages: (
+            state,
+            action: PayloadAction<{ convId: string; messages: ChatMessage[] }>
+        ) => {
+            const { convId, messages } = action.payload;
+            state.conversations.forEach((conv) => {
+                if (conv.conversation.id == convId) {
+                    conv.messages = messages;
+                }
+            });
+        },
+        setIsMessagesFetched: (state, { payload }: PayloadAction<string>) => {
+            state.conversations.forEach((conv) => {
+                if (conv.conversation.id == payload) {
+                    conv.isMessageFetched = true;
+                }
+            });
+        },
     },
 });
 

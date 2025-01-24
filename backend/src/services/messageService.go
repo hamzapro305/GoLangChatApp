@@ -31,6 +31,6 @@ func (*messageService) CreateMessage(
 	return &msg, nil
 }
 
-func (*messageService) GetConversationMessages(ConversationID string) {
-	
+func (*messageService) GetConversationMessages(ConversationID string) ([]models.Message, error) {
+	return repos.MessageRepo.GetConversationMessages(ConversationID)
 }

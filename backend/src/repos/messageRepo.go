@@ -7,7 +7,6 @@ import (
 	"github.com/hamzapro305/GoLangChatApp/src/config"
 	"github.com/hamzapro305/GoLangChatApp/src/models"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type messageRepo struct{}
@@ -23,19 +22,13 @@ func (*messageRepo) CreateMessage(message models.Message) error {
 	return err
 }
 
-func (*messageRepo) GetConversationMessages(conversationId string, userId string) ([]models.Message, error) {
+func (*messageRepo) GetConversationMessages(conversationId string) ([]models.Message, error) {
 	// Get all conversations for a user ID
 	ctx, cancel := context.WithTimeout(context.Background(), config.DatabaseTimeLimit)
 	defer cancel()
 
-	convId, err := primitive.ObjectIDFromHex(conversationId)
-	if err != nil {
-		fmt.Println("Error converting conversationId:", err)
-		return []models.Message{}, err
-	}
-
-	filter := bson.M{"conversationId": convId}
-	cursor, err := models.ConversationCollection.Find(ctx, filter)
+	filter := bson.M{"conversationId": conversationId}
+	cursor, err := models.MessageCollection.Find(ctx, filter)
 	if err != nil {
 		fmt.Println("Error finding conversations messages:", err)
 		return []models.Message{}, err

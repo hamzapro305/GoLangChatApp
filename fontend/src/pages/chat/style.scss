@@ -3,15 +3,12 @@
 .chat-page {
     height: 100vh;
     width: 100%;
-    background-color: red;
     max-width: $maxW;
     margin: 0 auto;
-
     display: flex;
     flex-direction: column;
 
     .chat-page-header {
-        background-color: green;
         padding: 0px 20px;
         display: flex;
         justify-content: space-between;
@@ -31,7 +28,7 @@
                     font-family: $font;
                     padding: 20px 10px;
                     padding-bottom: 10px;
-                    border-bottom: 6px solid red;
+                    border-bottom: 6px solid $purple;
                 }
             }
         }
@@ -55,17 +52,61 @@
         flex: 1;
         display: grid;
         grid-template-columns: 0.8fr 2fr;
-        background-color: aquamarine;
+        background-color: gray;
+
         .left-bar {
             display: flex;
             flex-direction: column;
+            .query {
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+                input {
+                    padding: 8px 10px;
+                    border-radius: 13px;
+                    outline: none;
+                    border: none;
+                }
+                .actions {
+                    display: flex;
+                    gap: 20px;
+                    button {
+                        all: unset;
+                        border-radius: 20px;
+                        text-align: center;
+                        font-family: $font;
+                        flex: 1;
+                        padding: 6px 20px;
+                        background-color: white;
+                    }
+                }
+            }
             .conversations {
                 flex: 1;
-                background-color: blue;
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                .conv {
+                    background-color: white;
+                    padding: 20px;
+                    cursor: pointer;
+                    &.active {
+                        background-color: red;
+                    }
+                }
             }
         }
         .chat {
             background-color: gray;
+            .chat-structure {
+                display: flex;
+                height: 100%;
+                flex-direction: column;
+                .chat-body {
+                    flex: 1;
+                }
+            }
         }
     }
 }

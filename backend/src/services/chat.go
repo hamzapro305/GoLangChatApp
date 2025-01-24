@@ -83,28 +83,9 @@ func (*conversationWebSocketService) SendNewMessageInConversationMessage(msg mod
 		return
 	}
 
-	var wg sync.WaitGroup
-
-	for _, participant := range conv.Participants {
-		participantId := participant.UserID
-		if participantId == msg.SenderID {
-			continue
-		}
-
-		mu.Lock()
-		conn, exists := activeConversationConnections[participantId]
-		mu.Unlock()
-
-		if exists {
-			wg.Add(1)
-			go func(participantId string, conn *websocket.Conn) {
-				defer wg.Done()
-				log.Println("Notifying participant:", participantId, "About Message in Conversation:", conv.ID.Hex(), "Created")
-				conn.WriteMessage(websocket.TextMessage, message)
-			}(participantId, conn)
-		}
-	}
-	wg.Wait()
+	go ConversationWebSocketService.SendMessageToParticipants(message, conv.Participants, func(participantId string) bool {
+		return participantId == msg.SenderID
+	})
 }
 
 // Send initial conversation data to the user

@@ -23,6 +23,11 @@ func SetupRoutes(app *fiber.App) {
 	userRoutes.Use(middlewares.ProtectedRoute())
 	SetupUserRoutes(userRoutes)
 
+	// Setup Message Routes
+	messageRoutes := v1.Group("/message")
+	messageRoutes.Use(middlewares.ProtectedRoute())
+	SetupMessageRoutes(messageRoutes)
+
 	webSocketRoute(v1)
 	setupAuthRoutes(v1)
 }

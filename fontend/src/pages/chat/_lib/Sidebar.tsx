@@ -5,19 +5,62 @@ import { Conversation } from "../../../@types/chat";
 import { useAppDispatch, useAppSelector } from "../../../Redux/Hooks";
 import UserService from "../../../utils/UserService";
 import useLocalStorage from "../../../Hooks/useLocalStorage";
-import { GlobalVarsActions, User } from "../../../Redux/slices/GlobalVars";
+import { User } from "../../../Redux/slices/GlobalVars";
 import { useQuery } from "@tanstack/react-query";
+import { ChatActions, SingleChatT } from "../../../Redux/slices/ChatSlice";
+import MessageService from "../../../utils/MessageService";
+import useToken from "../../../Hooks/useToken";
 
 const Sidebar = () => {
     const conversations = useAppSelector((s) => s.Chat.conversations);
+    const selectedChat = useAppSelector((s) => s.Chat.selectedChat);
+    const [token, _] = useToken();
+    const dispatch = useAppDispatch();
+    const SelectChat = (chat: SingleChatT) => {
+        if (token) {
+            dispatch(ChatActions.setSelectedChat(chat.conversation.id));
+            if (!chat.isMessageFetched) {
+                MessageService.FetchMessages(token, chat.conversation.id).then(
+                    (res) => {
+                        dispatch(
+                            ChatActions.setMessages({
+                                convId: chat.conversation.id,
+                                messages: res,
+                            })
+                        );
+                        dispatch(
+                            ChatActions.setIsMessagesFetched(
+                                chat.conversation.id
+                            )
+                        );
+                    }
+                );
+            }
+        }
+    };
     return (
         <div className="left-bar">
-            <div className="actions">action</div>
+            <div className="query">
+                <input type="text" placeholder="Search" />
+                <div className="actions">
+                    <button>Test 1</button>
+                    <button>Test 2</button>
+                </div>
+            </div>
             <div className="conversations">
                 {conversations.map((conv) => {
                     return (
-                        <div className="con" key={conv.conversation.id}>
+                        <div
+                            className={`conv ${
+                                selectedChat == conv.conversation.id
+                                    ? "active"
+                                    : ""
+                            }`}
+                            key={conv.conversation.id}
+                            onClick={() => SelectChat(conv)}
+                        >
                             <RenderConversationName
+                                key={conv.conversation.id}
                                 conversation={conv.conversation}
                             />
                         </div>
@@ -43,8 +86,6 @@ const RenderConversationName: FC<{ conversation: Conversation }> = ({
             CurrentUser,
             conv
         );
-
-        console.log(requiredParticipant.userId);
 
         const query = useQuery({
             queryKey: [requiredParticipant.userId],
