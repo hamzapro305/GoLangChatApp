@@ -39,7 +39,14 @@ func (*userService) GetUser(email string) (*models.User, error) {
 		return nil, fmt.Errorf("user not found")
 	}
 	return user, nil
+}
 
+func (*userService) GetUserById(id string) (*models.User, error) {
+	user, err := repos.UserRepo.GetUserById(id)
+	if err != nil {
+		return nil, fmt.Errorf("user not found")
+	}
+	return user, nil
 }
 
 func (*userService) GetAllUsers() ([]models.User, error) {

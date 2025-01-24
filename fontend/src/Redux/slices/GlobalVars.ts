@@ -1,15 +1,24 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
+export type User = {
+    id: string
+    name: string
+    email: string
+    createdAt: string
+}
+
 type initGlobalVars = {
     token: string | null
     ws: WebSocket | null
-    user: any | null
+    user: User | null
+    cacheUsers: User[]
 };
 
 const initialState: initGlobalVars = {
     token: null,
     ws: null,
-    user: null
+    user: null,
+    cacheUsers: []
 };
 
 export const Slice = createSlice({
@@ -33,6 +42,12 @@ export const Slice = createSlice({
             { payload }: PayloadAction<initGlobalVars["user"]>
         ) => {
             state.user = payload;
+        },
+        addUserInCache: (
+            state,
+            { payload }: PayloadAction<User>
+        ) => {
+            state.cacheUsers.push(payload)
         },
     },
 });

@@ -4,14 +4,14 @@ type Participant = {
     leftAt: string
 }
 
-type SimpleConversation = {
+export type SimpleConversation = {
     id: string
     participants: Participant[]
     isGroup: false,
     createdAt: string
     leader: string
 }
-type GroupConversation = {
+export type GroupConversation = {
     id: string
     participants: Participant[]
     isGroup: true,

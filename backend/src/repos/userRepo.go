@@ -7,6 +7,7 @@ import (
 	"github.com/hamzapro305/GoLangChatApp/src/config"
 	"github.com/hamzapro305/GoLangChatApp/src/models"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -19,6 +20,24 @@ func (*userRepo) GetUserByEmail(email string) (*models.User, error) {
 	defer cancel()
 
 	filter := bson.M{"email": email}
+	var user models.User
+	err := models.UserCollection.FindOne(ctx, filter).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (*userRepo) GetUserById(id string) (*models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), config.DatabaseTimeLimit)
+	defer cancel()
+
+	userId, conversionError := primitive.ObjectIDFromHex(id)
+	if conversionError != nil {
+		return nil, conversionError
+	}
+
+	filter := bson.M{"_id": userId}
 	var user models.User
 	err := models.UserCollection.FindOne(ctx, filter).Decode(&user)
 	if err != nil {
