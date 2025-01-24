@@ -1,11 +1,16 @@
-import { QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+    QueryCache,
+    QueryClient,
+    QueryClientProvider,
+} from "@tanstack/react-query";
 import AuthPage from "./pages/AuthPage";
 import ChatProvider from "./pages/chat/ChatProvider";
 import MainChat from "./pages/chat/MainChat";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import ModalsInit from "./modals/ModalsInit";
 
 const queryClient = new QueryClient({
-    queryCache: new QueryCache({})
+    queryCache: new QueryCache({}),
 });
 
 const App = () => {
@@ -25,6 +30,7 @@ const App = () => {
                         />
                     </Routes>
                 </Router>
+                <ModalsInit />
             </QueryClientProvider>
         </div>
     );

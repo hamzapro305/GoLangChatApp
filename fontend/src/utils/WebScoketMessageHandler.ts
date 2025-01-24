@@ -2,6 +2,7 @@ import { AppDispatch } from "../Redux/store";
 import { ChatActions } from "../Redux/slices/ChatSlice";
 import {
     ConversationCreationCompleteMessage,
+    ConversationCreationDoneMessage,
     MessageCreationDoneMessage,
     NewMessageInConversationMessage,
     SyncConversationMessage,
@@ -31,6 +32,9 @@ export class WebSocketInComingMessageHanlder {
                 break;
             case "action_message_creation_done":
                 WebSocketInComingMessageHanlder.messageCreationDone(message, dispatch);
+                break;
+            case "conversation_creation_completed":
+                WebSocketInComingMessageHanlder.conversationCreationDone(message, dispatch);
                 break;
             default:
                 console.log("Unknown Message", message);
@@ -73,12 +77,20 @@ export class WebSocketInComingMessageHanlder {
         console.log("New Message", message);
         dispatch(ChatActions.newMessage(message.message));
     }
-    
+
     static messageCreationDone(
         message: MessageCreationDoneMessage,
         dispatch: AppDispatch
     ) {
         console.log("New Message", message);
         dispatch(ChatActions.newMessage(message.message));
+    }
+    static conversationCreationDone(message: ConversationCreationDoneMessage, dispatch: AppDispatch) {
+        console.log("New Conversation", message);
+        dispatch(ChatActions.addNewConversation({
+            conversation: message.conversation,
+            messages: [],
+            isMessageFetched: false
+        }));
     }
 }

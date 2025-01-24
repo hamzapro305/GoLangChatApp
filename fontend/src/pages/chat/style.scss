@@ -111,7 +111,7 @@
                         right: 0;
                         height: 100%;
                         width: 6px;
-                        z-index: 123;
+                        z-index: 10;
                     }
                 }
             }
@@ -206,16 +206,16 @@
                         left: 0;
                         height: 3px;
                         width: 100%;
-                        z-index: 123;
+                        z-index: 10;
                         transform-origin: 0 0;
                         @include background();
                     }
                     .down-arrow-to-bottom {
-                        z-index: 123;
+                        z-index: 10;
                         position: absolute;
 
                         bottom: 20px;
-                        right: 50px;
+                        right: 30px;
 
                         background-color: white;
 
@@ -239,6 +239,7 @@
                         padding: 20px;
                         padding-top: 10px;
                         box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+                        border-radius: 10px;
 
                         display: flex;
                         flex-direction: column;

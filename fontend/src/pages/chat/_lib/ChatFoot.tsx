@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { KeyboardEvent, useState } from "react";
 import { useAppSelector } from "../../../Redux/Hooks";
 import { WebSocketMessageSender } from "../../../utils/WebSocketMessageSender";
 
@@ -12,6 +12,12 @@ const ChatFoot = () => {
             setContent("");
         }
     };
+    const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Enter") {
+            SendMessage();
+        }
+    };
+
     return (
         <div className="chat-foot">
             <div className="box">
@@ -20,6 +26,7 @@ const ChatFoot = () => {
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     placeholder="Type Message"
+                    onKeyDown={handleKeyDown}
                 />
                 <div className="options">
                     <div className="actions"></div>

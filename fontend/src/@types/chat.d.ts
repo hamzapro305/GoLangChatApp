@@ -41,6 +41,11 @@ type MessageCreationDoneMessage = {
     type: "action_message_creation_done";
     message: ChatMessage;
 };
+type ConversationCreationDoneMessage = {
+    type: "conversation_creation_completed";
+    message: string;
+    conversation: Conversation;
+};
 
 type ChatMessage = {
     id: string;
@@ -54,7 +59,8 @@ type WebSocketMessage =
     | MessageCreationDoneMessage
     | SyncConversationMessage
     | ConversationCreationCompleteMessage
-    | NewMessageInConversationMessage;
+    | NewMessageInConversationMessage 
+    | ConversationCreationDoneMessage
 
 export {
     ChatMessage,
@@ -65,4 +71,5 @@ export {
     ConversationCreationCompleteMessage,
     NewMessageInConversationMessage,
     MessageCreationDoneMessage,
+    ConversationCreationDoneMessage
 };

@@ -1,5 +1,5 @@
 import { FC, ReactNode, useEffect } from "react";
-import { useAppDispatch } from "../../Redux/Hooks";
+import { useAppDispatch, useAppSelector } from "../../Redux/Hooks";
 import useLocalStorage from "../../Hooks/useLocalStorage";
 import { GlobalVarsActions } from "../../Redux/slices/GlobalVars";
 import { WebSocketInComingMessageHanlder } from "../../utils/WebScoketMessageHandler";

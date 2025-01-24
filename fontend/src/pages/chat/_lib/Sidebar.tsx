@@ -11,12 +11,16 @@ import { ChatActions, SingleChatT } from "../../../Redux/slices/ChatSlice";
 import MessageService from "../../../utils/MessageService";
 import useToken from "../../../Hooks/useToken";
 import { motion } from "motion/react";
+import { ModalVarsVarsActions } from "../../../Redux/slices/ModalVars";
 
 const Sidebar = () => {
     const conversations = useAppSelector((s) => s.Chat.conversations);
     const selectedChat = useAppSelector((s) => s.Chat.selectedChat);
     const [token, _] = useToken();
     const dispatch = useAppDispatch();
+    const CreateConv = () => {
+        dispatch(ModalVarsVarsActions.setCreateConversation(true));
+    };
     const SelectChat = (chat: SingleChatT) => {
         if (token) {
             dispatch(ChatActions.setSelectedChat(chat.conversation.id));
@@ -44,8 +48,7 @@ const Sidebar = () => {
             <div className="query">
                 <input type="text" placeholder="Search" />
                 <div className="actions">
-                    <button>Test 1</button>
-                    <button>Test 2</button>
+                    <button onClick={CreateConv}>New chat</button>
                 </div>
             </div>
             <div className="conversations">
@@ -61,7 +64,12 @@ const Sidebar = () => {
                                 key={conv.conversation.id}
                                 conversation={conv.conversation}
                             />
-                            {isSelectedChat && <motion.div layoutId="active-conversation-indicator" className="active-indicator" />}
+                            {isSelectedChat && (
+                                <motion.div
+                                    layoutId="active-conversation-indicator"
+                                    className="active-indicator"
+                                />
+                            )}
                         </div>
                     );
                 })}

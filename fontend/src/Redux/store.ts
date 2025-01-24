@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import UserSlice from "./slices/UserSlice";
+import ModalVars from "./slices/ModalVars";
 import ChatSlice from "./slices/ChatSlice";
 import GlobalVars from "./slices/GlobalVars";
 
@@ -7,7 +7,7 @@ export const makeStore = () => {
     return configureStore({
         reducer: {
             GlobalVars: GlobalVars,
-            UserAuth: UserSlice,
+            ModalVars: ModalVars,
             Chat: ChatSlice
         },
         middleware: (getDefaultMiddleware) =>
