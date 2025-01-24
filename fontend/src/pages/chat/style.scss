@@ -5,14 +5,13 @@
     width: 100%;
     max-width: $maxW;
     margin: 0 auto;
-    display: flex;
-    flex-direction: column;
 
     .chat-page-header {
         padding: 0px 20px;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        height: 60px;
 
         .logo {
             flex: 1;
@@ -49,14 +48,15 @@
         }
     }
     .chat-page-body {
-        flex: 1;
         display: grid;
         grid-template-columns: 0.8fr 2fr;
         background-color: gray;
+        height: calc(100vh - 60px);
 
         .left-bar {
             display: flex;
             flex-direction: column;
+            background-color: #f2efff;
             .query {
                 padding: 20px;
                 display: flex;
@@ -91,20 +91,96 @@
                     background-color: white;
                     padding: 20px;
                     cursor: pointer;
+                    font-family: $font;
                     &.active {
-                        background-color: red;
+                        @include background();
+                        color: white;
                     }
                 }
             }
         }
         .chat {
-            background-color: gray;
+            background-color: #f3f3f9;
             .chat-structure {
                 display: flex;
                 height: 100%;
                 flex-direction: column;
+                .current-chat-head {
+                    padding: 10px;
+                    border-bottom: 1px solid black;
+                }
                 .chat-body {
                     flex: 1;
+                    padding: 10px 20px;
+                    overflow-y: scroll;
+                    max-height: calc(100vh - 60px - 40px - 150px);
+                    .messages {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 50px;
+                        .msg {
+                            position: relative;
+                            background-color: white;
+                            align-self: flex-start;
+                            padding: 10px 25px;
+                            font-family: $font;
+                            border-radius: 10px;
+                            text-align: left;
+                            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+                            min-width: 150px;
+                            max-width: 50%;
+                            &.mine {
+                                align-self: flex-end;
+                                @include background();
+                                color: white;
+
+                                .name {
+                                    position: absolute;
+                                    right: 10px;
+                                    bottom: -25px;
+                                    color: #333333ef;
+                                    font-size: 12px;
+                                }
+                            }
+                            .name {
+                                position: absolute;
+                                left: 10px;
+                                bottom: -25px;
+                                color: #333333ef;
+                                font-size: 12px;
+                            }
+                        }
+                    }
+                }
+                .chat-foot {
+                    padding: 20px;
+                    .box {
+                        background-color: white;
+                        padding: 20px;
+                        padding-top: 10px;
+                        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+
+                        display: flex;
+                        flex-direction: column;
+                        gap: 10px;
+                        input {
+                            padding: 5px 10px;
+                            padding-top: 20px;
+                            border: none;
+                            outline: none;
+                            color: #000;
+                            &::placeholder {
+                                color: #bcbcbcd5;
+                            }
+                        }
+                        .options {
+                            display: flex;
+                            justify-content: space-between;
+                            button {
+                                padding: 6px 20px;
+                            }
+                        }
+                    }
                 }
             }
         }

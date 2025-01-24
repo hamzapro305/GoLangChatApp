@@ -14,14 +14,17 @@ const ChatFoot = () => {
     };
     return (
         <div className="chat-foot">
-            <input
-                type="text"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-            />
-            <div className="options">
-                <div className="actions"></div>
-                <button onClick={SendMessage}>Submit</button>
+            <div className="box">
+                <input
+                    type="text"
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    placeholder="Type Message"
+                />
+                <div className="options">
+                    <div className="actions"></div>
+                    <button onClick={SendMessage}>Submit</button>
+                </div>
             </div>
         </div>
     );

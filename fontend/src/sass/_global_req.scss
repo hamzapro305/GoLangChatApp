@@ -1,9 +1,10 @@
 $font: "Poppins", sans-serif;
 $maxW: 1400px;
-$purple: #7f00ff;
-$pink: #e100ff;
+$purple: #6a3093;
+$pink: #a044ff;
 
 @mixin background() {
+
     background: $purple;
     background: -webkit-linear-gradient(to right, $purple, $pink);
     background: linear-gradient(to right, $purple, $pink);
