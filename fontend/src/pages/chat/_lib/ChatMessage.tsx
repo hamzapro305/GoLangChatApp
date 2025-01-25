@@ -29,11 +29,10 @@ const ChatMessage: FC<Props> = ({ Message }) => {
     return (
         <motion.div
             whileHover={{
-                scale: 1.05,
-                x: isMine ? -30 : 30,
+                x: isMine ? -70 : 70,
             }}
             whileInView={{
-                x: isMine ? -20 : 20,
+                x: isMine ? -60 : 60,
                 opacity: 1,
                 scale: 1,
                 transition: {
@@ -47,6 +46,12 @@ const ChatMessage: FC<Props> = ({ Message }) => {
             className={`msg ${isMine ? "mine" : ""}`}
         >
             <div className="content">{Message.content}</div>
+            <div className="profile">
+                <img
+                    src="https://www.shutterstock.com/image-vector/image-icon-600nw-211642900.jpg"
+                    alt=""
+                />
+            </div>
             <div className="name">{query?.data?.email}</div>
             <div className="options"></div>
         </motion.div>
