@@ -1,0 +1,36 @@
+@use "@/sass/global_req" as *;
+
+.EmojiComponent {
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+
+    position: absolute;
+
+    bottom: 110%;
+    left: 20px;
+
+    width: 500px;
+    height: 300px;
+
+    transform-origin: left bottom;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .emojis-head {
+        font-family: $font;
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    input {
+        padding: 5px 10px;
+        font-family: $font;
+        border-radius: 5px;
+        outline: none;
+        border: 3px solid $pink;
+    }
+}

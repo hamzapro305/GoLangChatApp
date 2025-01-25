@@ -2,10 +2,12 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 type initModalVars = {
     createConversation: boolean
+    emojiModal: boolean
 };
 
 const initialState: initModalVars = {
-    createConversation: false
+    createConversation: false,
+    emojiModal: false
 };
 
 export const Slice = createSlice({
@@ -14,6 +16,9 @@ export const Slice = createSlice({
     reducers: {
         setCreateConversation: (state, { payload }: PayloadAction<boolean>) => {
             state.createConversation = payload;
+        },
+        setEmojiModal: (state, { payload }: PayloadAction<boolean>) => {
+            state.emojiModal = payload;
         }
     },
 });

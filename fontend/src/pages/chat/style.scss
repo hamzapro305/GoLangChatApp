@@ -292,14 +292,13 @@
                         padding-top: 10px;
                         box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
                         border-radius: 10px;
-                        height: calc(100% - 40px);
+                        // height: calc(100% - 40px);
 
                         display: flex;
                         flex-direction: column;
                         gap: 10px;
                         textarea {
-                            padding: 5px 10px;
-                            padding-top: 20px;
+                            padding: 20px 10px;
                             border: none;
                             outline: none;
                             color: #000;
@@ -314,6 +313,23 @@
                         .options {
                             display: flex;
                             justify-content: space-between;
+                            .actions {
+                                display: flex;
+                                align-items: center;
+                                gap: 20px;
+                                padding-left: 10px;
+                                .emoji {
+                                    display: flex;
+                                    font-size: 25px;
+                                    cursor: pointer;
+                                }
+                                .attachment {
+                                    display: flex;
+                                    align-items: center;
+                                    font-size: 22px;
+                                    cursor: pointer;
+                                }
+                            }
                             button {
                                 padding: 6px 20px;
                             }
