@@ -193,17 +193,19 @@
                             box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
                             min-width: 150px;
                             max-width: 50%;
+                            transform-origin: 15% 50%;
                             &.mine {
                                 align-self: flex-end;
                                 @include background();
                                 color: white;
+                                transform-origin: 80% 0 0;
 
                                 .name {
-                                    position: absolute;
                                     right: 10px;
-                                    bottom: -25px;
-                                    color: #333333ef;
-                                    font-size: 12px;
+                                }
+                                .profile {
+                                    right: -50px !important;
+                                    left: auto;
                                 }
                             }
                             .name {
@@ -212,6 +214,17 @@
                                 bottom: -25px;
                                 color: #333333ef;
                                 font-size: 12px;
+                            }
+                            .profile {
+                                position: absolute;
+                                left: -50px;
+                                top: calc(100% - 45px);
+                                img {
+                                    width: 40px;
+                                    height: 40px;
+                                    border-radius: 50%;
+                                    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+                                }
                             }
                         }
                     }
@@ -249,24 +262,36 @@
                 }
                 .chat-foot {
                     padding: 20px;
+                    height: 150px;
+                    position: relative;
                     .box {
+                        position: absolute;
+                        bottom: 20px;
+                        left: 20px;
+                        width: calc(100% - 40px);
+
                         background-color: white;
                         padding: 20px;
                         padding-top: 10px;
                         box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
                         border-radius: 10px;
+                        height: calc(100% - 40px);
 
                         display: flex;
                         flex-direction: column;
                         gap: 10px;
-                        input {
+                        textarea {
                             padding: 5px 10px;
                             padding-top: 20px;
                             border: none;
                             outline: none;
                             color: #000;
+                            resize: none;
                             &::placeholder {
                                 color: #bcbcbcd5;
+                            }
+                            &::-webkit-scrollbar {
+                                display: none;
                             }
                         }
                         .options {
