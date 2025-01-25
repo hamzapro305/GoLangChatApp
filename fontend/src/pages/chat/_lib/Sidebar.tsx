@@ -24,6 +24,7 @@ const Sidebar = () => {
     const SelectChat = (chat: SingleChatT) => {
         if (token) {
             dispatch(ChatActions.setSelectedChat(chat.conversation.id));
+            dispatch(ChatActions.readMessages(chat.conversation.id));
             if (!chat.isMessageFetched) {
                 MessageService.FetchMessages(token, chat.conversation.id).then(
                     (res) => {
@@ -69,6 +70,11 @@ const Sidebar = () => {
                                     layoutId="active-conversation-indicator"
                                     className="active-indicator"
                                 />
+                            )}
+                            {conv.unReadMessages.length > 0 && (
+                                <div className="unread">
+                                    {conv.unReadMessages.length}
+                                </div>
                             )}
                         </div>
                     );

@@ -104,6 +104,20 @@
                     font-family: $font;
                     position: relative;
 
+                    .unread {
+                        position: absolute;
+                        right: 20px;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        @include background();
+                        padding: 1px 10px;
+                        border-radius: 50%;
+                        display: flex;
+                        color: white;
+                        align-items: center;
+                        justify-content: center;
+                    }
+
                     .active-indicator {
                         position: absolute;
                         @include background();
@@ -151,7 +165,7 @@
                             }
                         }
                     }
-                    .icon{
+                    .icon {
                         font-size: 20px;
                     }
                 }
