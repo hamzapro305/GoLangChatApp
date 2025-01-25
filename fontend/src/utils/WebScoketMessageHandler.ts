@@ -57,6 +57,7 @@ export class WebSocketInComingMessageHanlder {
             ChatActions.addNewConversation({
                 conversation: message.conversation,
                 messages: [],
+                unReadMessages: [],
                 isMessageFetched: false,
             })
         );
@@ -71,6 +72,7 @@ export class WebSocketInComingMessageHanlder {
                 message.conversations.map((conv) => ({
                     conversation: conv,
                     messages: [],
+                    unReadMessages: [],
                     isMessageFetched: false,
                 }))
             )
@@ -100,6 +102,7 @@ export class WebSocketInComingMessageHanlder {
             ChatActions.addNewConversation({
                 conversation: message.conversation,
                 messages: [],
+                unReadMessages: [],
                 isMessageFetched: false,
             })
         );

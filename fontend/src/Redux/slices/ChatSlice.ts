@@ -4,6 +4,7 @@ import { ChatMessage, Conversation } from "../../@types/chat";
 export type SingleChatT = {
     conversation: Conversation;
     messages: ChatMessage[];
+    unReadMessages: ChatMessage[];
     isMessageFetched: boolean;
 };
 
@@ -44,7 +45,15 @@ export const Slice = createSlice({
                     );
                     if (isMessageAlreadyInIt == undefined) {
                         conv.messages.push(payload);
+                        conv.unReadMessages.push(payload);
                     }
+                }
+            });
+        },
+        readMessages: (state, { payload }: PayloadAction<string>) => {
+            state.conversations.forEach((conv) => {
+                if (conv.conversation.id == payload) {
+                    conv.unReadMessages = [];
                 }
             });
         },

@@ -1,7 +1,7 @@
 "use client";
 
 import { FC } from "react";
-import { Conversation } from "../../../@types/chat";
+import { Conversation, SimpleConversation } from "../../../@types/chat";
 import { useAppDispatch, useAppSelector } from "../../../Redux/Hooks";
 import UserService from "../../../utils/UserService";
 import useLocalStorage from "../../../Hooks/useLocalStorage";
@@ -24,6 +24,7 @@ const Sidebar = () => {
     const SelectChat = (chat: SingleChatT) => {
         if (token) {
             dispatch(ChatActions.setSelectedChat(chat.conversation.id));
+            dispatch(ChatActions.readMessages(chat.conversation.id));
             if (!chat.isMessageFetched) {
                 MessageService.FetchMessages(token, chat.conversation.id).then(
                     (res) => {
@@ -62,13 +63,18 @@ const Sidebar = () => {
                         >
                             <RenderConversationName
                                 key={conv.conversation.id}
-                                conversation={conv.conversation}
+                                chat={conv}
                             />
                             {isSelectedChat && (
                                 <motion.div
                                     layoutId="active-conversation-indicator"
                                     className="active-indicator"
                                 />
+                            )}
+                            {conv.unReadMessages.length > 0 && (
+                                <div className="unread">
+                                    {conv.unReadMessages.length}
+                                </div>
                             )}
                         </div>
                     );
@@ -78,20 +84,41 @@ const Sidebar = () => {
     );
 };
 
-const RenderConversationName: FC<{ conversation: Conversation }> = ({
-    conversation: conv,
-}) => {
+const RenderConversationName: FC<{ chat: SingleChatT }> = ({ chat }) => {
     const CurrentUser = useAppSelector((s) => s.GlobalVars.user) as User;
 
-    if (conv.isGroup) {
-        return <div className="name">{conv.groupName}</div>;
+    const getUnread = () => {
+        return chat.unReadMessages.length > 0 ? (
+            <div className="message">
+                {chat.unReadMessages[chat.unReadMessages.length - 1].content}
+            </div>
+        ) : (
+            "----"
+        );
+    };
+
+    if (chat.conversation.isGroup) {
+        return (
+            <div className="conv-wrapper">
+                <div className="profile">
+                    <img
+                        src="https://www.shutterstock.com/image-vector/image-icon-600nw-211642900.jpg"
+                        alt=""
+                    />
+                </div>
+                <div className="content">
+                    <div className="name">{chat.conversation.groupName}</div>
+                    {getUnread()}
+                </div>
+            </div>
+        );
     }
 
     const GetUserConversationName = () => {
         const [token, _] = useLocalStorage<string | null>("token", null);
         const requiredParticipant = UserService.GetChatParticipant(
             CurrentUser,
-            conv
+            chat.conversation as SimpleConversation
         );
 
         const query = useQuery({
@@ -105,7 +132,22 @@ const RenderConversationName: FC<{ conversation: Conversation }> = ({
             },
         });
 
-        return <div className="name">{query.data?.email ?? "Loading.."}</div>;
+        return (
+            <div className="conv-wrapper">
+                <div className="profile">
+                    <img
+                        src="https://www.shutterstock.com/image-vector/image-icon-600nw-211642900.jpg"
+                        alt=""
+                    />
+                </div>
+                <div className="content">
+                    <div className="name">
+                        {query.data?.email ?? "Loading.."}
+                    </div>
+                    {getUnread()}
+                </div>
+            </div>
+        );
     };
 
     return <GetUserConversationName />;
