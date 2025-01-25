@@ -65,6 +65,7 @@ const RenderConversationName: FC<{ conversation: SimpleConversation }> = ({
 
     const query = useQuery({
         queryKey: [requiredParticipant.userId],
+        staleTime: Infinity,
         queryFn: () => {
             return UserService.fetchUserById(
                 requiredParticipant.userId,

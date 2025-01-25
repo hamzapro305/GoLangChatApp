@@ -157,13 +157,14 @@
                 }
                 .chat-body {
                     flex: 1;
-                    height: calc(100vh - 60px - 85px - 151px);
+                    height: calc(100vh - 60px - 85px - 155px);
+                    overflow-x: hidden;
                     position: relative;
                     .messages {
                         display: flex;
                         flex-direction: column;
                         gap: 50px;
-                        height: calc(100vh - 60px - 85px - 151px);
+                        height: calc(100vh - 60px - 85px - 155px);
                         overflow-y: scroll;
                         overflow-x: hidden;
                         padding: 20px 0;

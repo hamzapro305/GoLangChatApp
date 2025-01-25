@@ -31,10 +31,16 @@ export class WebSocketInComingMessageHanlder {
                 WebSocketInComingMessageHanlder.newMessage(message, dispatch);
                 break;
             case "action_message_creation_done":
-                WebSocketInComingMessageHanlder.messageCreationDone(message, dispatch);
+                WebSocketInComingMessageHanlder.messageCreationDone(
+                    message,
+                    dispatch
+                );
                 break;
             case "conversation_creation_completed":
-                WebSocketInComingMessageHanlder.conversationCreationDone(message, dispatch);
+                WebSocketInComingMessageHanlder.conversationCreationDone(
+                    message,
+                    dispatch
+                );
                 break;
             default:
                 console.log("Unknown Message", message);
@@ -85,12 +91,17 @@ export class WebSocketInComingMessageHanlder {
         console.log("New Message", message);
         dispatch(ChatActions.newMessage(message.message));
     }
-    static conversationCreationDone(message: ConversationCreationDoneMessage, dispatch: AppDispatch) {
+    static conversationCreationDone(
+        message: ConversationCreationDoneMessage,
+        dispatch: AppDispatch
+    ) {
         console.log("New Conversation", message);
-        dispatch(ChatActions.addNewConversation({
-            conversation: message.conversation,
-            messages: [],
-            isMessageFetched: false
-        }));
+        dispatch(
+            ChatActions.addNewConversation({
+                conversation: message.conversation,
+                messages: [],
+                isMessageFetched: false,
+            })
+        );
     }
 }

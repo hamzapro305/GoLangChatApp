@@ -19,7 +19,8 @@ services:
         restart: unless-stopped
         ports:
             - "3001:3001"
-        depends_on:
-            - app-db
+        # depends_on:
+        #     - app-db
         environment:
-            - MONGODB_URI=mongodb://admin:admin@app-db:27017/
+            # - MONGODB_URI=mongodb://admin:admin@app-db:27017/
+            - MONGODB_URI=mongodb+srv://hamzapro285:abc.123@gochatapp.j9a95.mongodb.net/?retryWrites=true&w=majority&appName=GoChatApp

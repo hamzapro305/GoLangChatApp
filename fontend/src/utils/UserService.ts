@@ -48,7 +48,7 @@ const fetchUserById = async (userId: string, token: string): Promise<User> => {
                 }
             })
             const data = JSON.parse(response.data)
-            console.log(data)
+            console.trace(data)
             res(data.user)
         } catch (error) {
             console.log(error)
