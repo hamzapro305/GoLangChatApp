@@ -1,12 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./style.scss";
-import useLocalStorage from "../../Hooks/useLocalStorage";
 import { Auth } from "../../utils/Auth";
+import { useNavigate } from "react-router-dom";
+import useToken from "../../Hooks/useToken";
 
 const AuthPage = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [_, setToken] = useLocalStorage<string | null>("token", null);
+    const [token, setToken] = useToken();
+    const navigate = useNavigate();
+    const VerifyToken = () => {
+        // navigate({
+        //     pathname: "/chat",
+        // });
+    };
+    useEffect(() => {
+        if (token) VerifyToken();
+    }, [token]);
     const SubmitLogin = async () => {
         try {
             const data = await Auth.Login(email, password);

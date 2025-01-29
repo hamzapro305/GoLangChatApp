@@ -11,41 +11,10 @@ export type SimpleConversation = {
     createdAt: string;
     leader: string;
 };
-export type GroupConversation = {
-    id: string;
-    participants: Participant[];
-    isGroup: true;
-    createdAt: string;
-    leader: string;
+export type GroupConversation = SimpleConversation & {
     groupName: string;
 };
 type Conversation = SimpleConversation | GroupConversation;
-
-type SyncConversationMessage = {
-    type: "sync_conversations";
-    conversations: Conversation[];
-    message: string;
-};
-
-type ConversationCreationCompleteMessage = {
-    type: "new_conversation";
-    conversation: Conversation;
-    message: string;
-};
-
-type NewMessageInConversationMessage = {
-    type: "new_message_in_conversation";
-    message: ChatMessage;
-};
-type MessageCreationDoneMessage = {
-    type: "action_message_creation_done";
-    message: ChatMessage;
-};
-type ConversationCreationDoneMessage = {
-    type: "conversation_creation_completed";
-    message: string;
-    conversation: Conversation;
-};
 
 type ChatMessage = {
     id: string;
@@ -55,21 +24,14 @@ type ChatMessage = {
     createdAt: string;
 };
 
-type WebSocketMessage =
-    | MessageCreationDoneMessage
-    | SyncConversationMessage
-    | ConversationCreationCompleteMessage
-    | NewMessageInConversationMessage 
-    | ConversationCreationDoneMessage
+type ChatLoadingMessage = Pick<ChatMessage, "conversationId" | "content"> & {
+    tempId: string
+    status: "loading" | "failed";
+};
 
 export {
     ChatMessage,
     Conversation,
     Participant,
-    WebSocketMessage,
-    SyncConversationMessage,
-    ConversationCreationCompleteMessage,
-    NewMessageInConversationMessage,
-    MessageCreationDoneMessage,
-    ConversationCreationDoneMessage
+    ChatLoadingMessage
 };

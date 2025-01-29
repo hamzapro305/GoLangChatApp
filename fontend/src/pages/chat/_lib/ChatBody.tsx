@@ -27,7 +27,9 @@ const ChatBody = () => {
         if (chatBodyRef.current) {
             const { scrollTop, scrollHeight, clientHeight } =
                 chatBodyRef.current;
-            setIsAtBottom(scrollTop + clientHeight === scrollHeight);
+            setIsAtBottom(
+                Math.abs(scrollTop + clientHeight - scrollHeight) < 1
+            );
         }
     };
 
@@ -68,6 +70,9 @@ const ChatBody = () => {
                 {GetSelectedConversationChat()?.messages?.map((msg) => {
                     return <ChatMessage Message={msg} key={msg.id} />;
                 })}
+                {/* {GetSelectedConversationChat()?.sendingMessages.map((msg) => {
+                    return <ChatMessage Message={msg} key={msg.id} />;
+                })} */}
             </div>
         </motion.div>
     );

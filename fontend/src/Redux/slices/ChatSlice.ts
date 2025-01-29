@@ -1,10 +1,11 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { ChatMessage, Conversation } from "../../@types/chat";
+import { ChatLoadingMessage, ChatMessage, Conversation } from "../../@types/chat";
 
 export type SingleChatT = {
     conversation: Conversation;
     messages: ChatMessage[];
     unReadMessages: ChatMessage[];
+    sendingMessages: ChatLoadingMessage[]
     isMessageFetched: boolean;
 };
 
@@ -75,6 +76,36 @@ export const Slice = createSlice({
                 }
             });
         },
+        addNewMeesageToSending: (state, { payload }: PayloadAction<{ message: ChatLoadingMessage, conversationId: string }>) => {
+            state.conversations.forEach((conv) => {
+                if (conv.conversation.id == payload.conversationId) {
+                    conv.sendingMessages.push(payload.message);
+                }
+            });
+        },
+        removeMeesageToSending: (state, { payload }: PayloadAction<{ tempId: string, conversationId: string }>) => {
+            state.conversations.forEach((conv) => {
+                if (conv.conversation.id == payload.conversationId) {
+                    conv.sendingMessages.forEach((msg, index) => {
+                        console.log(msg.tempId, payload.tempId)
+                        if (msg.tempId == payload.tempId) {
+                            conv.sendingMessages.splice(index, 1);
+                        }
+                    });
+                }
+            });
+        },
+        setMessageStatusToSending: (state, { payload }: PayloadAction<{ tempId: string, conversationId: string, status: "loading" | "failed" }>) => {
+            state.conversations.forEach((conv) => {
+                if (conv.conversation.id == payload.conversationId) {
+                    conv.sendingMessages.forEach((msg) => {
+                        if (msg.tempId == payload.tempId) {
+                            msg.status = payload.status;
+                        }
+                    });
+                }
+            });
+        }
     },
 });
 

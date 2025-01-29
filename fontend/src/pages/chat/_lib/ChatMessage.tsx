@@ -1,18 +1,23 @@
 import { FC } from "react";
-import { ChatMessage as ChatMessageType } from "../../../@types/chat";
-import { useAppSelector } from "../../../Redux/Hooks";
+import {
+    ChatLoadingMessage,
+    ChatMessage as ChatMessageType,
+} from "../../../@types/chat";
+import { useAppDispatch, useAppSelector } from "../../../Redux/Hooks";
 import { motion } from "motion/react";
 import { useQuery } from "@tanstack/react-query";
 import useToken from "../../../Hooks/useToken";
 import UserService from "../../../utils/UserService";
+import { ChatActions } from "../../../Redux/slices/ChatSlice";
 
 type Props = {
-    Message: ChatMessageType;
+    Message: ChatMessageType | ChatLoadingMessage;
 };
 const ChatMessage: FC<Props> = ({ Message }) => {
     const user = useAppSelector((s) => s.GlobalVars.user);
     const isMine = user?.id === Message.senderId;
     const [token, _] = useToken();
+    const dispatch = useAppDispatch();
     const query = useQuery({
         queryKey: [Message.senderId],
         queryFn: () => {
@@ -26,6 +31,16 @@ const ChatMessage: FC<Props> = ({ Message }) => {
             name: "Someone",
         },
     });
+    const removeMessage = (Message: ChatLoadingMessage) => {
+        if (Message.status === "loading") {
+            dispatch(
+                ChatActions.removeMeesageToSending({
+                    conversationId: Message.tempId,
+                    tempId: Message.tempId,
+                })
+            );
+        }
+    };
     return (
         <motion.div
             whileHover={{

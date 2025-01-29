@@ -1,13 +1,19 @@
+import { ChatMessage } from "../@types/chat";
+
 export class WebSocketMessageSender {
     static createNewMessage = (
         ws: WebSocket,
-        convId: string,
-        content: string
+        message: {
+            conversationId: string,
+            content: string,
+            tempId: string
+        }
     ) => {
         const data = JSON.stringify({
             type: "create_message",
-            conversationId: convId,
-            content: content,
+            conversationId: message.conversationId,
+            content: message.content,
+            tempId: message.tempId
         });
         ws.send(data);
     };

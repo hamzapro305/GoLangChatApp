@@ -1,4 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { ChatMessage } from "../../@types/chat";
 
 export type User = {
     id: string
@@ -11,14 +12,12 @@ type initGlobalVars = {
     token: string | null
     ws: WebSocket | null
     user: User | null
-    cacheUsers: User[]
 };
 
 const initialState: initGlobalVars = {
     token: null,
     ws: null,
-    user: null,
-    cacheUsers: []
+    user: null
 };
 
 export const Slice = createSlice({
@@ -42,12 +41,6 @@ export const Slice = createSlice({
             { payload }: PayloadAction<initGlobalVars["user"]>
         ) => {
             state.user = payload;
-        },
-        addUserInCache: (
-            state,
-            { payload }: PayloadAction<User>
-        ) => {
-            state.cacheUsers.push(payload)
         },
     },
 });

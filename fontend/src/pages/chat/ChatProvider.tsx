@@ -8,8 +8,9 @@ import UserService from "../../utils/UserService";
 const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const dispatch = useAppDispatch();
     const [token, _] = useLocalStorage<string | null>("token", null);
+    const user = useAppSelector((s) => s.GlobalVars.user);
     useEffect(() => {
-        if (token) {
+        if (token && user) {
             const ws = new WebSocket(
                 `ws://localhost:3001/api/v1/ws/conversation?token=${token}`
             );
@@ -20,7 +21,8 @@ const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
                 const receivedData = JSON.parse(event.data);
                 WebSocketInComingMessageHanlder.BasicMessageHandler(
                     receivedData,
-                    dispatch
+                    dispatch,
+                    user
                 );
             };
 
@@ -34,16 +36,12 @@ const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
                 ws.close();
             };
         }
-    }, [token]);
+    }, [token, user?.id]);
     useEffect(() => {
         if (token) {
             const Something = async () => {
                 const user = await UserService.GetCurrentUser(token);
-                dispatch(
-                    GlobalVarsActions.setUser(
-                        user
-                    )
-                )                
+                dispatch(GlobalVarsActions.setUser(user));
             };
             Something();
         }

@@ -6,6 +6,9 @@ import { GrAttachment } from "react-icons/gr";
 import EmojiComponent from "./EmojiComponent";
 import { ModalVarsVarsActions } from "../../../Redux/slices/ModalVars";
 import { AnimatePresence } from "motion/react";
+import { ChatLoadingMessage, ChatMessage } from "../../../@types/chat";
+import { nanoid } from "@reduxjs/toolkit";
+import { ChatActions } from "../../../Redux/slices/ChatSlice";
 
 const ChatFoot = () => {
     const [content, setContent] = useState("");
@@ -22,7 +25,23 @@ const ChatFoot = () => {
 
     const SendMessage = () => {
         if (ws && selectedChat) {
-            WebSocketMessageSender.createNewMessage(ws, selectedChat, content);
+            let message: ChatLoadingMessage = {
+                conversationId: selectedChat,
+                content: content,
+                tempId: nanoid(10),
+                status: "loading",
+            };
+            dispatch(
+                ChatActions.addNewMeesageToSending({
+                    conversationId: selectedChat,
+                    message: message,
+                })
+            );
+            WebSocketMessageSender.createNewMessage(ws, {
+                content,
+                conversationId: selectedChat,
+                tempId: message.tempId,
+            });
             setContent("");
         }
     };
@@ -33,17 +52,13 @@ const ChatFoot = () => {
         }
     };
 
-    console.log(`calc(100% - 40px -${lineCount * 20}px)`);
-
     return (
         <div className="chat-foot">
-            <div
-                className="box"
-            >
+            <div className="box">
                 <textarea
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
-                    rows={lineCount}
+                    rows={lineCount > 10 ? 10 : lineCount}
                     placeholder="Type Message"
                     onKeyDownCapture={handleKeyDown}
                 />

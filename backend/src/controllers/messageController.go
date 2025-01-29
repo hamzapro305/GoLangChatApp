@@ -33,8 +33,9 @@ func (*messageController) GetConversationMessages(c *fiber.Ctx) error {
 }
 
 type createMessageBody struct {
-	ConversationID string `bson:"conversationId"`
-	Content        string `bson:"content"`
+	ConversationID string `json:"conversationId"`
+	Content        string `json:"content"`
+	TempId         string `json:"tempId"`
 }
 
 func (*messageController) CreateConversationMessages(
@@ -54,15 +55,19 @@ func (*messageController) CreateConversationMessages(
 		body.Content,
 	)
 	if err != nil {
-		c.WriteJSON(map[string]interface{}{
-			"type":    "error",
-			"message": "message creation failed",
+		c.WriteJSON(fiber.Map{
+			"type":           "error",
+			"message":        "message creation failed",
+			"tempId":         body.TempId,
+			"conversationId": body.ConversationID,
 		})
 		return
 	}
 	services.ConversationWebSocketService.SendNewMessageInConversationMessage(*msg)
-	c.WriteJSON(map[string]interface{}{
-		"type":    "action_message_creation_done",
-		"message": msg,
+	c.WriteJSON(fiber.Map{
+		"type":           "action_message_creation_done",
+		"message":        msg,
+		"tempId":         body.TempId,
+		"conversationId": body.ConversationID,
 	})
 }
