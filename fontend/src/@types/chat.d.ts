@@ -24,14 +24,17 @@ type ChatMessage = {
     createdAt: string;
 };
 
-type ChatLoadingMessage = Pick<ChatMessage, "conversationId" | "content"> & {
+type ChatNewMessage = {
     tempId: string
-    status: "loading" | "failed";
+    status: "loading" | "failed" | "sent";
+    conversationId: string;
+    senderId: string;
+    content: string;
 };
 
 export {
     ChatMessage,
     Conversation,
     Participant,
-    ChatLoadingMessage
+    ChatNewMessage
 };

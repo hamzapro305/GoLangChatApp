@@ -4,32 +4,37 @@ import { WebSocketMessageSender } from "../../../utils/WebSocketMessageSender";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
 import { GrAttachment } from "react-icons/gr";
 import EmojiComponent from "./EmojiComponent";
-import { ModalVarsVarsActions } from "../../../Redux/slices/ModalVars";
 import { AnimatePresence } from "motion/react";
-import { ChatLoadingMessage, ChatMessage } from "../../../@types/chat";
+import { ChatNewMessage } from "../../../@types/chat";
 import { nanoid } from "@reduxjs/toolkit";
 import { ChatActions } from "../../../Redux/slices/ChatSlice";
+import useUser from "../../../Hooks/useUser";
+import MessageOptions from "./MessageOptions";
 
 const ChatFoot = () => {
     const [content, setContent] = useState("");
     const dispatch = useAppDispatch();
-    const { selectedChat } = useAppSelector((s) => s.Chat);
+    const { selectedChat, emojiModal, messageOptions } = useAppSelector(
+        (s) => s.Chat
+    );
     const ws = useAppSelector((s) => s.GlobalVars.ws);
-    const emojiModal = useAppSelector((s) => s.ModalVars.emojiModal);
+    const user = useUser();
 
     const lineCount = useMemo(() => content.split("\n").length, [content]);
 
     const toggleEmojiModal = () => {
-        dispatch(ModalVarsVarsActions.setEmojiModal(!emojiModal));
+        dispatch(ChatActions.setEmojiModal(!emojiModal));
     };
 
     const SendMessage = () => {
-        if (ws && selectedChat) {
-            let message: ChatLoadingMessage = {
+        if (!content) return;
+        if (ws && selectedChat && user) {
+            let message: ChatNewMessage = {
                 conversationId: selectedChat,
                 content: content,
                 tempId: nanoid(10),
                 status: "loading",
+                senderId: user.id,
             };
             dispatch(
                 ChatActions.addNewMeesageToSending({
@@ -74,8 +79,9 @@ const ChatFoot = () => {
                     <button onClick={SendMessage}>Submit</button>
                 </div>
             </div>
-            <AnimatePresence mode="wait">
+            <AnimatePresence presenceAffectsLayout propagate mode="sync">
                 {emojiModal && <EmojiComponent />}
+                {messageOptions && <MessageOptions />}
             </AnimatePresence>
         </div>
     );

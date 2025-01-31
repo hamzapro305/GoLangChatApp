@@ -1,23 +1,23 @@
 import { FC, useState } from "react";
-import { ChatMessage as ChatMessageType } from "../../../@types/chat";
+import { ChatNewMessage as ChatNewMessageT } from "../../../@types/chat";
 import { useAppDispatch, useAppSelector } from "../../../Redux/Hooks";
 import { motion } from "motion/react";
 import { useQuery } from "@tanstack/react-query";
 import useToken from "../../../Hooks/useToken";
 import UserService from "../../../utils/UserService";
-import { BiDotsVertical } from "react-icons/bi";
-import { MdDoneAll } from "react-icons/md";
 import { ChatActions } from "../../../Redux/slices/ChatSlice";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { RxCrossCircled } from "react-icons/rx";
+import { MdDoneAll } from "react-icons/md";
 
 type Props = {
-    Message: ChatMessageType;
+    Message: ChatNewMessageT;
 };
-const ChatMessage: FC<Props> = ({ Message }) => {
+const ChatNewMessage: FC<Props> = ({ Message }) => {
     const user = useAppSelector((s) => s.GlobalVars.user);
     const isMine = user?.id === Message.senderId;
     const [token, _] = useToken();
     const [isHovering, setIsHovering] = useState(false);
-
     const dispatch = useAppDispatch();
     const query = useQuery({
         queryKey: [Message.senderId],
@@ -32,13 +32,35 @@ const ChatMessage: FC<Props> = ({ Message }) => {
             name: "Someone",
         },
     });
-
-    const OpenMessageOptions = () => {
-        dispatch(ChatActions.setMessageOptions(Message.id));
+    const removeMessage = (Message: ChatNewMessageT) => {
+        if (Message.status === "loading") {
+            dispatch(
+                ChatActions.removeMeesageToSending({
+                    conversationId: Message.tempId,
+                    tempId: Message.tempId,
+                })
+            );
+        }
+    };
+    const getIcon = () => {
+        switch (Message.status) {
+            case "failed":
+                return <RxCrossCircled fontSize={18} color="red" />;
+            case "loading":
+                return (
+                    <AiOutlineLoading3Quarters
+                        className="loading"
+                        fontSize={15}
+                    />
+                );
+            case "sent":
+                return <MdDoneAll color="blue" fontSize={20} />;
+            default:
+                break;
+        }
     };
 
     const msgXPositttion = isHovering ? 70 : 60;
-
     return (
         <motion.div
             className={`msg ${isMine ? "mine" : ""}`}
@@ -75,18 +97,12 @@ const ChatMessage: FC<Props> = ({ Message }) => {
                 </div>
                 <div className="name">{query?.data?.email}</div>
                 <div className="status">
-                    <div className="icon">
-                        <MdDoneAll color="blue" fontSize={20} />
-                    </div>
+                    <div className="icon">{getIcon()}</div>
                 </div>
-                {isHovering && (
-                    <div className="option-icon" onClick={OpenMessageOptions}>
-                        <BiDotsVertical />
-                    </div>
-                )}
+                <div className="options"></div>
             </motion.div>
         </motion.div>
     );
 };
 
-export default ChatMessage;
+export default ChatNewMessage;

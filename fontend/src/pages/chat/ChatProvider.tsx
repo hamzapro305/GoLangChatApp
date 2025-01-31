@@ -8,6 +8,7 @@ import UserService from "../../utils/UserService";
 const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const dispatch = useAppDispatch();
     const [token, _] = useLocalStorage<string | null>("token", null);
+    const chat = useAppSelector((s) => s.Chat);
     const user = useAppSelector((s) => s.GlobalVars.user);
     useEffect(() => {
         if (token && user) {
@@ -22,7 +23,10 @@ const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
                 WebSocketInComingMessageHanlder.BasicMessageHandler(
                     receivedData,
                     dispatch,
-                    user
+                    {
+                        user: user,
+                        chat: chat,
+                    }
                 );
             };
 

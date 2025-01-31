@@ -1,22 +1,29 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { ChatLoadingMessage, ChatMessage, Conversation } from "../../@types/chat";
+import { ChatNewMessage, ChatMessage, Conversation } from "../../@types/chat";
 
 export type SingleChatT = {
     conversation: Conversation;
     messages: ChatMessage[];
     unReadMessages: ChatMessage[];
-    sendingMessages: ChatLoadingMessage[]
+    newMessages: ChatNewMessage[]
     isMessageFetched: boolean;
+
+
 };
 
-type initChatSlice = {
+export type ChatSliceT = {
     conversations: SingleChatT[];
     selectedChat: string | null;
+
+    emojiModal: boolean
+    messageOptions: string | null
 };
 
-const initialState: initChatSlice = {
+const initialState: ChatSliceT = {
     conversations: [],
     selectedChat: null,
+    emojiModal: false,
+    messageOptions: null
 };
 
 export const Slice = createSlice({
@@ -25,18 +32,20 @@ export const Slice = createSlice({
     reducers: {
         setAllConversations: (
             state,
-            { payload }: PayloadAction<initChatSlice["conversations"]>
+            { payload }: PayloadAction<ChatSliceT["conversations"]>
         ) => {
             state.conversations = payload;
         },
         addNewConversation: (
             state,
-            { payload }: PayloadAction<initChatSlice["conversations"][0]>
+            { payload }: PayloadAction<ChatSliceT["conversations"][0]>
         ) => {
             state.conversations.push(payload);
         },
         setSelectedChat: (state, { payload }: PayloadAction<string>) => {
             state.selectedChat = payload;
+            state.emojiModal = false
+            state.messageOptions = null
         },
         newMessage: (state, { payload }: PayloadAction<ChatMessage>) => {
             state.conversations.forEach((conv) => {
@@ -76,35 +85,65 @@ export const Slice = createSlice({
                 }
             });
         },
-        addNewMeesageToSending: (state, { payload }: PayloadAction<{ message: ChatLoadingMessage, conversationId: string }>) => {
+        addNewMeesageToSending: (state, { payload }: PayloadAction<{ message: ChatNewMessage, conversationId: string }>) => {
             state.conversations.forEach((conv) => {
                 if (conv.conversation.id == payload.conversationId) {
-                    conv.sendingMessages.push(payload.message);
+                    conv.newMessages.push(payload.message);
                 }
             });
         },
         removeMeesageToSending: (state, { payload }: PayloadAction<{ tempId: string, conversationId: string }>) => {
             state.conversations.forEach((conv) => {
                 if (conv.conversation.id == payload.conversationId) {
-                    conv.sendingMessages.forEach((msg, index) => {
+                    conv.newMessages.forEach((msg, index) => {
                         console.log(msg.tempId, payload.tempId)
                         if (msg.tempId == payload.tempId) {
-                            conv.sendingMessages.splice(index, 1);
+                            conv.newMessages.splice(index, 1);
                         }
                     });
                 }
             });
         },
-        setMessageStatusToSending: (state, { payload }: PayloadAction<{ tempId: string, conversationId: string, status: "loading" | "failed" }>) => {
+        setMessageStatusToSending: (state, { payload }: PayloadAction<{ tempId: string, conversationId: string, status: ChatNewMessage["status"] }>) => {
             state.conversations.forEach((conv) => {
                 if (conv.conversation.id == payload.conversationId) {
-                    conv.sendingMessages.forEach((msg) => {
+                    conv.newMessages.forEach((msg) => {
                         if (msg.tempId == payload.tempId) {
                             msg.status = payload.status;
                         }
                     });
                 }
             });
+        },
+        newMessageInChat: (
+            state,
+            { payload }: PayloadAction<{ message: ChatMessage, tempId: string }>
+        ) => {
+            const { message, tempId } = payload
+            state.conversations.forEach(conv => {
+                if (conv.conversation.id === message.conversationId) {
+                    const element = conv.newMessages.filter(element => element.tempId == tempId)
+                    if (element.length) {
+                        conv.newMessages.forEach((msg) => {
+                            if (msg.tempId == payload.tempId) {
+                                msg.status = "sent";
+                            }
+                        });
+                    } else {
+                        conv.newMessages.push({
+                            ...message,
+                            tempId: tempId,
+                            status: "sent"
+                        });
+                    }
+                }
+            })
+        },
+        setEmojiModal: (state, { payload }: PayloadAction<boolean>) => {
+            state.emojiModal = payload;
+        },
+        setMessageOptions: (state, { payload }: PayloadAction<string | null>) => {
+            state.messageOptions = payload;
         }
     },
 });

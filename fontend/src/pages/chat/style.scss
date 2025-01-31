@@ -194,53 +194,82 @@
                     .messages {
                         display: flex;
                         flex-direction: column;
-                        gap: 50px;
+                        // gap: 50px;
                         height: calc(100vh - 60px - 85px - 155px);
                         overflow-y: scroll;
                         overflow-x: hidden;
                         padding: 20px 0;
                         .msg {
-                            position: relative;
-                            background-color: white;
-                            align-self: flex-start;
-                            padding: 10px 25px;
-                            font-family: $font;
-                            border-radius: 10px;
-                            text-align: left;
-                            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-                            min-width: 150px;
-                            max-width: 50%;
-                            transform-origin: 15% 100%;
+                            display: flex;
+                            padding: 30px 0;
+                            transition: background 0.2s ease-in-out;
                             &.mine {
-                                align-self: flex-end;
-                                @include background();
-                                color: white;
-                                transform-origin: 80% 100% 0;
+                                justify-content: flex-end;
+                            }
+                            .msg-wrapper {
+                                position: relative;
+                                background-color: white;
+                                align-self: flex-start;
+                                padding: 10px 25px;
+                                font-family: $font;
+                                border-radius: 10px;
+                                text-align: left;
+                                box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+                                min-width: 150px;
+                                max-width: 50%;
+                                transform-origin: 15% 100%;
+                                &.mine {
+                                    @include background();
+                                    color: white;
+                                    transform-origin: 80% 100% 0;
 
+                                    .name {
+                                        right: 10px;
+                                    }
+                                    .profile {
+                                        right: -50px !important;
+                                        left: auto;
+                                    }
+                                    .option-icon {
+                                        right: unset;
+                                        left: -30px !important;
+                                    }
+                                }
                                 .name {
+                                    position: absolute;
+                                    left: 10px;
+                                    bottom: -25px;
+                                    color: #333333ef;
+                                    font-size: 12px;
+                                }
+                                .status {
+                                    position: absolute;
                                     right: 10px;
+                                    bottom: -25px;
+                                    color: #333333ef;
+                                    font-size: 12px;
+                                }
+                                .option-icon {
+                                    cursor: pointer;
+                                    position: absolute;
+                                    left: unset;
+                                    right: -30px !important;
+                                    top: calc(50% + 6px);
+                                    transform: translateY(-50%);
+                                    color: #333333ef;
+                                    font-size: 25px;
                                 }
                                 .profile {
-                                    right: -50px !important;
-                                    left: auto;
-                                }
-                            }
-                            .name {
-                                position: absolute;
-                                left: 10px;
-                                bottom: -25px;
-                                color: #333333ef;
-                                font-size: 12px;
-                            }
-                            .profile {
-                                position: absolute;
-                                left: -50px;
-                                top: calc(100% - 45px);
-                                img {
-                                    width: 40px;
-                                    height: 40px;
-                                    border-radius: 50%;
-                                    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+                                    position: absolute;
+                                    left: -50px;
+                                    top: calc(100% - 45px);
+                                    img {
+                                        width: 40px;
+                                        height: 40px;
+                                        border-radius: 50%;
+                                        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px
+                                            12px;
+                                    }
                                 }
                             }
                         }

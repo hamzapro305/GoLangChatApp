@@ -1,5 +1,5 @@
 import { AppDispatch } from "../Redux/store";
-import { ChatActions } from "../Redux/slices/ChatSlice";
+import { ChatActions, ChatSliceT } from "../Redux/slices/ChatSlice";
 import {
     ConversationCreationCompleteMessage,
     ConversationCreationDoneMessage,
@@ -10,46 +10,51 @@ import {
 } from "../@types/socket";
 import { User } from "../Redux/slices/GlobalVars";
 
+type Data = {
+    user: User,
+    chat: ChatSliceT
+}
+
 export class WebSocketInComingMessageHanlder {
     static BasicMessageHandler(
         message: WebSocketMessage,
         dispatch: AppDispatch,
-        user: User
+        data: Data,
     ) {
         switch (message.type) {
             case "sync_conversations":
                 WebSocketInComingMessageHanlder.syncConversation(
                     message,
                     dispatch,
-                    user
+                    data
                 );
                 break;
             case "new_conversation":
                 WebSocketInComingMessageHanlder.newConversation(
                     message,
                     dispatch,
-                    user
+                    data
                 );
                 break;
             case "new_message_in_conversation":
                 WebSocketInComingMessageHanlder.newMessage(
                     message,
                     dispatch,
-                    user
+                    data
                 );
                 break;
             case "action_message_creation_done":
                 WebSocketInComingMessageHanlder.messageCreationDone(
                     message,
                     dispatch,
-                    user
+                    data
                 );
                 break;
             case "conversation_creation_completed":
                 WebSocketInComingMessageHanlder.conversationCreationDone(
                     message,
                     dispatch,
-                    user
+                    data
                 );
                 break;
             default:
@@ -60,7 +65,7 @@ export class WebSocketInComingMessageHanlder {
     static newConversation(
         message: ConversationCreationCompleteMessage,
         dispatch: AppDispatch,
-        user: User
+        data: Data,
     ) {
         console.log("Create Conversation Message", message);
 
@@ -70,14 +75,14 @@ export class WebSocketInComingMessageHanlder {
                 messages: [],
                 unReadMessages: [],
                 isMessageFetched: false,
-                sendingMessages: []
+                newMessages: []
             })
         );
     }
     static syncConversation(
         message: SyncConversationMessage,
         dispatch: AppDispatch,
-        user: User
+        data: Data,
     ) {
         console.log("Sync Conversation Message", message);
         dispatch(
@@ -87,7 +92,7 @@ export class WebSocketInComingMessageHanlder {
                     messages: [],
                     unReadMessages: [],
                     isMessageFetched: false,
-                    sendingMessages: []
+                    newMessages: []
                 }))
             )
         );
@@ -95,15 +100,20 @@ export class WebSocketInComingMessageHanlder {
     static newMessage(
         message: NewMessageInConversationMessage,
         dispatch: AppDispatch,
-        user: User
+        data: Data,
     ) {
         console.log("New Message", message);
-        dispatch(ChatActions.newMessage(message.message));
+        dispatch(
+            ChatActions.newMessageInChat({
+                message: message.message,
+                tempId: message.message.id,
+            })
+        );
     }
     static messageCreationDone(
         message: MessageCreationDoneMessage,
         dispatch: AppDispatch,
-        user: User
+        data: Data,
     ) {
         console.log("New Message", message);
         if (message.type === "error") {
@@ -115,17 +125,18 @@ export class WebSocketInComingMessageHanlder {
                 })
             );
         } else {
-            dispatch(ChatActions.removeMeesageToSending({
-                conversationId: message.conversationId,
-                tempId: message.tempId
-            }))
-            dispatch(ChatActions.newMessage(message.message));
+            dispatch(
+                ChatActions.newMessageInChat({
+                    message: message.message,
+                    tempId: message.tempId,
+                })
+            );
         }
     }
     static conversationCreationDone(
         message: ConversationCreationDoneMessage,
         dispatch: AppDispatch,
-        user: User
+        data: Data,
     ) {
         console.log("New Conversation", message);
         dispatch(
@@ -134,7 +145,7 @@ export class WebSocketInComingMessageHanlder {
                 messages: [],
                 unReadMessages: [],
                 isMessageFetched: false,
-                sendingMessages: []
+                newMessages: []
             })
         );
     }

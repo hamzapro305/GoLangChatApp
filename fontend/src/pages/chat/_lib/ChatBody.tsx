@@ -1,8 +1,9 @@
 import { useAppSelector } from "../../../Redux/Hooks";
-import { motion, useScroll, useSpring } from "motion/react";
+import { AnimatePresence, motion, useScroll, useSpring } from "motion/react";
 import ChatMessage from "./ChatMessage";
 import { CiCircleChevDown } from "react-icons/ci";
 import { useEffect, useRef, useState } from "react";
+import ChatNewMessage from "./ChatNewMessage";
 
 const ChatBody = () => {
     const { conversations, selectedChat } = useAppSelector((s) => s.Chat);
@@ -55,8 +56,15 @@ const ChatBody = () => {
     }, []);
 
     useEffect(() => {
-        scrollToBottom();
-    }, [GetSelectedConversationChat()?.messages.length]);
+        if (chatBodyRef.current) {
+            chatBodyRef.current.scrollTo({
+                top: chatBodyRef.current.scrollHeight,
+            });
+        }
+    }, [
+        GetSelectedConversationChat()?.messages.length,
+        GetSelectedConversationChat()?.newMessages.length,
+    ]);
 
     return (
         <motion.div className="chat-body">
@@ -67,12 +75,16 @@ const ChatBody = () => {
             )}
             <motion.div className="underline" style={{ scaleX }}></motion.div>
             <div className="messages" ref={chatBodyRef}>
-                {GetSelectedConversationChat()?.messages?.map((msg) => {
-                    return <ChatMessage Message={msg} key={msg.id} />;
-                })}
-                {/* {GetSelectedConversationChat()?.sendingMessages.map((msg) => {
-                    return <ChatMessage Message={msg} key={msg.id} />;
-                })} */}
+                <AnimatePresence mode="sync" presenceAffectsLayout>
+                    {GetSelectedConversationChat()?.messages?.map((msg) => {
+                        return <ChatMessage Message={msg} key={msg.id} />;
+                    })}
+                    {GetSelectedConversationChat()?.newMessages.map((msg) => {
+                        return (
+                            <ChatNewMessage Message={msg} key={msg.tempId} />
+                        );
+                    })}
+                </AnimatePresence>
             </div>
         </motion.div>
     );
