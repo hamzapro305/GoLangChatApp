@@ -63,7 +63,7 @@ const ChatMessage: FC<Props> = ({ Message }) => {
                     },
                 }}
                 initial={{ opacity: 0, x: isMine ? 20 : -20, scale: 0 }}
-                // viewport={{ once: true }}
+                viewport={{ once: true }}
                 className={`msg-wrapper ${isMine ? "mine" : ""}`}
             >
                 <div className="content">{Message.content}</div>

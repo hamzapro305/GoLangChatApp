@@ -12,7 +12,7 @@
     left: 20px;
 
     width: 500px;
-    height: 300px;
+    height: 500px;
 
     transform-origin: left bottom;
 
@@ -32,5 +32,27 @@
         border-radius: 5px;
         outline: none;
         border: 3px solid $pink;
+    }
+    .emojis {
+        display: flex;
+
+        gap: 4px;
+        flex-wrap: wrap;
+        justify-content: space-between;
+
+        overflow-y: scroll;
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        .emoji {
+            font-size: 28px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border-radius: 0.2rem;
+            user-select: none;
+        }
     }
 }

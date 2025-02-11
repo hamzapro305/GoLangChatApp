@@ -1,15 +1,17 @@
+import { lazy, Suspense } from "react";
 import { KeyboardEvent, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../Redux/Hooks";
 import { WebSocketMessageSender } from "../../../utils/WebSocketMessageSender";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
 import { GrAttachment } from "react-icons/gr";
-import EmojiComponent from "./EmojiComponent";
 import { AnimatePresence } from "motion/react";
 import { ChatNewMessage } from "../../../@types/chat";
 import { nanoid } from "@reduxjs/toolkit";
 import { ChatActions } from "../../../Redux/slices/ChatSlice";
 import useUser from "../../../Hooks/useUser";
 import MessageOptions from "./MessageOptions";
+
+const EmojiComponent = lazy(() => import("./EmojiComponent"));
 
 const ChatFoot = () => {
     const [content, setContent] = useState("");
@@ -24,6 +26,10 @@ const ChatFoot = () => {
 
     const toggleEmojiModal = () => {
         dispatch(ChatActions.setEmojiModal(!emojiModal));
+    };
+
+    const pushToContent = (myString: string) => {
+        setContent((p) => (p += myString));
     };
 
     const SendMessage = () => {
@@ -80,7 +86,11 @@ const ChatFoot = () => {
                 </div>
             </div>
             <AnimatePresence presenceAffectsLayout propagate mode="sync">
-                {emojiModal && <EmojiComponent />}
+                {emojiModal && (
+                    <Suspense fallback="Loading">
+                        <EmojiComponent pushToContent={pushToContent}/>
+                    </Suspense>
+                )}
                 {messageOptions && <MessageOptions />}
             </AnimatePresence>
         </div>

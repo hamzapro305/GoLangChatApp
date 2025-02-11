@@ -1,7 +1,14 @@
 import { motion } from "motion/react";
-import "./style.scss";
 
-const EmojiComponent = () => {
+import "./style.scss";
+import AllEmojis from "../../../../utils/AllEmojis";
+import { FC } from "react";
+
+type EmojiComponentT = FC<{
+    pushToContent: (myString: string) => void;
+}>;
+
+const EmojiComponent: EmojiComponentT = ({ pushToContent }) => {
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0 }}
@@ -24,7 +31,22 @@ const EmojiComponent = () => {
                 className="searchbar"
                 placeholder="Search Emoji"
             />
-            <div className="emojis"></div>
+            <div className="emojis">
+                {AllEmojis.map((emoji) => {
+                    return (
+                        <motion.div
+                            className="emoji"
+                            key={emoji.emoji}
+                            onClick={() => pushToContent(emoji.emoji)}
+                            whileHover={{
+                                background: "#6a309381",
+                            }}
+                        >
+                            {emoji.emoji}
+                        </motion.div>
+                    );
+                })}
+            </div>
         </motion.div>
     );
 };
