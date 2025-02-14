@@ -2,14 +2,36 @@ import { motion } from "motion/react";
 import "./index.scss";
 import { useAppDispatch } from "../../../../Redux/Hooks";
 import { ChatActions } from "../../../../Redux/slices/ChatSlice";
+import { useEffect, useRef } from "react";
 
 const MessageOptions = () => {
     const dispatch = useAppDispatch();
     const closeModal = () => {
-        dispatch(ChatActions.setMessageOptions(null));
+        dispatch(
+            ChatActions.setSelectedChat({
+                messageOptions: null,
+            })
+        );
     };
+
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (ref.current && !ref.current.contains(event.target as Node)) {
+                closeModal();
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
     return (
         <motion.div
+            ref={ref}
             initial={{ opacity: 0, scale: 0 }}
             animate={{
                 opacity: 1,

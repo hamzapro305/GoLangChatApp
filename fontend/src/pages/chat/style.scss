@@ -59,14 +59,15 @@
     }
     .chat-page-body {
         display: grid;
-        grid-template-columns: 0.8fr 2fr;
+        grid-template-columns: 0.8fr 2fr auto;
         background-color: gray;
         height: calc(100vh - 60px);
 
         .left-bar {
             display: flex;
             flex-direction: column;
-            background-color: #f2efff;
+            background-color: #eeeafd;
+            padding-right: 5px;
             .query {
                 padding: 20px;
                 display: flex;
@@ -98,6 +99,31 @@
                 display: flex;
                 flex-direction: column;
                 gap: 6px;
+                padding-right: 5px;
+
+                /* width */
+                &::-webkit-scrollbar {
+                    width: 10px;
+                }
+
+                /* Track */
+                &::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+
+                /* Handle */
+                &::-webkit-scrollbar-thumb {
+                    background: rgba(128, 128, 128, 0.438);
+                    width: 5px;
+                    border-radius: 0.4rem;
+                }
+
+                /* Handle on hover */
+                &::-webkit-scrollbar-thumb:hover {
+                    // background: #555;
+                    cursor: pointer;
+                }
+
                 .conv {
                     background-color: white;
                     padding: 20px;
@@ -150,6 +176,18 @@
         }
         .chat {
             background-color: #f3f3f9;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            .chat-unselected {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                height: 100%;
+                justify-content: center;
+                font-family: $font;
+                font-size: 35px;
+                text-transform: uppercase;
+            }
             .chat-structure {
                 display: flex;
                 height: 100%;
@@ -185,6 +223,7 @@
                     }
                     .icon {
                         font-size: 20px;
+                        cursor: pointer;
                     }
                 }
                 .chat-body {
@@ -333,7 +372,7 @@
                             outline: none;
                             color: #000;
                             resize: none;
-                            font-size: 28px;
+                            font-size: 20px;
                             &::placeholder {
                                 color: #bcbcbcd5;
                             }

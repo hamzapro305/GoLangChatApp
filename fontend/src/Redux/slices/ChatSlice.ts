@@ -11,19 +11,22 @@ export type SingleChatT = {
 
 };
 
-export type ChatSliceT = {
-    conversations: SingleChatT[];
-    selectedChat: string | null;
-
+type SelectedChatT = {
+    id: string
     emojiModal: boolean
     messageOptions: string | null
+    chatInfo: boolean
+}
+
+
+export type ChatSliceT = {
+    conversations: SingleChatT[];
+    selectedChat: SelectedChatT | null;
 };
 
 const initialState: ChatSliceT = {
     conversations: [],
     selectedChat: null,
-    emojiModal: false,
-    messageOptions: null
 };
 
 export const Slice = createSlice({
@@ -42,10 +45,19 @@ export const Slice = createSlice({
         ) => {
             state.conversations.push(payload);
         },
-        setSelectedChat: (state, { payload }: PayloadAction<string>) => {
-            state.selectedChat = payload;
-            state.emojiModal = false
-            state.messageOptions = null
+        setSelectedChat: (
+            state,
+            { payload }: PayloadAction<Partial<SelectedChatT> | null>
+        ) => {
+            if (payload == null) {
+                state.selectedChat = null
+            }
+            else {
+                state.selectedChat = {
+                    ...state.selectedChat,
+                    ...payload
+                } as SelectedChatT;
+            }
         },
         newMessage: (state, { payload }: PayloadAction<ChatMessage>) => {
             state.conversations.forEach((conv) => {
@@ -138,12 +150,6 @@ export const Slice = createSlice({
                     }
                 }
             })
-        },
-        setEmojiModal: (state, { payload }: PayloadAction<boolean>) => {
-            state.emojiModal = payload;
-        },
-        setMessageOptions: (state, { payload }: PayloadAction<string | null>) => {
-            state.messageOptions = payload;
         }
     },
 });

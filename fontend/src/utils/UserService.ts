@@ -10,8 +10,11 @@ const GetCurrentUser = async (token: string): Promise<any> => {
                     "Authorization": `Bearer ${token}`
                 }
             })
-            const data = JSON.parse(response.data)
-            res(data?.user)
+            if (response.status == 200) {
+                const data = JSON.parse(response.data)
+                res(data?.user)
+            }
+            rej(null)
         } catch (error) {
             console.log(error)
             rej(null)

@@ -11,14 +11,16 @@
     bottom: 110%;
     left: 20px;
 
-    width: 500px;
-    height: 500px;
+    width: 25vw;
+    height: 50vh;
 
     transform-origin: left bottom;
 
     display: flex;
     flex-direction: column;
     gap: 10px;
+
+    z-index: 123;
 
     .emojis-head {
         font-family: $font;

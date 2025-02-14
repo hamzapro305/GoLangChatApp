@@ -1,4 +1,3 @@
-import { lazy, Suspense } from "react";
 import { KeyboardEvent, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../Redux/Hooks";
 import { WebSocketMessageSender } from "../../../utils/WebSocketMessageSender";
@@ -10,22 +9,25 @@ import { nanoid } from "@reduxjs/toolkit";
 import { ChatActions } from "../../../Redux/slices/ChatSlice";
 import useUser from "../../../Hooks/useUser";
 import MessageOptions from "./MessageOptions";
-
-const EmojiComponent = lazy(() => import("./EmojiComponent"));
+import EmojiComponent from "./EmojiComponent";
 
 const ChatFoot = () => {
     const [content, setContent] = useState("");
     const dispatch = useAppDispatch();
-    const { selectedChat, emojiModal, messageOptions } = useAppSelector(
-        (s) => s.Chat
-    );
+    const { selectedChat } = useAppSelector((s) => s.Chat);
     const ws = useAppSelector((s) => s.GlobalVars.ws);
     const user = useUser();
 
     const lineCount = useMemo(() => content.split("\n").length, [content]);
 
     const toggleEmojiModal = () => {
-        dispatch(ChatActions.setEmojiModal(!emojiModal));
+        if (selectedChat) {
+            dispatch(
+                ChatActions.setSelectedChat({
+                    emojiModal: !selectedChat.emojiModal,
+                })
+            );
+        }
     };
 
     const pushToContent = (myString: string) => {
@@ -36,7 +38,7 @@ const ChatFoot = () => {
         if (!content) return;
         if (ws && selectedChat && user) {
             let message: ChatNewMessage = {
-                conversationId: selectedChat,
+                conversationId: selectedChat.id,
                 content: content,
                 tempId: nanoid(10),
                 status: "loading",
@@ -44,13 +46,13 @@ const ChatFoot = () => {
             };
             dispatch(
                 ChatActions.addNewMeesageToSending({
-                    conversationId: selectedChat,
+                    conversationId: selectedChat.id,
                     message: message,
                 })
             );
             WebSocketMessageSender.createNewMessage(ws, {
                 content,
-                conversationId: selectedChat,
+                conversationId: selectedChat.id,
                 tempId: message.tempId,
             });
             setContent("");
@@ -82,16 +84,19 @@ const ChatFoot = () => {
                             <GrAttachment />
                         </div>
                     </div>
-                    <button onClick={SendMessage}>Submit</button>
+                    <button className="btn-global" onClick={SendMessage}>
+                        Submit
+                    </button>
                 </div>
             </div>
             <AnimatePresence presenceAffectsLayout propagate mode="sync">
-                {emojiModal && (
-                    <Suspense fallback="Loading">
-                        <EmojiComponent pushToContent={pushToContent}/>
-                    </Suspense>
+                {selectedChat?.emojiModal && (
+                    <EmojiComponent
+                        pushToContent={pushToContent}
+                        onClose={toggleEmojiModal}
+                    />
                 )}
-                {messageOptions && <MessageOptions />}
+                {selectedChat?.messageOptions && <MessageOptions />}
             </AnimatePresence>
         </div>
     );

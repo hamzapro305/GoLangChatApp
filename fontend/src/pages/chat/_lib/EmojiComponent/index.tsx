@@ -1,16 +1,43 @@
 import { motion } from "motion/react";
+import { lazy, Suspense, useEffect, useRef } from "react";
 
 import "./style.scss";
-import AllEmojis from "../../../../utils/AllEmojis";
-import { FC } from "react";
+import { FC, useState } from "react";
+import { useAppSelector } from "../../../../Redux/Hooks";
+
+const RenderAllEmojis = lazy(() => import("./RenderAllEmojis"));
 
 type EmojiComponentT = FC<{
     pushToContent: (myString: string) => void;
+    onClose: () => void;
 }>;
 
-const EmojiComponent: EmojiComponentT = ({ pushToContent }) => {
+const EmojiComponent: EmojiComponentT = ({ pushToContent, onClose }) => {
+    const { emojiModal } = useAppSelector((s) => s.Chat);
+    const [query, setQuery] = useState("");
+
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                ref.current &&
+                !ref.current.contains(event.target as Node) &&
+                emojiModal
+            ) {
+                // onClose();
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
     return (
         <motion.div
+            ref={ref}
             initial={{ opacity: 0, scale: 0 }}
             animate={{
                 opacity: 1,
@@ -28,25 +55,14 @@ const EmojiComponent: EmojiComponentT = ({ pushToContent }) => {
             <div className="emojis-head">Emojis</div>
             <input
                 type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
                 className="searchbar"
                 placeholder="Search Emoji"
             />
-            <div className="emojis">
-                {AllEmojis.map((emoji) => {
-                    return (
-                        <motion.div
-                            className="emoji"
-                            key={emoji.emoji}
-                            onClick={() => pushToContent(emoji.emoji)}
-                            whileHover={{
-                                background: "#6a309381",
-                            }}
-                        >
-                            {emoji.emoji}
-                        </motion.div>
-                    );
-                })}
-            </div>
+            <Suspense fallback="Loading">
+                <RenderAllEmojis pushToContent={pushToContent} query={query} />
+            </Suspense>
         </motion.div>
     );
 };

@@ -22,6 +22,7 @@ type GroupConversation struct {
 	Leader       string             `bson:"leaderId" json:"leaderId"`
 	IsGroup      bool               `bson:"isGroup" json:"isGroup"`
 	GroupName    string             `bson:"groupName" json:"groupName"`
+	GroupImage   string             `bson:"groupImage" json:"groupImage"`
 }
 
 type Participant struct {

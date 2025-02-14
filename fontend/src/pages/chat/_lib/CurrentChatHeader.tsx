@@ -1,16 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import useLocalStorage from "../../../Hooks/useLocalStorage";
-import { useAppSelector } from "../../../Redux/Hooks";
+import { useAppDispatch, useAppSelector } from "../../../Redux/Hooks";
 import UserService from "../../../utils/UserService";
 import { SimpleConversation } from "../../../@types/chat";
 import { FC } from "react";
 import { User } from "../../../Redux/slices/GlobalVars";
 import { LuInfo } from "react-icons/lu";
+import { ChatActions } from "../../../Redux/slices/ChatSlice";
 
 const CurrentChatHeader = () => {
     const { selectedChat, conversations } = useAppSelector((s) => s.Chat);
     const selectedConv = conversations.find((conv) => {
-        return conv.conversation.id === selectedChat;
+        return conv.conversation.id === selectedChat?.id;
     });
 
     if (selectedConv) {
@@ -45,8 +46,19 @@ const CurrentChatHeader = () => {
 };
 
 const OpenChatInfoIcon = () => {
+    const { selectedChat } = useAppSelector((s) => s.Chat);
+    const dispatch = useAppDispatch();
+    const onClickChatInfo = () => {
+        if (selectedChat) {
+            dispatch(
+                ChatActions.setSelectedChat({
+                    chatInfo: !selectedChat.chatInfo,
+                })
+            );
+        }
+    };
     return (
-        <div className="icon">
+        <div className="icon" onClick={onClickChatInfo}>
             <LuInfo />
         </div>
     );

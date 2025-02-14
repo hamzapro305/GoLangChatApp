@@ -23,7 +23,14 @@ const Sidebar = () => {
     };
     const SelectChat = (chat: SingleChatT) => {
         if (token) {
-            dispatch(ChatActions.setSelectedChat(chat.conversation.id));
+            dispatch(
+                ChatActions.setSelectedChat({
+                    id: chat.conversation.id,
+                    emojiModal: false,
+                    messageOptions: null,
+                    chatInfo: false,
+                })
+            );
             dispatch(ChatActions.readMessages(chat.conversation.id));
             if (!chat.isMessageFetched) {
                 MessageService.FetchMessages(token, chat.conversation.id).then(
@@ -54,7 +61,8 @@ const Sidebar = () => {
             </div>
             <div className="conversations">
                 {conversations.map((conv) => {
-                    const isSelectedChat = selectedChat == conv.conversation.id;
+                    const isSelectedChat =
+                        selectedChat?.id == conv.conversation.id;
                     return (
                         <div
                             className={`conv ${isSelectedChat ? "active" : ""}`}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useAppSelector } from "../../../Redux/Hooks";
 import { User } from "../../../Redux/slices/GlobalVars";
 import { motion } from "motion/react";

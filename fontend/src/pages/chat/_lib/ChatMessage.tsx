@@ -34,7 +34,11 @@ const ChatMessage: FC<Props> = ({ Message }) => {
     });
 
     const OpenMessageOptions = () => {
-        dispatch(ChatActions.setMessageOptions(Message.id));
+        dispatch(
+            ChatActions.setSelectedChat({
+                messageOptions: Message.id,
+            })
+        );
     };
 
     const msgXPositttion = isHovering ? 70 : 60;

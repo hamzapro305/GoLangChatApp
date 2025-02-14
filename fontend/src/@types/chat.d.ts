@@ -11,7 +11,12 @@ export type SimpleConversation = {
     createdAt: string;
     leader: string;
 };
-export type GroupConversation = SimpleConversation & {
+export type GroupConversation = {
+    id: string;
+    participants: Participant[];
+    isGroup: true;
+    createdAt: string;
+    leader: string;
     groupName: string;
 };
 type Conversation = SimpleConversation | GroupConversation;

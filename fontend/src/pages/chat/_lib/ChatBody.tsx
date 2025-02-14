@@ -1,13 +1,15 @@
-import { useAppSelector } from "../../../Redux/Hooks";
+import { useAppDispatch, useAppSelector } from "../../../Redux/Hooks";
 import { AnimatePresence, motion, useScroll, useSpring } from "motion/react";
 import ChatMessage from "./ChatMessage";
 import { CiCircleChevDown } from "react-icons/ci";
 import { useEffect, useRef, useState } from "react";
 import ChatNewMessage from "./ChatNewMessage";
+import { ChatActions } from "../../../Redux/slices/ChatSlice";
 
 const ChatBody = () => {
     const { conversations, selectedChat } = useAppSelector((s) => s.Chat);
     const [isAtBottom, setIsAtBottom] = useState(true);
+    const dispatch = useAppDispatch();
 
     const scrollToBottom = () => {
         if (chatBodyRef.current) {
@@ -36,7 +38,7 @@ const ChatBody = () => {
 
     const GetSelectedConversationChat = () => {
         const Conv = conversations.find((conv) => {
-            return conv.conversation.id === selectedChat;
+            return conv.conversation.id === selectedChat?.id;
         });
         return Conv;
     };
@@ -65,6 +67,22 @@ const ChatBody = () => {
         GetSelectedConversationChat()?.messages.length,
         GetSelectedConversationChat()?.newMessages.length,
     ]);
+
+    useEffect(() => {
+        const handleKeyPress = (event: KeyboardEvent) => {
+            if (event.key === "Escape") {
+                if (selectedChat) {
+                    dispatch(ChatActions.setSelectedChat(null));
+                }
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyPress);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyPress);
+        };
+    }, []);
 
     return (
         <motion.div className="chat-body">

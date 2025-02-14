@@ -59,3 +59,34 @@ func (*userController) GetUserById(c *fiber.Ctx) error {
 		"user": user,
 	})
 }
+
+type setUserProfilePicBody struct {
+	profilePic string `json:"profilePic"`
+}
+
+func (*userController) UploadUserProfile(c *fiber.Ctx) error {
+	file, err := c.FormFile("file")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid file"})
+	}
+
+	// Open the file
+	src, err := file.Open()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to open file"})
+	}
+	defer src.Close()
+
+	return nil
+
+	// // Generate unique filename
+	// fileName := fmt.Sprintf("profiles/%d-%s", time.Now().Unix(), file.Filename)
+
+	// // Upload to Firebase Storage
+	// downloadURL, err := config.StorageClient.uploadToFirebase(src, fileName)
+	// if err != nil {
+	// 	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to upload"})
+	// }
+
+	// return c.JSON(fiber.Map{"url": downloadURL})
+}
