@@ -20,7 +20,7 @@ func InitFirebase() error {
 		log.Fatalf("Failed to initialize Firebase Storage: %v", err)
 		return err
 	}
-	
+
 	StorageClient = client
 	fmt.Println("Firebase Storage Initialized!")
 	return nil

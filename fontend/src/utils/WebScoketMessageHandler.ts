@@ -9,6 +9,7 @@ import {
     WebSocketMessage,
 } from "../@types/socket";
 import { User } from "../Redux/slices/GlobalVars";
+import { Toast } from "../components/HSToast";
 
 type Data = {
     user: User,
@@ -109,6 +110,7 @@ export class WebSocketInComingMessageHanlder {
                 tempId: message.message.id,
             })
         );
+        Toast.SuccessToast("New Message In Chat!")
     }
     static messageCreationDone(
         message: MessageCreationDoneMessage,

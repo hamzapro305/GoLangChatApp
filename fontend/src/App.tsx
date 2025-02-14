@@ -8,6 +8,7 @@ import ChatProvider from "./pages/chat/ChatProvider";
 import MainChat from "./pages/chat/MainChat";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ModalsInit from "./modals/ModalsInit";
+import HSToast from "./components/HSToast";
 
 const queryClient = new QueryClient({
     queryCache: new QueryCache({}),
@@ -30,6 +31,7 @@ const App = () => {
                         />
                     </Routes>
                 </Router>
+                <HSToast />
                 <ModalsInit />
             </QueryClientProvider>
         </div>
