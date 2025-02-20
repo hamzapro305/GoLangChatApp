@@ -3,7 +3,7 @@ import { lazy, Suspense, useEffect, useRef } from "react";
 
 import "./style.scss";
 import { FC, useState } from "react";
-import { useAppSelector } from "../../../../Redux/Hooks";
+import { useAppSelector } from "@/Redux/Hooks";
 
 const RenderAllEmojis = lazy(() => import("./RenderAllEmojis"));
 

@@ -18,7 +18,7 @@ func main() {
 	}
 
 	config.ConnectDB()
-	config.InitFirebase()
+	// config.InitFirebase()
 
 	app := fiber.New()
 

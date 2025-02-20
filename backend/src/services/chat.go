@@ -14,25 +14,31 @@ type conversationWebSocketService struct{}
 
 var ConversationWebSocketService = &conversationWebSocketService{}
 
+type UserConnection struct {
+	Conn *websocket.Conn
+	Mu   *sync.Mutex
+}
+
 // Active WebSocket Connections (userID -> WebSocket connection)
-var activeConversationConnections = make(map[string]*websocket.Conn)
+var activeConversationConnections = make(map[string]UserConnection)
 var mu sync.Mutex // For thread safety
 
 // Function to Add WebSocket Connection
 func (*conversationWebSocketService) AddConnection(userID string, conn *websocket.Conn) {
 	mu.Lock()
-	defer mu.Unlock()
-	activeConversationConnections[userID] = conn
+	var userConnection = UserConnection{Conn: conn, Mu: &sync.Mutex{}}
+	activeConversationConnections[userID] = userConnection
+	mu.Unlock()
 
 	// Sync user conversations initially
-	go ConversationWebSocketService.SyncUserConversations(userID, conn)
+	go ConversationWebSocketService.SyncUserConversations(userID, &userConnection)
 }
 
 // Function to Remove WebSocket Connection
 func (*conversationWebSocketService) RemoveConnection(userID string) {
 	mu.Lock()
-	defer mu.Unlock()
 	delete(activeConversationConnections, userID)
+	mu.Unlock()
 }
 
 // Notify only the participants about the new conversation
@@ -89,7 +95,7 @@ func (*conversationWebSocketService) SendNewMessageInConversationMessage(msg mod
 }
 
 // Send initial conversation data to the user
-func (*conversationWebSocketService) SyncUserConversations(userID string, conn *websocket.Conn) {
+func (*conversationWebSocketService) SyncUserConversations(userID string, userConnection *UserConnection) {
 	conversations, err := repos.ConversationRepo.GetUserConversations(userID)
 	if err != nil {
 		log.Println("Error fetching user conversations:", err)
@@ -107,11 +113,9 @@ func (*conversationWebSocketService) SyncUserConversations(userID string, conn *
 		return
 	}
 
-	mu.Lock()
-	if conn, exists := activeConversationConnections[userID]; exists {
-		conn.WriteMessage(websocket.TextMessage, message)
-	}
-	mu.Unlock()
+	userConnection.Mu.Lock()
+	userConnection.Conn.WriteMessage(websocket.TextMessage, message)
+	userConnection.Mu.Unlock()
 }
 
 // Send Participant Message
@@ -127,11 +131,13 @@ func (*conversationWebSocketService) SendMessageToParticipants(message []byte, p
 		mu.Unlock()
 
 		if exists {
-			wg.Add(1) // Increment wait group for each Goroutine
-			go func(participantId string, conn *websocket.Conn) {
+			wg.Add(1)
+			go func(conn *UserConnection) { // FIXED: Pass by reference
 				defer wg.Done()
-				conn.WriteMessage(websocket.TextMessage, message)
-			}(participantId, conn)
+				conn.Mu.Lock()
+				defer conn.Mu.Unlock()
+				conn.Conn.WriteMessage(websocket.TextMessage, message)
+			}(&conn)
 		}
 	}
 	wg.Wait()

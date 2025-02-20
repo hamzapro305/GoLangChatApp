@@ -1,17 +1,17 @@
 "use client";
 
 import { FC } from "react";
-import { Conversation, SimpleConversation } from "../../../@types/chat";
-import { useAppDispatch, useAppSelector } from "../../../Redux/Hooks";
-import UserService from "../../../utils/UserService";
-import useLocalStorage from "../../../Hooks/useLocalStorage";
-import { User } from "../../../Redux/slices/GlobalVars";
 import { useQuery } from "@tanstack/react-query";
-import { ChatActions, SingleChatT } from "../../../Redux/slices/ChatSlice";
-import MessageService from "../../../utils/MessageService";
-import useToken from "../../../Hooks/useToken";
 import { motion } from "motion/react";
-import { ModalVarsVarsActions } from "../../../Redux/slices/ModalVars";
+import useToken from "@/Hooks/useToken";
+import { ModalVarsVarsActions } from "@/Redux/slices/ModalVars";
+import { ChatActions, SingleChatT } from "@/Redux/slices/ChatSlice";
+import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
+import MessageService from "@/utils/MessageService";
+import { User } from "@/Redux/slices/GlobalVars";
+import useLocalStorage from "@/Hooks/useLocalStorage";
+import { SimpleConversation } from "@/@types/chat";
+import UserService from "@/utils/UserService";
 
 const Sidebar = () => {
     const conversations = useAppSelector((s) => s.Chat.conversations);

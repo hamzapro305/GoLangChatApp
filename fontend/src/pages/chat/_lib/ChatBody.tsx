@@ -1,10 +1,11 @@
-import { useAppDispatch, useAppSelector } from "../../../Redux/Hooks";
+
 import { AnimatePresence, motion, useScroll, useSpring } from "motion/react";
 import ChatMessage from "./ChatMessage";
 import { CiCircleChevDown } from "react-icons/ci";
 import { useEffect, useRef, useState } from "react";
 import ChatNewMessage from "./ChatNewMessage";
-import { ChatActions } from "../../../Redux/slices/ChatSlice";
+import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
+import { ChatActions } from "@/Redux/slices/ChatSlice";
 
 const ChatBody = () => {
     const { conversations, selectedChat } = useAppSelector((s) => s.Chat);

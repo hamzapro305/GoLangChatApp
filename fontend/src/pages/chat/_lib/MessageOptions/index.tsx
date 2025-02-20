@@ -1,8 +1,8 @@
 import { motion } from "motion/react";
-import "./index.scss";
-import { useAppDispatch } from "../../../../Redux/Hooks";
-import { ChatActions } from "../../../../Redux/slices/ChatSlice";
 import { useEffect, useRef } from "react";
+import "./index.scss";
+import { useAppDispatch } from "@/Redux/Hooks";
+import { ChatActions } from "@/Redux/slices/ChatSlice";
 
 const MessageOptions = () => {
     const dispatch = useAppDispatch();

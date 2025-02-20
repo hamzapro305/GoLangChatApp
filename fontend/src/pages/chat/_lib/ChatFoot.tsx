@@ -1,15 +1,15 @@
 import { KeyboardEvent, useMemo, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../Redux/Hooks";
-import { WebSocketMessageSender } from "../../../utils/WebSocketMessageSender";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
 import { GrAttachment } from "react-icons/gr";
 import { AnimatePresence } from "motion/react";
-import { ChatNewMessage } from "../../../@types/chat";
 import { nanoid } from "@reduxjs/toolkit";
-import { ChatActions } from "../../../Redux/slices/ChatSlice";
-import useUser from "../../../Hooks/useUser";
 import MessageOptions from "./MessageOptions";
 import EmojiComponent from "./EmojiComponent";
+import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
+import useUser from "@/Hooks/useUser";
+import { ChatActions } from "@/Redux/slices/ChatSlice";
+import { ChatNewMessage } from "@/@types/chat";
+import { WebSocketMessageSender } from "@/utils/WebSocketMessageSender";
 
 const ChatFoot = () => {
     const [content, setContent] = useState("");
