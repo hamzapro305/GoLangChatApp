@@ -14,13 +14,25 @@ services:
     #         - MONGO_INITDB_ROOT_PASSWORD=admin
     #         - MONGO_INITDB_DATABASE=auth-db
 
-    chat-application:
+    backend:
         build: ./backend
         restart: unless-stopped
         ports:
             - "3001:3001"
+        expose:
+          - 3001
         # depends_on:
         #     - app-db
         environment:
             # - MONGODB_URI=mongodb://admin:admin@app-db:27017/
             - MONGODB_URI=mongodb+srv://hamzapro285:abc.123@gochatapp.j9a95.mongodb.net/?retryWrites=true&w=majority&appName=GoChatApp
+    frontend:
+        build: ./frontend
+        restart: unless-stopped
+        depends_on:
+            - backend
+        ports:
+            - "5173:3000"
+        environment:
+            - VITE_BACKEND_DOMAIN=backend:3001
+    

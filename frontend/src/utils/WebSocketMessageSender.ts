@@ -1,4 +1,4 @@
-import { ChatMessage } from "../@types/chat";
+
 
 export class WebSocketMessageSender {
     static createNewMessage = (

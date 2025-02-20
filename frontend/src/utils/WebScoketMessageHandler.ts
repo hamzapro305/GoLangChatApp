@@ -66,7 +66,7 @@ export class WebSocketInComingMessageHanlder {
     static newConversation(
         message: ConversationCreationCompleteMessage,
         dispatch: AppDispatch,
-        data: Data,
+        _data: Data,
     ) {
         console.log("Create Conversation Message", message);
 
@@ -83,7 +83,7 @@ export class WebSocketInComingMessageHanlder {
     static syncConversation(
         message: SyncConversationMessage,
         dispatch: AppDispatch,
-        data: Data,
+        _data: Data,
     ) {
         console.log("Sync Conversation Message", message);
         dispatch(
@@ -101,7 +101,7 @@ export class WebSocketInComingMessageHanlder {
     static newMessage(
         message: NewMessageInConversationMessage,
         dispatch: AppDispatch,
-        data: Data,
+        _data: Data,
     ) {
         console.log("New Message", message);
         dispatch(
@@ -115,7 +115,7 @@ export class WebSocketInComingMessageHanlder {
     static messageCreationDone(
         message: MessageCreationDoneMessage,
         dispatch: AppDispatch,
-        data: Data,
+        _data: Data,
     ) {
         console.log("New Message", message);
         if (message.type === "error") {
@@ -138,7 +138,7 @@ export class WebSocketInComingMessageHanlder {
     static conversationCreationDone(
         message: ConversationCreationDoneMessage,
         dispatch: AppDispatch,
-        data: Data,
+        _data: Data,
     ) {
         console.log("New Conversation", message);
         dispatch(

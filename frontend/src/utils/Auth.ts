@@ -1,5 +1,4 @@
 import apiClient from "./Axios"
-import UserService from "./UserService"
 
 const Login = async (email: string, password: string): Promise<{ token: string }> => {
     const body = JSON.stringify({

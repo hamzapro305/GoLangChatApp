@@ -1,11 +1,10 @@
 import { FC, useState } from "react";
 import { ChatNewMessage as ChatNewMessageT } from "../../../@types/chat";
-import { useAppDispatch, useAppSelector } from "../../../Redux/Hooks";
+import { useAppSelector } from "../../../Redux/Hooks";
 import { motion } from "motion/react";
 import { useQuery } from "@tanstack/react-query";
 import useToken from "../../../Hooks/useToken";
 import UserService from "../../../utils/UserService";
-import { ChatActions } from "../../../Redux/slices/ChatSlice";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { RxCrossCircled } from "react-icons/rx";
 import { MdDoneAll } from "react-icons/md";
@@ -18,7 +17,7 @@ const ChatNewMessage: FC<Props> = ({ Message }) => {
     const isMine = user?.id === Message.senderId;
     const [token, _] = useToken();
     const [isHovering, setIsHovering] = useState(false);
-    const dispatch = useAppDispatch();
+    // const _dispatch = useAppDispatch();
     const query = useQuery({
         queryKey: [Message.senderId],
         queryFn: () => {
@@ -32,16 +31,16 @@ const ChatNewMessage: FC<Props> = ({ Message }) => {
             name: "Someone",
         },
     });
-    const removeMessage = (Message: ChatNewMessageT) => {
-        if (Message.status === "loading") {
-            dispatch(
-                ChatActions.removeMeesageToSending({
-                    conversationId: Message.tempId,
-                    tempId: Message.tempId,
-                })
-            );
-        }
-    };
+    // const removeMessage = (Message: ChatNewMessageT) => {
+    //     if (Message.status === "loading") {
+    //         dispatch(
+    //             ChatActions.removeMeesageToSending({
+    //                 conversationId: Message.tempId,
+    //                 tempId: Message.tempId,
+    //             })
+    //         );
+    //     }
+    // };
     const getIcon = () => {
         switch (Message.status) {
             case "failed":

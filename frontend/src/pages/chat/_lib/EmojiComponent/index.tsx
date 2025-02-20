@@ -3,7 +3,6 @@ import { lazy, Suspense, useEffect, useRef } from "react";
 
 import "./style.scss";
 import { FC, useState } from "react";
-import { useAppSelector } from "@/Redux/Hooks";
 
 const RenderAllEmojis = lazy(() => import("./RenderAllEmojis"));
 
@@ -12,8 +11,8 @@ type EmojiComponentT = FC<{
     onClose: () => void;
 }>;
 
-const EmojiComponent: EmojiComponentT = ({ pushToContent, onClose }) => {
-    const { emojiModal } = useAppSelector((s) => s.Chat);
+const EmojiComponent: EmojiComponentT = ({ pushToContent }) => {
+    // const { emojiModal } = useAppSelector((s) => s.Chat);
     const [query, setQuery] = useState("");
 
     const ref = useRef<HTMLDivElement>(null);
@@ -22,8 +21,7 @@ const EmojiComponent: EmojiComponentT = ({ pushToContent, onClose }) => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
                 ref.current &&
-                !ref.current.contains(event.target as Node) &&
-                emojiModal
+                !ref.current.contains(event.target as Node)
             ) {
                 // onClose();
             }

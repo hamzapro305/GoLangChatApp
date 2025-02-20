@@ -1,5 +1,4 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { ChatMessage } from "../../@types/chat";
 
 export type User = {
     id: string
