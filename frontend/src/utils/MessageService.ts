@@ -12,8 +12,7 @@ const FetchMessages = (token: string, conv: string): Promise<ChatMessage[]> => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            const data: any = JSON.parse(response.data);
-            res(data?.messages as ChatMessage[]);
+            res(response.data?.messages as ChatMessage[]);
         } catch (error) {
             console.log(error);
             rej(null);

@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"fmt"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/hamzapro305/GoLangChatApp/src/services"
 	"github.com/hamzapro305/GoLangChatApp/src/utils"
@@ -54,15 +52,14 @@ func (*userController) GetUserById(c *fiber.Ctx) error {
 			"error": "Cannot Get user",
 		})
 	}
-	fmt.Println("Getting User:", user.Email)
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"user": user,
 	})
 }
 
-type setUserProfilePicBody struct {
-	profilePic string `json:"profilePic"`
-}
+// type setUserProfilePicBody struct {
+// 	profilePic string `json:"profilePic"`
+// }
 
 func (*userController) UploadUserProfile(c *fiber.Ctx) error {
 	file, err := c.FormFile("file")

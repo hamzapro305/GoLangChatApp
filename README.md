@@ -1,4 +1,3 @@
-```markdown
 # Real-Time Chat Application 🚀💬
 
 A real-time chat application built with **React** (frontend) and **Golang** (backend). This project allows users to send and receive messages instantly, making it ideal for real-time communication platforms.

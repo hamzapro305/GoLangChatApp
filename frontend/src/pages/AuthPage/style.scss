@@ -12,7 +12,28 @@
         gap: 20px;
         align-items: center;
         width: 100%;
+        .title {
+            font-size: 20px;
+            font-family: $font;
+            font-weight: bolder;
+        }
 
+        .form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .change {
+            all: unset;
+            font-size: 12px;
+            font-family: $font;
+            font-weight: bolder;
+            color: #4d4ae8;
+            text-decoration: underline;
+            cursor: pointer;
+        }
         input {
             padding: 10px 10px;
             border: 2px solid #4d4ae8;

@@ -11,7 +11,7 @@ const GetCurrentUser = async (token: string): Promise<any> => {
                 }
             })
             if (response.status == 200) {
-                const data = JSON.parse(response.data)
+                const data = response.data
                 res(data?.user)
             }
             rej(null)
@@ -30,8 +30,7 @@ const GetAllUsers = async (token: string): Promise<User[]> => {
                     "Authorization": `Bearer ${token}`
                 }
             })
-            const data = JSON.parse(response.data)
-            res(data?.users)
+            res(response.data?.users)
         } catch (error) {
             console.log(error)
             rej(null)
@@ -50,7 +49,7 @@ const fetchUserById = async (userId: string, token: string): Promise<User> => {
                     "Authorization": `Bearer ${token}`
                 }
             })
-            const data = JSON.parse(response.data)
+            const data = response.data
             res(data.user)
         } catch (error) {
             console.log(error)

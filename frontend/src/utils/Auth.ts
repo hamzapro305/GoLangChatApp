@@ -1,24 +1,50 @@
 import apiClient from "./Axios"
 
-const Login = async (email: string, password: string): Promise<{ token: string }> => {
-    const body = JSON.stringify({
-        email: email,
-        password: password
-    })
-    return new Promise(async (res, rej) => {
-        try {
-            const response = await apiClient.post("/auth/login", body)
-            const data: { token: string } = JSON.parse(response.data)
-
-            console.log(response.data)
-            res(data)
-        } catch (error) {
-            console.log(error)
-            rej(null)
-        }
-    })
+type SuccessResponse = {
+    token: string
 }
+type AuthError = {
+    error: string;
+};
+
+type AuthResponse = SuccessResponse | AuthError;
+
+const Login = async (email: string, password: string): Promise<AuthResponse> => {
+    try {
+        const response = await apiClient.post("/auth/login", { email, password });
+
+        if (response.data?.token) {
+            return response.data as SuccessResponse;
+        } else {
+            return { error: "Invalid login response from server" };
+        }
+    } catch (error: any) {
+        if (error.response) {
+            return { error: error.response.data?.error || "Login failed" };
+        }
+        return { error: "Network error or server unreachable" };
+    }
+};
+
+const Register = async (email: string, password: string): Promise<AuthResponse> => {
+    try {
+        const response = await apiClient.post("/auth/register", { email, password });
+
+        if (response.data?.token) {
+            return response.data as SuccessResponse;
+        } else {
+            return { error: "Invalid registration response from server" };
+        }
+    } catch (error: any) {
+        if (error.response) {
+            return { error: error.response.data?.error || "Registration failed" };
+        }
+        return { error: "Network error or server unreachable" };
+    }
+};
+
 
 export const Auth = {
     Login,
+    Register
 }
