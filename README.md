@@ -109,7 +109,8 @@ You may want to configure the environment variables to suit your deployment need
 
 ## Screenshots 📸
 
-![chat-app](https://github.com/hamzapro305/GoLangChatApp/blob/main/assets/Thumbnail.png)
+[![chat-app](https://github.com/hamzapro305/GoLangChatApp/blob/main/assets/Thumbnail.png)](https://www.youtube.com/watch?v=skC-IBghoeU)
+
 
 ## Contributing 🤝
 
