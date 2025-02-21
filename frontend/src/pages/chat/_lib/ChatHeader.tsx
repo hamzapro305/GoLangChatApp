@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { useAppSelector } from "../../../Redux/Hooks";
-import { User } from "../../../Redux/slices/GlobalVars";
 import { motion } from "motion/react";
+import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
+import { User } from "@/Redux/slices/GlobalVars";
+import { ModalVarsVarsActions } from "@/Redux/slices/ModalVars";
 
 const Routes = [
     {
@@ -17,6 +18,14 @@ const Routes = [
 const ChatHeader = () => {
     const [currentRoute, setCurrentRoute] = useState("/inbox");
     const CurrentUser = useAppSelector((s) => s.GlobalVars.user) as User;
+    const dispatch = useAppDispatch();
+    const OpenUserProfile = () => {
+        dispatch(
+            ModalVarsVarsActions.setUserProfile(
+                true
+            )
+        )
+    }
     return (
         <div className="chat-page-header">
             <div className="logo">Logo</div>
@@ -39,7 +48,7 @@ const ChatHeader = () => {
                     ))}
                 </ul>
             </nav>
-            <div className="user-profile">
+            <div className="user-profile" onClick={OpenUserProfile}>
                 <div className="pp">
                     <img
                         src="https://www.shutterstock.com/image-vector/image-icon-600nw-211642900.jpg"

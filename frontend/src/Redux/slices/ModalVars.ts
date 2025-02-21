@@ -1,11 +1,13 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 type initModalVars = {
-    createConversation: boolean
+    createConversation: boolean,
+    userProfile: boolean
 };
 
 const initialState: initModalVars = {
     createConversation: false,
+    userProfile: false,
 };
 
 export const Slice = createSlice({
@@ -14,6 +16,9 @@ export const Slice = createSlice({
     reducers: {
         setCreateConversation: (state, { payload }: PayloadAction<boolean>) => {
             state.createConversation = payload;
+        },
+        setUserProfile: (state, { payload }: PayloadAction<boolean>) => {
+            state.userProfile = payload;
         },
     },
 });
