@@ -2,6 +2,10 @@
 
 A real-time chat application built with **React** (frontend) and **Golang** (backend). This project allows users to send and receive messages instantly, making it ideal for real-time communication platforms.
 
+## Screenshots 📸
+
+[![chat-app](https://github.com/hamzapro305/GoLangChatApp/blob/main/assets/Thumbnail.png)](https://www.youtube.com/watch?v=skC-IBghoeU)
+
 ## Features ✨
 
 - **Real-time messaging**: Messages are delivered instantly between users using WebSockets.
@@ -106,10 +110,6 @@ You may want to configure the environment variables to suit your deployment need
 - Open your browser and go to `http://localhost:5173`.
 - Log in or sign up with your credentials.
 - Join a room and start chatting with other users in real-time!
-
-## Screenshots 📸
-
-[![chat-app](https://github.com/hamzapro305/GoLangChatApp/blob/main/assets/Thumbnail.png)](https://www.youtube.com/watch?v=skC-IBghoeU)
 
 
 ## Contributing 🤝
