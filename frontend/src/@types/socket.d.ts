@@ -30,6 +30,16 @@ type ConversationCreationDoneMessage = {
     message: string;
     conversation: Conversation;
 };
+type SetUserTypingMessage = {
+    type: "user_started_typing";
+    user_id: string;
+    conversation_id: string
+}
+type SetUserStopTypingMessage = {
+    type: "user_stopped_typing";
+    user_id: string;
+    conversation_id: string
+}
 
 type WebSocketMessage =
     | MessageCreationDoneMessage
@@ -37,6 +47,8 @@ type WebSocketMessage =
     | ConversationCreationCompleteMessage
     | NewMessageInConversationMessage
     | ConversationCreationDoneMessage
+    | SetUserTypingMessage
+    | SetUserStopTypingMessage
 
 export {
     WebSocketMessage,
@@ -44,5 +56,7 @@ export {
     ConversationCreationCompleteMessage,
     NewMessageInConversationMessage,
     MessageCreationDoneMessage,
-    ConversationCreationDoneMessage
+    ConversationCreationDoneMessage,
+    SetUserTypingMessage,
+    SetUserStopTypingMessage
 }

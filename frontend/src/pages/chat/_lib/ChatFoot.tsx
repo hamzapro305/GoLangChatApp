@@ -17,31 +17,52 @@ const ChatFoot = () => {
     const { selectedChat } = useAppSelector((s) => s.Chat);
     const ws = useAppSelector((s) => s.GlobalVars.ws);
     const [typingTimeout, setTypingTimeout] = useState<number | null>(null);
+    const [isTyping, setIsTyping] = useState(false);
     const user = useUser();
 
     const handleTyping = (content: string) => {
-        if(!ws || !selectedChat) return
+        if (!ws || !selectedChat) return;
         setContent(content);
-        // setIsTyping(true);
-        WebSocketMessageSender.userTypingStatus(ws, selectedChat.id, "user_started_typing")
-    
+        setIsTyping(true);
+
         // Pehle se existing timeout clear kar do
         if (typingTimeout) clearTimeout(typingTimeout);
-    
+
         // Naya timeout set karo, jo 2 sec baad "Not Typing" karega
         const timeout = setTimeout(() => {
-            WebSocketMessageSender.userTypingStatus(ws, selectedChat.id, "user_stopped_typing")
+            console.log("Sending that is not typing");
+            setIsTyping(false);
         }, 2000);
-    
+
         setTypingTimeout(timeout);
-      };
-    
-      useEffect(() => {
+    };
+
+    const TypingIndicator = (isTyping: boolean) => {
+        if (!ws || !selectedChat) return;
+        if (isTyping) {
+            WebSocketMessageSender.userTypingStatus(
+                ws,
+                selectedChat.id,
+                "user_started_typing"
+            );
+        } else {
+            WebSocketMessageSender.userTypingStatus(
+                ws,
+                selectedChat.id,
+                "user_stopped_typing"
+            );
+        }
+    };
+
+    useEffect(() => {
         return () => {
-          if (typingTimeout) clearTimeout(typingTimeout);
+            if (typingTimeout) clearTimeout(typingTimeout);
         };
-      }, [typingTimeout]);
-    
+    }, [typingTimeout]);
+
+    useEffect(() => {
+        TypingIndicator(isTyping);
+    }, [isTyping]);
 
     const lineCount = useMemo(() => content.split("\n").length, [content]);
 

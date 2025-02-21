@@ -7,6 +7,7 @@ import { FC } from "react";
 import { User } from "../../../Redux/slices/GlobalVars";
 import { LuInfo } from "react-icons/lu";
 import { ChatActions } from "../../../Redux/slices/ChatSlice";
+import TypingIndicator from "./TypingIndicator";
 
 const CurrentChatHeader = () => {
     const { selectedChat, conversations } = useAppSelector((s) => s.Chat);
@@ -29,7 +30,13 @@ const CurrentChatHeader = () => {
                             <div className="name">
                                 {selectedConv.conversation.groupName}
                             </div>
-                            <div className="desc">Something</div>
+                            <div className="desc">
+                                {selectedChat && (
+                                    <TypingIndicator
+                                        selectedChat={selectedChat.id}
+                                    />
+                                )}
+                            </div>
                         </div>
                     </div>
                     <OpenChatInfoIcon />

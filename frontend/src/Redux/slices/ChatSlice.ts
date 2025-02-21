@@ -7,8 +7,7 @@ export type SingleChatT = {
     unReadMessages: ChatMessage[];
     newMessages: ChatNewMessage[]
     isMessageFetched: boolean;
-
-
+    usersTyping: string[]
 };
 
 type SelectedChatT = {
@@ -147,6 +146,24 @@ export const Slice = createSlice({
                             tempId: tempId,
                             status: "sent"
                         });
+                    }
+                }
+            })
+        },
+        setUserTyping: (state, { payload }: PayloadAction<{ userId: string, conversationId: string }>) => {
+            state.conversations.forEach(conv => {
+                if (conv.conversation.id === payload.conversationId) {
+                    if (!conv.usersTyping.includes(payload.userId)) {
+                        conv.usersTyping.push(payload.userId)
+                    }
+                }
+            })
+        },
+        setUserStoppedTyping: (state, { payload }: PayloadAction<{ userId: string, conversationId: string }>) => {
+            state.conversations.forEach(conv => {
+                if (conv.conversation.id === payload.conversationId) {
+                    if (conv.usersTyping.includes(payload.userId)) {
+                        conv.usersTyping = conv.usersTyping.filter(user => user != payload.userId)
                     }
                 }
             })

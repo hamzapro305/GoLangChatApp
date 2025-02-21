@@ -5,6 +5,8 @@ import {
     ConversationCreationDoneMessage,
     MessageCreationDoneMessage,
     NewMessageInConversationMessage,
+    SetUserStopTypingMessage,
+    SetUserTypingMessage,
     SyncConversationMessage,
     WebSocketMessage,
 } from "../@types/socket";
@@ -58,6 +60,20 @@ export class WebSocketInComingMessageHanlder {
                     data
                 );
                 break;
+            case "user_started_typing":
+                WebSocketInComingMessageHanlder.userStartedTyping(
+                    message,
+                    dispatch,
+                    data
+                )
+                break;
+            case "user_stopped_typing":
+                WebSocketInComingMessageHanlder.userStoppedTyping(
+                    message,
+                    dispatch,
+                    data
+                )
+                break;
             default:
                 console.log("Unknown Message", message);
                 break;
@@ -76,7 +92,8 @@ export class WebSocketInComingMessageHanlder {
                 messages: [],
                 unReadMessages: [],
                 isMessageFetched: false,
-                newMessages: []
+                newMessages: [],
+                usersTyping: []
             })
         );
     }
@@ -93,7 +110,8 @@ export class WebSocketInComingMessageHanlder {
                     messages: [],
                     unReadMessages: [],
                     isMessageFetched: false,
-                    newMessages: []
+                    newMessages: [],
+                    usersTyping: []
                 }))
             )
         );
@@ -147,8 +165,33 @@ export class WebSocketInComingMessageHanlder {
                 messages: [],
                 unReadMessages: [],
                 isMessageFetched: false,
-                newMessages: []
+                newMessages: [],
+                usersTyping: []
             })
         );
+    }
+    static userStartedTyping(
+        message: SetUserTypingMessage,
+        dispatch: AppDispatch,
+        _data: Data,
+    ) {
+        dispatch(
+            ChatActions.setUserTyping({
+                conversationId: message.conversation_id,
+                userId: message.user_id
+            })
+        )
+    }
+    static userStoppedTyping(
+        message: SetUserStopTypingMessage,
+        dispatch: AppDispatch,
+        _data: Data,
+    ) {
+        dispatch(
+            ChatActions.setUserStoppedTyping({
+                conversationId: message.conversation_id,
+                userId: message.user_id
+            })
+        )
     }
 }
