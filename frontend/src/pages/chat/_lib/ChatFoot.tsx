@@ -1,4 +1,4 @@
-import { KeyboardEvent, useMemo, useState } from "react";
+import { KeyboardEvent, useEffect, useMemo, useState } from "react";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
 import { GrAttachment } from "react-icons/gr";
 import { AnimatePresence } from "motion/react";
@@ -16,7 +16,32 @@ const ChatFoot = () => {
     const dispatch = useAppDispatch();
     const { selectedChat } = useAppSelector((s) => s.Chat);
     const ws = useAppSelector((s) => s.GlobalVars.ws);
+    const [typingTimeout, setTypingTimeout] = useState<number | null>(null);
     const user = useUser();
+
+    const handleTyping = (content: string) => {
+        if(!ws || !selectedChat) return
+        setContent(content);
+        // setIsTyping(true);
+        WebSocketMessageSender.userTypingStatus(ws, selectedChat.id, "user_started_typing")
+    
+        // Pehle se existing timeout clear kar do
+        if (typingTimeout) clearTimeout(typingTimeout);
+    
+        // Naya timeout set karo, jo 2 sec baad "Not Typing" karega
+        const timeout = setTimeout(() => {
+            WebSocketMessageSender.userTypingStatus(ws, selectedChat.id, "user_stopped_typing")
+        }, 2000);
+    
+        setTypingTimeout(timeout);
+      };
+    
+      useEffect(() => {
+        return () => {
+          if (typingTimeout) clearTimeout(typingTimeout);
+        };
+      }, [typingTimeout]);
+    
 
     const lineCount = useMemo(() => content.split("\n").length, [content]);
 
@@ -70,7 +95,7 @@ const ChatFoot = () => {
             <div className="box">
                 <textarea
                     value={content}
-                    onChange={(e) => setContent(e.target.value)}
+                    onChange={(e) => handleTyping(e.target.value)}
                     rows={lineCount > 10 ? 10 : lineCount}
                     placeholder="Type Message"
                     onKeyDownCapture={handleKeyDown}
