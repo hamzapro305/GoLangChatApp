@@ -21,12 +21,8 @@ services:
             - "3001:3001"
         expose:
           - 3001
-        # depends_on:
-        #     - app-db
-        environment:
-            - JWT_SECRET="I Want Something Just Like this Todo do do do dooo!"
-            # - MONGODB_URI=mongodb://admin:admin@app-db:27017/
-            - MONGODB_URI=mongodb+srv://hamzapro285:abc.123@gochatapp.j9a95.mongodb.net/?retryWrites=true&w=majority&appName=GoChatApp
+        env_file:
+            - ./.env
     frontend:
         build: ./frontend
         restart: unless-stopped
@@ -34,6 +30,6 @@ services:
             - backend
         ports:
             - "5173:3000"
-        environment:
-            - VITE_BACKEND_DOMAIN=localhost:3001
+        env_file:
+            - ./.env
     

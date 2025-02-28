@@ -1,7 +1,6 @@
 "use client";
 
 import { FC } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { motion } from "motion/react";
 import useToken from "@/Hooks/useToken";
 import { ModalVarsVarsActions } from "@/Redux/slices/ModalVars";
@@ -9,7 +8,6 @@ import { ChatActions, SingleChatT } from "@/Redux/slices/ChatSlice";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import MessageService from "@/utils/MessageService";
 import { User } from "@/Redux/slices/GlobalVars";
-import useLocalStorage from "@/Hooks/useLocalStorage";
 import { SimpleConversation } from "@/@types/chat";
 import UserService from "@/utils/UserService";
 import { useAnyUser } from "@/Hooks/useUser";
@@ -124,7 +122,6 @@ const RenderConversationName: FC<{ chat: SingleChatT }> = ({ chat }) => {
     }
 
     const GetUserConversationName = () => {
-        const [token, _] = useLocalStorage<string | null>("token", null);
         const requiredParticipant = UserService.GetChatParticipant(
             CurrentUser,
             chat.conversation as SimpleConversation
