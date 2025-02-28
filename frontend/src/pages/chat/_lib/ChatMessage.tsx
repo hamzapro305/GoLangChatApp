@@ -2,12 +2,10 @@ import { FC, useState } from "react";
 import { ChatMessage as ChatMessageType } from "../../../@types/chat";
 import { useAppDispatch, useAppSelector } from "../../../Redux/Hooks";
 import { motion } from "motion/react";
-import { useQuery } from "@tanstack/react-query";
-import useToken from "../../../Hooks/useToken";
-import UserService from "../../../utils/UserService";
 import { BiDotsVertical } from "react-icons/bi";
 import { MdDoneAll } from "react-icons/md";
 import { ChatActions } from "../../../Redux/slices/ChatSlice";
+import { useAnyUser } from "@/Hooks/useUser";
 
 type Props = {
     Message: ChatMessageType;
@@ -15,23 +13,10 @@ type Props = {
 const ChatMessage: FC<Props> = ({ Message }) => {
     const user = useAppSelector((s) => s.GlobalVars.user);
     const isMine = user?.id === Message.senderId;
-    const [token, _] = useToken();
     const [isHovering, setIsHovering] = useState(false);
 
     const dispatch = useAppDispatch();
-    const query = useQuery({
-        queryKey: [Message.senderId],
-        queryFn: () => {
-            return UserService.fetchUserById(Message.senderId, token as string);
-        },
-        staleTime: Infinity,
-        placeholderData: {
-            createdAt: "",
-            email: "User name",
-            id: "13",
-            name: "Someone",
-        },
-    });
+    const queryUser = useAnyUser(Message.senderId);
 
     const OpenMessageOptions = () => {
         dispatch(
@@ -77,7 +62,7 @@ const ChatMessage: FC<Props> = ({ Message }) => {
                         alt=""
                     />
                 </div>
-                <div className="name">{query?.data?.email}</div>
+                <div className="name">{queryUser?.name}</div>
                 <div className="status">
                     <div className="icon">
                         <MdDoneAll color="blue" fontSize={20} />

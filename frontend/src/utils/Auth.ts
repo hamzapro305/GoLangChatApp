@@ -26,10 +26,9 @@ const Login = async (email: string, password: string): Promise<AuthResponse> => 
     }
 };
 
-const Register = async (email: string, password: string): Promise<AuthResponse> => {
+const Register = async (userName: string, email: string, password: string): Promise<AuthResponse> => {
     try {
-        const response = await apiClient.post("/auth/register", { email, password });
-
+        const response = await apiClient.post("/auth/register", { email, password, name: userName ?? "Noob" });
         if (response.data?.token) {
             return response.data as SuccessResponse;
         } else {

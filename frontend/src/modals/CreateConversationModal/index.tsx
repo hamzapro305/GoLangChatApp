@@ -115,7 +115,7 @@ const CreateConverationModal = () => {
                                         src="https://www.shutterstock.com/image-vector/image-icon-600nw-211642900.jpg"
                                         alt=""
                                     />
-                                    <div className="name">{user.email}</div>
+                                    <div className="name">{user.name}</div>
                                 </div>
                             );
                         })}

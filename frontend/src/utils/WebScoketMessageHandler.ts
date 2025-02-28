@@ -106,7 +106,7 @@ export class WebSocketInComingMessageHanlder {
         dispatch(
             ChatActions.setAllConversations(
                 message.conversations.map((conv) => ({
-                    conversation: conv,
+                    conversation: conv ?? [],
                     messages: [],
                     unReadMessages: [],
                     isMessageFetched: false,
@@ -128,7 +128,9 @@ export class WebSocketInComingMessageHanlder {
                 tempId: message.message.id,
             })
         );
-        Toast.SuccessToast("New Message In Chat!")
+        Toast.SuccessToast("New Message In Chat!", {
+            toastId: "new-message"
+        })
     }
     static messageCreationDone(
         message: MessageCreationDoneMessage,

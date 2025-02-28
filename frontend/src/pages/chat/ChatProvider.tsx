@@ -1,15 +1,17 @@
-import { FC, ReactNode, useEffect } from "react";
+import { FC, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../Redux/Hooks";
 import useLocalStorage from "../../Hooks/useLocalStorage";
 import { GlobalVarsActions } from "../../Redux/slices/GlobalVars";
 import { WebSocketInComingMessageHanlder } from "../../utils/WebScoketMessageHandler";
 import UserService from "../../utils/UserService";
+import MainChat from "./MainChat";
 
-const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
+const ChatProvider: FC<{}> = () => {
     const dispatch = useAppDispatch();
     const [token, _] = useLocalStorage<string | null>("token", null);
     const chat = useAppSelector((s) => s.Chat);
     const user = useAppSelector((s) => s.GlobalVars.user);
+
     useEffect(() => {
         if (token && user) {
             const ws = new WebSocket(
@@ -41,16 +43,17 @@ const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
             };
         }
     }, [token, user?.id]);
+    
     useEffect(() => {
         if (token) {
-            const Something = async () => {
+            const FetchUser = async () => {
                 const user = await UserService.GetCurrentUser(token);
                 dispatch(GlobalVarsActions.setUser(user));
             };
-            Something();
+            FetchUser();
         }
     }, [token]);
-    return children;
+    return <MainChat />;
 };
 
 export default ChatProvider;

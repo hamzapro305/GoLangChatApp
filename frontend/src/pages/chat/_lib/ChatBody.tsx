@@ -1,4 +1,3 @@
-
 import { AnimatePresence, motion, useScroll, useSpring } from "motion/react";
 import ChatMessage from "./ChatMessage";
 import { CiCircleChevDown } from "react-icons/ci";
@@ -42,6 +41,13 @@ const ChatBody = () => {
             return conv.conversation.id === selectedChat?.id;
         });
         return Conv;
+    };
+
+    const GetSelectedConversationChatNewMessages = () => {
+        const Conv = GetSelectedConversationChat();
+        return Conv?.newMessages?.filter((msg) =>
+            !Conv.messages.find((m) => m.id === msg.tempId)
+        );
     };
 
     useEffect(() => {
@@ -98,7 +104,7 @@ const ChatBody = () => {
                     {GetSelectedConversationChat()?.messages?.map((msg) => {
                         return <ChatMessage Message={msg} key={msg.id} />;
                     })}
-                    {GetSelectedConversationChat()?.newMessages.map((msg) => {
+                    {GetSelectedConversationChatNewMessages()?.map((msg) => {
                         return (
                             <ChatNewMessage Message={msg} key={msg.tempId} />
                         );

@@ -40,7 +40,6 @@ func (*webSocketMessageHandler) WebSocketMessageHandler(
 	case "add_participant_to_conversation":
 		ParticipantController.AddParticipantToConversation(c, userClaims, message)
 	default:
-		c.WriteJSON(map[string]interface{}{
 		// c.WriteJSON(map[string]interface{}{
 		// 	"type":    "Error",
 		// 	"message": "Invalid Message type",

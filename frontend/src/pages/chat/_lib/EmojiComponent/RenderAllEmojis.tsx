@@ -17,7 +17,7 @@ const RenderAllEmojis: RenderAllEmojisT = ({ pushToContent, query }) => {
                             key={emoji.emoji}
                             onClick={() => pushToContent(emoji.emoji)}
                             whileHover={{
-                                background: "#6a309381",
+                                backgroundColor: "#6a309381",
                             }}
                         >
                             {emoji.emoji}

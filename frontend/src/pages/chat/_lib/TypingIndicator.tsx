@@ -1,7 +1,5 @@
-import useToken from "@/Hooks/useToken";
+import { useAnyUser } from "@/Hooks/useUser";
 import { useAppSelector } from "@/Redux/Hooks";
-import UserService from "@/utils/UserService";
-import { useQuery } from "@tanstack/react-query";
 import { FC } from "react";
 
 type TypingIndicatorT = FC<{
@@ -33,21 +31,8 @@ const TypingIndicator: TypingIndicatorT = ({ selectedChat }) => {
 };
 
 const UserInfo: FC<{ userId: string }> = ({ userId }) => {
-    const [token, _] = useToken();
-    const query = useQuery({
-        queryKey: [userId],
-        queryFn: () => {
-            return UserService.fetchUserById(userId, token as string);
-        },
-        staleTime: Infinity,
-        placeholderData: {
-            createdAt: "",
-            email: "User name",
-            id: "13",
-            name: "Someone",
-        },
-    });
-    return <span className="userName">{query.data?.email}</span>;
+    const queryUser = useAnyUser(userId);
+    return <span className="userName">{queryUser?.email}</span>;
 };
 
 export default TypingIndicator;

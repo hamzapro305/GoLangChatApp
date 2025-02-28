@@ -2,12 +2,10 @@ import { FC, useState } from "react";
 import { ChatNewMessage as ChatNewMessageT } from "../../../@types/chat";
 import { useAppSelector } from "../../../Redux/Hooks";
 import { motion } from "motion/react";
-import { useQuery } from "@tanstack/react-query";
-import useToken from "../../../Hooks/useToken";
-import UserService from "../../../utils/UserService";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { RxCrossCircled } from "react-icons/rx";
 import { MdDoneAll } from "react-icons/md";
+import { useAnyUser } from "@/Hooks/useUser";
 
 type Props = {
     Message: ChatNewMessageT;
@@ -15,22 +13,9 @@ type Props = {
 const ChatNewMessage: FC<Props> = ({ Message }) => {
     const user = useAppSelector((s) => s.GlobalVars.user);
     const isMine = user?.id === Message.senderId;
-    const [token, _] = useToken();
     const [isHovering, setIsHovering] = useState(false);
-    // const _dispatch = useAppDispatch();
-    const query = useQuery({
-        queryKey: [Message.senderId],
-        queryFn: () => {
-            return UserService.fetchUserById(Message.senderId, token as string);
-        },
-        staleTime: Infinity,
-        placeholderData: {
-            createdAt: "",
-            email: "User name",
-            id: "13",
-            name: "Someone",
-        },
-    });
+    
+    const User = useAnyUser(Message.senderId);
     // const removeMessage = (Message: ChatNewMessageT) => {
     //     if (Message.status === "loading") {
     //         dispatch(
@@ -94,7 +79,7 @@ const ChatNewMessage: FC<Props> = ({ Message }) => {
                         alt=""
                     />
                 </div>
-                <div className="name">{query?.data?.email}</div>
+                <div className="name">{User?.name}</div>
                 <div className="status">
                     <div className="icon">{getIcon()}</div>
                 </div>

@@ -55,7 +55,7 @@ const ChatHeader = () => {
                         alt=""
                     />
                 </div>
-                <div className="name">{CurrentUser?.email}</div>
+                <div className="name">{CurrentUser?.name}</div>
             </div>
         </div>
     );

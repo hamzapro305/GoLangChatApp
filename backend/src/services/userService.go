@@ -14,7 +14,7 @@ type userService struct{}
 
 var UserService = &userService{}
 
-func (*userService) AddUser(email string, password string) (*models.User, error) {
+func (*userService) AddUser(name string, email string, password string) (*models.User, error) {
 	// encrupt pass
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
 	if err != nil {
@@ -26,7 +26,7 @@ func (*userService) AddUser(email string, password string) (*models.User, error)
 		ID:        primitive.NewObjectID(),
 		Email:     email,
 		Password:  hashedPassword,
-		Name:      "",
+		Name:      name,
 		CreatedAt: time.Now(),
 	}
 	err = repos.UserRepo.CreateUser(newUser)

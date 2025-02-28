@@ -13,6 +13,7 @@ var AuthController = &authController{}
 type registerBody struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+	Name     string `json:"name"`
 }
 
 func (*authController) Register(c *fiber.Ctx) error {
@@ -29,7 +30,7 @@ func (*authController) Register(c *fiber.Ctx) error {
 		})
 	}
 
-	newUser, err := services.UserService.AddUser(body.Email, body.Password)
+	newUser, err := services.UserService.AddUser(body.Name, body.Email, body.Password)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Could not create user",

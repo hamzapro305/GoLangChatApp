@@ -1,5 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
-import useLocalStorage from "../../../Hooks/useLocalStorage";
 import { useAppDispatch, useAppSelector } from "../../../Redux/Hooks";
 import UserService from "../../../utils/UserService";
 import { SimpleConversation } from "../../../@types/chat";
@@ -8,6 +6,7 @@ import { User } from "../../../Redux/slices/GlobalVars";
 import { LuInfo } from "react-icons/lu";
 import { ChatActions } from "../../../Redux/slices/ChatSlice";
 import TypingIndicator from "./TypingIndicator";
+import { useAnyUser } from "@/Hooks/useUser";
 
 const CurrentChatHeader = () => {
     const { selectedChat, conversations } = useAppSelector((s) => s.Chat);
@@ -75,24 +74,12 @@ const RenderConversationName: FC<{ conversation: SimpleConversation }> = ({
     conversation: conv,
 }) => {
     const CurrentUser = useAppSelector((s) => s.GlobalVars.user) as User;
-
-    const [token, _] = useLocalStorage<string | null>("token", null);
     const requiredParticipant = UserService.GetChatParticipant(
         CurrentUser,
         conv
     );
-
-    const query = useQuery({
-        queryKey: [requiredParticipant.userId],
-        staleTime: Infinity,
-        queryFn: () => {
-            return UserService.fetchUserById(
-                requiredParticipant.userId,
-                token as string
-            );
-        },
-    });
-
+    
+    const queryUser = useAnyUser(requiredParticipant.userId);
     return (
         <div className="current-chat-head">
             <div className="user">
@@ -104,7 +91,7 @@ const RenderConversationName: FC<{ conversation: SimpleConversation }> = ({
                 </div>
                 <div className="content">
                     <div className="name">
-                        {query.data?.email ?? "Loading.."}
+                        {queryUser?.name ?? "Loading.."}
                     </div>
                     <div className="desc">Something</div>
                 </div>

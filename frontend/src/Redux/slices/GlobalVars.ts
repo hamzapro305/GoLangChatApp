@@ -8,27 +8,23 @@ export type User = {
 }
 
 type initGlobalVars = {
-    token: string | null
     ws: WebSocket | null
+    isLogin: boolean
+    isLoading: boolean
     user: User | null
 };
 
 const initialState: initGlobalVars = {
-    token: null,
     ws: null,
-    user: null
+    user: null,
+    isLoading: true,
+    isLogin: false,
 };
 
 export const Slice = createSlice({
     name: "GlobalVars",
     initialState,
     reducers: {
-        setRedirectUrlAfterLogin: (
-            state,
-            { payload }: PayloadAction<initGlobalVars["token"]>
-        ) => {
-            state.token = payload;
-        },
         setWebsocket: (
             state,
             { payload }: PayloadAction<initGlobalVars["ws"]>
@@ -41,6 +37,16 @@ export const Slice = createSlice({
         ) => {
             state.user = payload;
         },
+        setIsLogin: (
+            state,
+            { payload }: PayloadAction<boolean>) => {
+            state.isLogin = payload;
+        },
+        setIsLoading: (
+            state,
+            { payload }: PayloadAction<boolean>) => {
+            state.isLoading = payload;
+        }
     },
 });
 

@@ -12,6 +12,7 @@ import { User } from "@/Redux/slices/GlobalVars";
 import useLocalStorage from "@/Hooks/useLocalStorage";
 import { SimpleConversation } from "@/@types/chat";
 import UserService from "@/utils/UserService";
+import { useAnyUser } from "@/Hooks/useUser";
 
 const Sidebar = () => {
     const conversations = useAppSelector((s) => s.Chat.conversations);
@@ -60,7 +61,7 @@ const Sidebar = () => {
                 </div>
             </div>
             <div className="conversations">
-                {conversations.map((conv) => {
+                {conversations?.map((conv) => {
                     const isSelectedChat =
                         selectedChat?.id == conv.conversation.id;
                     return (
@@ -129,16 +130,7 @@ const RenderConversationName: FC<{ chat: SingleChatT }> = ({ chat }) => {
             chat.conversation as SimpleConversation
         );
 
-        const query = useQuery({
-            queryKey: [requiredParticipant.userId],
-            staleTime: Infinity,
-            queryFn: () => {
-                return UserService.fetchUserById(
-                    requiredParticipant.userId,
-                    token as string
-                );
-            },
-        });
+        const User = useAnyUser(requiredParticipant.userId)
 
         return (
             <div className="conv-wrapper">
@@ -150,7 +142,7 @@ const RenderConversationName: FC<{ chat: SingleChatT }> = ({ chat }) => {
                 </div>
                 <div className="content">
                     <div className="name">
-                        {query.data?.email ?? "Loading.."}
+                        {User?.name ?? "Loading.."}
                     </div>
                     {getUnread()}
                 </div>
