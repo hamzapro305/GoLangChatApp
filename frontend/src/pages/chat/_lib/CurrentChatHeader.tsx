@@ -73,12 +73,14 @@ const OpenChatInfoIcon = () => {
 const RenderConversationName: FC<{ conversation: SimpleConversation }> = ({
     conversation: conv,
 }) => {
+    const { selectedChat } = useAppSelector((s) => s.Chat);
+
     const CurrentUser = useAppSelector((s) => s.GlobalVars.user) as User;
     const requiredParticipant = UserService.GetChatParticipant(
         CurrentUser,
         conv
     );
-    
+
     const queryUser = useAnyUser(requiredParticipant.userId);
     return (
         <div className="current-chat-head">
@@ -90,10 +92,12 @@ const RenderConversationName: FC<{ conversation: SimpleConversation }> = ({
                     />
                 </div>
                 <div className="content">
-                    <div className="name">
-                        {queryUser?.name ?? "Loading.."}
+                    <div className="name">{queryUser?.name ?? "Loading.."}</div>
+                    <div className="desc">
+                        {selectedChat && (
+                            <TypingIndicator selectedChat={selectedChat.id} />
+                        )}
                     </div>
-                    <div className="desc">Something</div>
                 </div>
             </div>
             <OpenChatInfoIcon />

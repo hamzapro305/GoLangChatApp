@@ -16,7 +16,8 @@ const TypingIndicator: TypingIndicatorT = ({ selectedChat }) => {
                 className="TypingIndicator"
                 style={{
                     display: "flex",
-                    gap: "10px",
+                    gap: "5px",
+                    color: "#41d141",
                 }}
             >
                 {conversation.usersTyping.map((user) => (
@@ -32,7 +33,7 @@ const TypingIndicator: TypingIndicatorT = ({ selectedChat }) => {
 
 const UserInfo: FC<{ userId: string }> = ({ userId }) => {
     const queryUser = useAnyUser(userId);
-    return <span className="userName">{queryUser?.email}</span>;
+    return <span className="userName">{queryUser?.name}</span>;
 };
 
 export default TypingIndicator;
