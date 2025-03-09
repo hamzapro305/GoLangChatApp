@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/gofiber/contrib/websocket"
+	"github.com/gofiber/fiber/v2"
 	"github.com/hamzapro305/GoLangChatApp/src/models"
 	"github.com/hamzapro305/GoLangChatApp/src/repos"
 )
@@ -43,7 +44,7 @@ func (*conversationWebSocketService) RemoveConnection(userID string) {
 
 // Notify only the participants about the new conversation
 func (*conversationWebSocketService) SendNewConversationMessage(conv models.Conversation, createdByParticipantId string) {
-	message, err := json.Marshal(map[string]interface{}{
+	message, err := json.Marshal(fiber.Map{
 		"type":         "new_conversation",
 		"conversation": conv,
 	})
@@ -58,7 +59,7 @@ func (*conversationWebSocketService) SendNewConversationMessage(conv models.Conv
 
 // Notify only the participants about the new group conversation
 func (*conversationWebSocketService) SendNewGroupConversationMessage(conv models.GroupConversation, createdByParticipantId string) {
-	message, err := json.Marshal(map[string]interface{}{
+	message, err := json.Marshal(fiber.Map{
 		"type":         "new_conversation",
 		"conversation": conv,
 	})
@@ -73,7 +74,7 @@ func (*conversationWebSocketService) SendNewGroupConversationMessage(conv models
 
 // Notify only the participants about the new message in conversation
 func (*conversationWebSocketService) SendNewMessageInConversationMessage(msg models.Message) {
-	message, err := json.Marshal(map[string]interface{}{
+	message, err := json.Marshal(fiber.Map{
 		"type":    "new_message_in_conversation",
 		"message": msg,
 	})
@@ -104,7 +105,7 @@ func (*conversationWebSocketService) SyncUserConversations(userID string, userCo
 
 	transformedConversations := ConversationArrayTransformation(conversations)
 
-	message, err := json.Marshal(map[string]interface{}{
+	message, err := json.Marshal(fiber.Map{
 		"type":          "sync_conversations",
 		"conversations": transformedConversations,
 	})
@@ -119,11 +120,11 @@ func (*conversationWebSocketService) SyncUserConversations(userID string, userCo
 }
 
 // Send Participant Message
-func (*conversationWebSocketService) SendMessageToParticipants(message []byte, participants []models.Participant, skipMMessage func(participantId string) bool) {
+func (*conversationWebSocketService) SendMessageToParticipants(message []byte, participants []models.Participant, skipMessage func(participantId string) bool) {
 	var wg sync.WaitGroup // Wait group to track Goroutines
 	for _, participant := range participants {
 		participantId := participant.UserID
-		if skipMMessage(participantId) {
+		if skipMessage(participantId) {
 			continue
 		}
 		mu.Lock()
@@ -132,7 +133,7 @@ func (*conversationWebSocketService) SendMessageToParticipants(message []byte, p
 
 		if exists {
 			wg.Add(1)
-			go func(conn *UserConnection) { // FIXED: Pass by reference
+			go func(conn *UserConnection) {
 				defer wg.Done()
 				conn.Mu.Lock()
 				defer conn.Mu.Unlock()
@@ -147,7 +148,7 @@ func ConversationArrayTransformation(conversations []models.GroupConversation) [
 	var convs []interface{}
 	for _, conv := range conversations {
 		// Create a map to hold the common fields
-		convInfo := map[string]interface{}{
+		convInfo := fiber.Map{
 			"id":           conv.ID,
 			"participants": conv.Participants,
 			"createdAt":    conv.CreatedAt,

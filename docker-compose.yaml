@@ -17,12 +17,32 @@ services:
     backend:
         build: ./backend
         restart: unless-stopped
-        ports:
-            - "3001:3001"
-        expose:
-          - 3001
+        depends_on:
+            - redis-db
+        deploy:
+            replicas: 2
+            update_config:
+                parallelism: 1
+                delay: 10s
+            restart_policy:
+                condition: any
+                delay: 5s
+                max_attempts: 0
         env_file:
             - ./.env
+        environment:
+            - REDIS_ADDR=redis-db:6379
+
+    nginx-backend:
+        image: nginx:latest
+        volumes: 
+            - ./backend/conf.d:/etc/nginx/conf.d
+        depends_on:
+            - backend
+        ports: 
+            - 3001:3001
+        restart: always 
+
     frontend:
         build: ./frontend
         restart: unless-stopped
@@ -32,4 +52,9 @@ services:
             - "5173:3000"
         env_file:
             - ./.env
+    redis-db:
+        image: redis
+        ports:
+            - "6379:6379"
+
     

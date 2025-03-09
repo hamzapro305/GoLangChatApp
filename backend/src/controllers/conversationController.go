@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/hamzapro305/GoLangChatApp/src/services"
 	"github.com/hamzapro305/GoLangChatApp/src/utils"
@@ -16,32 +15,17 @@ type createConversationBody struct {
 }
 
 func (*conversationController) CreateConversation(
-	c *websocket.Conn,
-	userClaims services.UserClaims,
 	message []byte,
+	userId string,
 ) {
 	body, parseError := utils.ParseWebsocketMessage[createConversationBody](message)
 	if parseError != nil {
-		c.WriteJSON(parseError)
 		return
 	}
 
-	conv, err := services.ConversationService.CreateConversation(body.Participants, userClaims.UserID)
-	if err != nil {
-		c.WriteJSON(map[string]interface{}{
-			"type":    "error",
-			"message": "Could not create conversation",
-		})
-		return
-	}
+	conv, _ := services.ConversationService.CreateConversation(body.Participants, userId)
 
-	go services.ConversationWebSocketService.SendNewConversationMessage(conv, userClaims.UserID)
-
-	c.WriteJSON(map[string]interface{}{
-		"type":         "conversation_creation_completed",
-		"message":      "Conversation created",
-		"conversation": conv,
-	})
+	go services.ConversationWebSocketService.SendNewConversationMessage(conv, userId)
 }
 
 type createGrupConversationBody struct {
@@ -50,32 +34,16 @@ type createGrupConversationBody struct {
 }
 
 func (*conversationController) CreateGroupConversation(
-	c *websocket.Conn,
-	userClaims services.UserClaims,
 	message []byte,
+	userId string,
 ) {
 	body, parseError := utils.ParseWebsocketMessage[createGrupConversationBody](message)
 	if parseError != nil {
-		c.WriteJSON(parseError)
 		return
 	}
 
-	conv, err := services.ConversationService.CreateGroupConversation(body.Participants, userClaims.UserID, body.GroupName)
-	if err != nil {
-		c.WriteJSON(map[string]interface{}{
-			"type":    "error",
-			"message": "Could not create conversation",
-		})
-		return
-	}
-
-	go services.ConversationWebSocketService.SendNewGroupConversationMessage(conv, userClaims.UserID)
-
-	c.WriteJSON(map[string]interface{}{
-		"type":         "conversation_creation_completed",
-		"message":      "Conversation created",
-		"conversation": conv,
-	})
+	conv, _ := services.ConversationService.CreateGroupConversation(body.Participants, userId, body.GroupName)
+	go services.ConversationWebSocketService.SendNewGroupConversationMessage(conv, userId)
 }
 
 type getUserConversationsBody struct {

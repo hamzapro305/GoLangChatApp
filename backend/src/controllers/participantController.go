@@ -16,46 +16,26 @@ type addParticipantToConversationBody struct {
 }
 
 func (*participantController) AddParticipantToConversation(
-	c *websocket.Conn,
-	userClaims services.UserClaims,
 	message []byte,
+	userId string,
 ) {
 	body, parseError := utils.ParseWebsocketMessage[addParticipantToConversationBody](message)
 	if parseError != nil {
-		c.WriteJSON(parseError)
 		return
 	}
 
 	// Getting Conversation
 	conv, err := services.ConversationService.GetConversationById(body.ConversationId)
 	if err != nil {
-		c.WriteJSON(map[string]interface{}{
-			"type":       "error",
-			"error_type": "invalid_id",
-			"message":    "invalid conversation id",
-		})
 		return
 	}
 
-	//  Check if user is leader of conversation
-	if conv.Leader != userClaims.UserID {
-		c.WriteJSON(map[string]interface{}{
-			"type":       "error",
-			"error_type": "not_leader",
-			"message":    "user is not the leader of conversation",
-		})
-		return
-	}
 
 	// Check if user is part of conversation already
 	for _, participant := range conv.Participants {
 		participantId := participant.UserID
 		if participantId == body.ParticipantId {
-			c.WriteJSON(map[string]interface{}{
-				"type":       "error",
-				"error_type": "already_participant",
-				"message":    "user is already part of conversation",
-			})
+			
 			return
 		}
 	}

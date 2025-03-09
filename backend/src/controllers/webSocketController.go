@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"github.com/gofiber/contrib/websocket"
-	"github.com/hamzapro305/GoLangChatApp/src/services"
 	"github.com/hamzapro305/GoLangChatApp/src/utils"
 )
 
@@ -12,33 +10,29 @@ var WebSocketMessageHandler = &webSocketMessageHandler{}
 
 // Message structure for WebSocket communication
 type IncomingMessage struct {
-	Type string `json:"type"`
+	Type          string `json:"type"`
+	CurrentUserId string `json:"current_user_id"`
 }
 
-func (*webSocketMessageHandler) WebSocketMessageHandler(
-	c *websocket.Conn,
-	userClaims services.UserClaims,
-	message []byte,
-) {
+func (*webSocketMessageHandler) WebSocketMessageHandler(message []byte) {
 	// Parse the incoming JSON message
 	incomingMsg, err := utils.ParseWebsocketMessage[IncomingMessage](message)
 	if err != nil {
-		c.WriteJSON(err)
 		return
 	}
 	switch incomingMsg.Type {
 	case "create_conversation":
-		ConversationController.CreateConversation(c, userClaims, message)
+		ConversationController.CreateConversation(message, incomingMsg.CurrentUserId)
 	case "create_group_conversation":
-		ConversationController.CreateGroupConversation(c, userClaims, message)
+		ConversationController.CreateGroupConversation(message, incomingMsg.CurrentUserId)
 	case "create_message":
-		MessageContrller.CreateConversationMessages(c, userClaims, message)
+		MessageContrller.CreateConversationMessages(message, incomingMsg.CurrentUserId)
 	case "user_started_typing":
-		TypingController.SetUserStartedTyping(c, userClaims, message)
+		TypingController.SetUserStartedTyping(message, incomingMsg.CurrentUserId)
 	case "user_stopped_typing":
-		TypingController.SetUserStoppedTyping(c, userClaims, message)
+		TypingController.SetUserStoppedTyping(message, incomingMsg.CurrentUserId)
 	case "add_participant_to_conversation":
-		ParticipantController.AddParticipantToConversation(c, userClaims, message)
+		ParticipantController.AddParticipantToConversation(message, incomingMsg.CurrentUserId)
 	default:
 		// c.WriteJSON(map[string]interface{}{
 		// 	"type":    "Error",
