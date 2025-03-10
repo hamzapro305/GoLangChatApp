@@ -2,8 +2,6 @@ import { AppDispatch } from "../Redux/store";
 import { ChatActions, ChatSliceT } from "../Redux/slices/ChatSlice";
 import {
     ConversationCreationCompleteMessage,
-    ConversationCreationDoneMessage,
-    MessageCreationDoneMessage,
     NewMessageInConversationMessage,
     SetUserStopTypingMessage,
     SetUserTypingMessage,
@@ -41,20 +39,6 @@ export class WebSocketInComingMessageHanlder {
                 break;
             case "new_message_in_conversation":
                 WebSocketInComingMessageHanlder.newMessage(
-                    message,
-                    dispatch,
-                    data
-                );
-                break;
-            case "action_message_creation_done":
-                WebSocketInComingMessageHanlder.messageCreationDone(
-                    message,
-                    dispatch,
-                    data
-                );
-                break;
-            case "conversation_creation_completed":
-                WebSocketInComingMessageHanlder.conversationCreationDone(
                     message,
                     dispatch,
                     data
@@ -129,49 +113,10 @@ export class WebSocketInComingMessageHanlder {
             })
         );
         Toast.SuccessToast("New Message In Chat!", {
-            toastId: "new-message"
+            toastId: message.message.conversationId
         })
     }
-    static messageCreationDone(
-        message: MessageCreationDoneMessage,
-        dispatch: AppDispatch,
-        _data: Data,
-    ) {
-        console.log("New Message", message);
-        if (message.type === "error") {
-            dispatch(
-                ChatActions.setMessageStatusToSending({
-                    conversationId: message.conversationId,
-                    tempId: message.tempId,
-                    status: "failed"
-                })
-            );
-        } else {
-            dispatch(
-                ChatActions.newMessageInChat({
-                    message: message.message,
-                    tempId: message.tempId,
-                })
-            );
-        }
-    }
-    static conversationCreationDone(
-        message: ConversationCreationDoneMessage,
-        dispatch: AppDispatch,
-        _data: Data,
-    ) {
-        console.log("New Conversation", message);
-        dispatch(
-            ChatActions.addNewConversation({
-                conversation: message.conversation,
-                messages: [],
-                unReadMessages: [],
-                isMessageFetched: false,
-                newMessages: [],
-                usersTyping: []
-            })
-        );
-    }
+
     static userStartedTyping(
         message: SetUserTypingMessage,
         dispatch: AppDispatch,
