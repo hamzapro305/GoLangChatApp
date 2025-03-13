@@ -1,13 +1,13 @@
-import BackDrop from "../../components/Backdrop";
-import { useQuery } from "@tanstack/react-query";
-import { useAppDispatch, useAppSelector } from "../../Redux/Hooks";
-import { ModalVarsVarsActions } from "../../Redux/slices/ModalVars";
-import "./style.scss";
-import UserService from "../../utils/UserService";
-import useToken from "../../Hooks/useToken";
 import { useState } from "react";
-import { User } from "../../Redux/slices/GlobalVars";
-import { WebSocketMessageSender } from "../../utils/WebSocketMessageSender";
+import { useQuery } from "@tanstack/react-query";
+import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
+import useToken from "@/Hooks/useToken";
+import UserService from "@/utils/UserService";
+import { ModalVarsVarsActions } from "@/Redux/slices/ModalVars";
+import { User } from "@/Redux/slices/GlobalVars";
+import { WebSocketMessageSender } from "@/utils/WebSocketMessageSender";
+import BackDrop from "@/components/Backdrop";
+import "./style.scss";
 
 const CreateConverationModal = () => {
     const ws = useAppSelector((s) => s.GlobalVars.ws);
