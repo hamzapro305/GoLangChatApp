@@ -21,6 +21,7 @@ const CreateConverationModal = () => {
 
     const query = useQuery({
         queryKey: ["users"],
+        staleTime: 100,
         queryFn: () => {
             return UserService.GetAllUsers(token as string);
         },
