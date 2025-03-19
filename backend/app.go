@@ -19,7 +19,6 @@ func main() {
 
 	config.ConnectDB()
 	// config.InitFirebase()
-	config.InitRedis()
 
 	app := fiber.New()
 

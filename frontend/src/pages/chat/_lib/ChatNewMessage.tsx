@@ -2,7 +2,7 @@ import { FC, useState } from "react";
 import { ChatNewMessage as ChatNewMessageT } from "../../../@types/chat";
 import { useAppSelector } from "../../../Redux/Hooks";
 import { motion } from "motion/react";
-// import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { RxCrossCircled } from "react-icons/rx";
 import { MdDoneAll } from "react-icons/md";
 import { useAnyUser } from "@/Hooks/useUser";
@@ -14,7 +14,7 @@ const ChatNewMessage: FC<Props> = ({ Message }) => {
     const user = useAppSelector((s) => s.GlobalVars.user);
     const isMine = user?.id === Message.senderId;
     const [isHovering, setIsHovering] = useState(false);
-
+    
     const User = useAnyUser(Message.senderId);
     // const removeMessage = (Message: ChatNewMessageT) => {
     //     if (Message.status === "loading") {
@@ -30,6 +30,13 @@ const ChatNewMessage: FC<Props> = ({ Message }) => {
         switch (Message.status) {
             case "failed":
                 return <RxCrossCircled fontSize={18} color="red" />;
+            case "loading":
+                return (
+                    <AiOutlineLoading3Quarters
+                        className="loading"
+                        fontSize={15}
+                    />
+                );
             case "sent":
                 return <MdDoneAll color="blue" fontSize={20} />;
             default:

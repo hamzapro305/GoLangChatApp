@@ -30,6 +30,7 @@ const ChatFoot = () => {
 
         // Naya timeout set karo, jo 2 sec baad "Not Typing" karega
         const timeout = setTimeout(() => {
+            console.log("Sending that is not typing");
             setIsTyping(false);
         }, 2000);
 
@@ -86,7 +87,7 @@ const ChatFoot = () => {
                 conversationId: selectedChat.id,
                 content: content,
                 tempId: nanoid(10),
-                status: "sent",
+                status: "loading",
                 senderId: user.id,
             };
             dispatch(

@@ -31,7 +31,7 @@ type ChatMessage = {
 
 type ChatNewMessage = {
     tempId: string
-    status: "failed" | "sent";
+    status: "loading" | "failed" | "sent";
     conversationId: string;
     senderId: string;
     content: string;

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/hamzapro305/GoLangChatApp/src/services"
 	"github.com/hamzapro305/GoLangChatApp/src/utils"
@@ -38,18 +39,35 @@ type createMessageBody struct {
 }
 
 func (*messageController) CreateConversationMessages(
+	c *websocket.Conn,
+	userClaims services.UserClaims,
 	message []byte,
-	userId string,
 ) {
 	body, parseError := utils.ParseWebsocketMessage[createMessageBody](message)
 	if parseError != nil {
+		c.WriteJSON(parseError)
 		return
 	}
 
-	msg, _ := services.MessageService.CreateMessage(
+	msg, err := services.MessageService.CreateMessage(
 		body.ConversationID,
-		userId,
+		userClaims.UserID,
 		body.Content,
 	)
-	go services.ConversationWebSocketService.SendNewMessageInConversationMessage(*msg)
+	if err != nil {
+		c.WriteJSON(fiber.Map{
+			"type":           "error",
+			"message":        "message creation failed",
+			"tempId":         body.TempId,
+			"conversationId": body.ConversationID,
+		})
+		return
+	}
+	services.ConversationWebSocketService.SendNewMessageInConversationMessage(*msg)
+	c.WriteJSON(fiber.Map{
+		"type":           "action_message_creation_done",
+		"message":        msg,
+		"tempId":         body.TempId,
+		"conversationId": body.ConversationID,
+	})
 }
