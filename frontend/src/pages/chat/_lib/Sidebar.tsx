@@ -1,3 +1,5 @@
+"use client";
+
 import { FC } from "react";
 import { motion } from "motion/react";
 import useToken from "@/Hooks/useToken";
