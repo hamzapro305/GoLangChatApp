@@ -1,0 +1,35 @@
+@use "@/sass/global_req" as *;
+
+.MessageOptions {
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+
+    position: absolute;
+
+    bottom: 110%;
+    left: 20px;
+
+    width: 500px;
+    height: 300px;
+
+    transform-origin: left bottom;
+
+    .head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .title {
+            font-family: $font;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        button {
+            all: unset;
+            font-family: $font;
+            cursor: pointer;
+            font-size: 20px;
+        }
+    }
+}

@@ -1,35 +1,35 @@
 services:
-    # app-db:
-    #     image: mongo:latest
+    app-db:
+        image: mongo:latest
+        restart: unless-stopped
+        ports:
+            - "27017:27017"
+        expose:
+            - "27017"
+        volumes:
+            - ./data-mongo/:/data/db
+
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=admin
+            - MONGO_INITDB_ROOT_PASSWORD=admin
+            - MONGO_INITDB_DATABASE=auth-db
+
+    # backend:
+    #     build: ./backend
     #     restart: unless-stopped
     #     ports:
-    #         - "27017:27017"
+    #         - "3001:3001"
     #     expose:
-    #         - "27017"
-    #     volumes:
-    #         - ./data-mongo/:/data/db
-
-    #     environment:
-    #         - MONGO_INITDB_ROOT_USERNAME=admin
-    #         - MONGO_INITDB_ROOT_PASSWORD=admin
-    #         - MONGO_INITDB_DATABASE=auth-db
-
-    backend:
-        build: ./backend
-        restart: unless-stopped
-        ports:
-            - "3001:3001"
-        expose:
-          - 3001
-        env_file:
-            - ./.env
-    frontend:
-        build: ./frontend
-        restart: unless-stopped
-        depends_on:
-            - backend
-        ports:
-            - "5173:3000"
-        env_file:
-            - ./.env
+    #       - 3001
+    #     env_file:
+    #         - ./.env
+    # frontend:
+    #     build: ./frontend
+    #     restart: unless-stopped
+    #     depends_on:
+    #         - backend
+    #     ports:
+    #         - "5173:3000"
+    #     env_file:
+    #         - ./.env
     

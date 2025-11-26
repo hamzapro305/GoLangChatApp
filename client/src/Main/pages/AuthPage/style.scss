@@ -1,0 +1,47 @@
+@use "@/sass/global_req" as *;
+
+.auth-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+
+    &-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
+        width: 100%;
+        .title {
+            font-size: 20px;
+            font-family: $font;
+            font-weight: bolder;
+        }
+
+        .form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .change {
+            all: unset;
+            font-size: 12px;
+            font-family: $font;
+            font-weight: bolder;
+            color: #4d4ae8;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        input {
+            padding: 10px 10px;
+            border: 2px solid #4d4ae8;
+            outline: none;
+            max-width: 500px;
+            width: 100%;
+
+            border-radius: 0.2rem;
+        }
+    }
+}
