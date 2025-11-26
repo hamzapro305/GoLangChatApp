@@ -1,5 +1,5 @@
-import { Participant, SimpleConversation } from "../@types/chat"
-import { User } from "../Redux/slices/GlobalVars"
+import { Participant, SimpleConversation } from "../@types/chat.js"
+import { User } from "../Redux/slices/GlobalVars.js"
 import apiClient from "./Axios.js"
 
 const GetCurrentUser = async (token: string): Promise<any> => {
@@ -60,7 +60,7 @@ const fetchUserById = async (userId: string, token: string): Promise<User> => {
 
 const GetChatParticipant = (currentUser: User, conversation: SimpleConversation): Participant => {
     return conversation.participants.filter(
-        (user) => user.userId != currentUser?.id
+        (user: any) => user.userId != currentUser?.id
     )?.[0];
 }
 

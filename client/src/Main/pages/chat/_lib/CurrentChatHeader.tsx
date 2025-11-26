@@ -44,7 +44,7 @@ const CurrentChatHeader = () => {
         } else {
             return (
                 <RenderConversationName
-                    conversation={selectedConv.conversation}
+                    conversation={selectedConv.conversation as SimpleConversation}
                 />
             );
         }

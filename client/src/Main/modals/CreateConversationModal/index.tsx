@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import "./style.scss";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks.js";
 import useToken from "@/Hooks/useToken.js";
 import { User } from "@/Redux/slices/GlobalVars.js";
@@ -7,7 +8,6 @@ import UserService from "@/utils/UserService.js";
 import { ModalVarsVarsActions } from "@/Redux/slices/ModalVars.js";
 import { WebSocketMessageSender } from "@/utils/WebSocketMessageSender.js";
 import BackDrop from "@/components/Backdrop/index.js";
-import "./style.scss";
 
 const CreateConverationModal = () => {
     const ws = useAppSelector((s) => s.GlobalVars.ws);

@@ -1,5 +1,5 @@
+import { ChatMessage, ChatNewMessage, Conversation } from "@/@types/chat.js";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { ChatNewMessage, ChatMessage, Conversation } from "../../@types/chat";
 
 export type SingleChatT = {
     conversation: Conversation;

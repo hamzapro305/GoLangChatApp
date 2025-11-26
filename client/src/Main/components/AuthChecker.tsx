@@ -1,7 +1,7 @@
-import useToken from "@/Hooks/useToken";
-import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { GlobalVarsActions } from "@/Redux/slices/GlobalVars";
-import UserService from "@/utils/UserService";
+import useToken from "@/Hooks/useToken.js";
+import { useAppDispatch, useAppSelector } from "@/Redux/Hooks.js";
+import { GlobalVarsActions } from "@/Redux/slices/GlobalVars.js";
+import UserService from "@/utils/UserService.js";
 import React, { FC, useEffect } from "react";
 
 type AuthCheckerT = FC<{ children: React.ReactNode }>;

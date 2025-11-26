@@ -3,9 +3,9 @@ services:
         image: mongo:latest
         restart: unless-stopped
         ports:
-            - "27017:27017"
+            - 27017:27017
         expose:
-            - "27017"
+            - 27017
         volumes:
             - ./data-mongo/:/data/db
 
@@ -14,15 +14,19 @@ services:
             - MONGO_INITDB_ROOT_PASSWORD=admin
             - MONGO_INITDB_DATABASE=auth-db
 
-    # backend:
-    #     build: ./backend
-    #     restart: unless-stopped
-    #     ports:
-    #         - "3001:3001"
-    #     expose:
-    #       - 3001
-    #     env_file:
-    #         - ./.env
+    backend:
+        build: ./backend
+        restart: unless-stopped
+        depends_on:
+            - app-db
+        ports:
+            - "3001:3001"
+        expose:
+            - 3001
+        env_file:
+            - ./.env
+        environment:
+            - MONGODB_URI=mongodb://admin:admin@app-db:27017/auth-db?authSource=admin
     # frontend:
     #     build: ./frontend
     #     restart: unless-stopped
@@ -32,4 +36,3 @@ services:
     #         - "5173:3000"
     #     env_file:
     #         - ./.env
-    

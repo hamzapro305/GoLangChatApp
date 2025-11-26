@@ -1,0 +1,21 @@
+﻿src/Main/components/Backdrop/index.tsx(14,19): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/Main/components/HSToast.tsx(37,10): error TS2741: Property '"aria-label"' is missing in type '{ position: "bottom-right"; autoClose: number; hideProgressBar: false; transition: ({ children, position, preventExitTransition, done, nodeRef, isIn, playToast }: ToastTransitionProps) => React.JSX.Element; closeOnClick: true; pauseOnFocusLoss: true; draggable: true; }' but required in type 'ToastContainerProps'.
+src/Main/pages/chat/_lib/CurrentChatHeader.tsx(47,21): error TS2322: Type 'Conversation' is not assignable to type 'SimpleConversation'.
+  Type 'GroupConversation' is not assignable to type 'SimpleConversation'.
+    Types of property 'isGroup' are incompatible.
+      Type 'true' is not assignable to type 'false'.
+src/Main/utils/Axios.ts(3,44): error TS2339: Property 'env' does not exist on type 'ImportMeta'.
+src/Main/utils/MessageService.ts(1,29): error TS2834: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Consider adding an extension to the import path.
+src/Main/utils/UserService.ts(1,49): error TS2834: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Consider adding an extension to the import path.
+src/Main/utils/UserService.ts(2,22): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../Redux/slices/GlobalVars.js'?
+src/Main/utils/UserService.ts(63,10): error TS7006: Parameter 'user' implicitly has an 'any' type.
+src/Main/utils/WebScoketMessageHandler.ts(1,29): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../Redux/store.js'?
+src/Main/utils/WebScoketMessageHandler.ts(2,41): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../Redux/slices/ChatSlice.js'?
+src/Main/utils/WebScoketMessageHandler.ts(12,8): error TS2834: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Consider adding an extension to the import path.
+src/Main/utils/WebScoketMessageHandler.ts(13,22): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../Redux/slices/GlobalVars.js'?
+src/Main/utils/WebScoketMessageHandler.ts(14,23): error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean '../components/HSToast.js'?
+src/Main/utils/WebScoketMessageHandler.ts(108,44): error TS7006: Parameter 'conv' implicitly has an 'any' type.
+src/Main/utils/WebScoketMessageHandler.ts(110,21): error TS7018: Object literal's property 'messages' implicitly has an 'any[]' type.
+src/Main/utils/WebScoketMessageHandler.ts(111,21): error TS7018: Object literal's property 'unReadMessages' implicitly has an 'any[]' type.
+src/Main/utils/WebScoketMessageHandler.ts(113,21): error TS7018: Object literal's property 'newMessages' implicitly has an 'any[]' type.
+src/Main/utils/WebScoketMessageHandler.ts(114,21): error TS7018: Object literal's property 'usersTyping' implicitly has an 'any[]' type.

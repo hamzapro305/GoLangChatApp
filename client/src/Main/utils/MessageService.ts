@@ -1,4 +1,4 @@
-import { ChatMessage } from "../@types/chat";
+import { ChatMessage } from "../@types/chat.js";
 import apiClient from "./Axios.js";
 
 const FetchMessages = (token: string, conv: string): Promise<ChatMessage[]> => {

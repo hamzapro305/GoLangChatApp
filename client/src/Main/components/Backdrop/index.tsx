@@ -1,5 +1,5 @@
 import React, { FC, ReactNode } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 type Component = FC<{
     children?: ReactNode;
@@ -11,7 +11,7 @@ const BackDrop: Component = ({ children, onClick, Animation }) => (
         className="BackDrop"
         {...(Animation ?? PageAnimation)}
         style={Styling}
-        onClick={(e) => {
+        onClick={(e: React.MouseEvent<HTMLDivElement>) => {
             if (e.target === e.currentTarget) {
                 onClick?.(e);
             }

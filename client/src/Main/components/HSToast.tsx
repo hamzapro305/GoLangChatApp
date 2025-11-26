@@ -40,12 +40,9 @@ const HSToast = () => {
             hideProgressBar={false}
             transition={Zoom}
             closeOnClick
-            // rtl={false}
             pauseOnFocusLoss
             draggable
-            // pauseOnHover
-            // stacked
-            // limit={2}
+            aria-label="Notifications"
         />
     );
 };

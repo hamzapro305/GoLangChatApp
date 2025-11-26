@@ -1,5 +1,5 @@
-import { AppDispatch } from "../Redux/store";
-import { ChatActions, ChatSliceT } from "../Redux/slices/ChatSlice";
+import { AppDispatch } from "../Redux/store.js";
+import { ChatActions, ChatSliceT } from "../Redux/slices/ChatSlice.js";
 import {
     ConversationCreationCompleteMessage,
     ConversationCreationDoneMessage,
@@ -9,9 +9,9 @@ import {
     SetUserTypingMessage,
     SyncConversationMessage,
     WebSocketMessage,
-} from "../@types/socket";
-import { User } from "../Redux/slices/GlobalVars";
-import { Toast } from "../components/HSToast";
+} from "../@types/socket.js";
+import { User } from "../Redux/slices/GlobalVars.js";
+import { Toast } from "../components/HSToast.js";
 
 type Data = {
     user: User,
@@ -105,13 +105,13 @@ export class WebSocketInComingMessageHanlder {
         console.log("Sync Conversation Message", message);
         dispatch(
             ChatActions.setAllConversations(
-                message.conversations.map((conv) => ({
+                message.conversations.map((conv: any) => ({
                     conversation: conv ?? [],
-                    messages: [],
-                    unReadMessages: [],
+                    messages: [] as any[],
+                    unReadMessages: [] as any[],
                     isMessageFetched: false,
-                    newMessages: [],
-                    usersTyping: []
+                    newMessages: [] as any[],
+                    usersTyping: [] as string[]
                 }))
             )
         );

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BACKEND_DOMAIN: string = import.meta.env.VITE_BACKEND_DOMAIN || "localhost:3001";
+const BACKEND_DOMAIN: string = (import.meta as any).env?.VITE_BACKEND_DOMAIN || "localhost:3001";
 
 console.log(BACKEND_DOMAIN)
 

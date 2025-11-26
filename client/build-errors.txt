@@ -1,0 +1,49 @@
+﻿
+> client@1.0.0 package
+> electron-forge package
+
+[33mΓ¥»[39m Checking your system
+[33mΓ¥»[39m Checking package manager version
+[32mΓ£ö[39m Found npm@10.9.2
+[32mΓ£ö[39m Checking your system
+[?25h[33mΓ¥»[39m Preparing to package application
+[32mΓ£ö[39m Preparing to package application
+[33mΓ¥»[39m Running packaging hooks
+[33mΓ¥»[39m Running generateAssets hook
+[32mΓ£ö[39m Running generateAssets hook
+[33mΓ¥»[39m Running prePackage hook
+[33mΓ¥»[39m [plugin-vite] Building production Vite bundles
+[33mΓ¥»[39m Building main and preload targets...
+[33mΓ¥»[39m Building renderer targets...
+[33mΓ¥»[39m Building src/index.ts target
+[33mΓ¥»[39m Building src/preload.ts target
+node.exe : Generated an empty chunk: "preload".
+At C:\Program Files\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Generated an empty chunk: "preloa 
+   d".:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[32mΓ£ö[39m Building src/index.ts target
+[32mΓ£ö[39m Building src/preload.ts target
+[32mΓ£ö[39m Building main and preload targets...
+[32mΓ£ö[39m Built target main_window
+[32mΓ£ö[39m Building renderer targets...
+[32mΓ£ö[39m [plugin-vite] Building production Vite bundles
+[32mΓ£ö[39m Running prePackage hook
+[32mΓ£ö[39m Running packaging hooks
+[33mΓ¥»[39m Packaging application
+ΓÇ║ Determining targets...
+[33mΓ¥»[39m Packaging for x64 on win32
+[33mΓ¥»[39m Copying files
+[33mΓ¥»[39m Preparing native dependencies
+[33mΓ¥»[39m Finalizing package
+[32mΓ£ö[39m Copying files
+[32mΓ£ö[39m Preparing native dependencies
+[32mΓ£ö[39m Finalizing package
+[32mΓ£ö[39m Packaging for x64 on win32
+[32mΓ£ö[39m Packaging application
+[33mΓ¥»[39m Running postPackage hook
+[32mΓ£ö[39m Running postPackage hook
+[?25h
