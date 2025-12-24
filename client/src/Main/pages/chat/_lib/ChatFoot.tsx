@@ -37,6 +37,7 @@ const ChatFoot = () => {
     };
 
     const handleFileClick = (type: string) => {
+        setShowAttachmentMenu(false);
         if (fileInputRef.current) {
             // Filter by type if needed
             if (type === "image") fileInputRef.current.accept = "image/*";
@@ -165,6 +166,26 @@ const ChatFoot = () => {
         TypingIndicator(isTyping);
     }, [isTyping, TypingIndicator]);
 
+    const attachmentRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (attachmentRef.current && !attachmentRef.current.contains(event.target as Node)) {
+                setShowAttachmentMenu(false);
+            }
+        };
+
+        if (showAttachmentMenu) {
+            document.addEventListener("mousedown", handleClickOutside);
+        } else {
+            document.removeEventListener("mousedown", handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [showAttachmentMenu]);
+
     const toggleEmojiModal = () => {
         if (selectedChat) {
             dispatch(
@@ -253,7 +274,7 @@ const ChatFoot = () => {
                 <EditorContent editor={editor} className="tiptap-editor" />
 
                 <div className="options">
-                    <div className="actions">
+                    <div className="actions" ref={attachmentRef}>
                         <div className="emoji emoji-toggle-btn" onClick={toggleEmojiModal}>
                             <MdOutlineEmojiEmotions />
                         </div>
