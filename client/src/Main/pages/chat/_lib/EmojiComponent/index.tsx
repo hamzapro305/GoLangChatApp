@@ -14,10 +14,14 @@ type EmojiComponentT = FC<{
 const EmojiComponent: EmojiComponentT = ({ pushToContent, onClose }) => {
     // const { emojiModal } = useAppSelector((s) => s.Chat);
     const [query, setQuery] = useState("");
+    const [showEmojis, setShowEmojis] = useState(false); // Sukoon loading
 
     const ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        // Start showing emojis after initial animation
+        const timer = setTimeout(() => setShowEmojis(true), 150);
+
         const handleClickOutside = (event: MouseEvent) => {
             const target = event.target as HTMLElement;
             if (
@@ -32,20 +36,23 @@ const EmojiComponent: EmojiComponentT = ({ pushToContent, onClose }) => {
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
+            clearTimeout(timer);
         };
     }, [onClose]);
 
     return (
         <motion.div
             ref={ref}
-            initial={{ opacity: 0, scale: 0 }}
+            initial={{ opacity: 0, scale: 0.9, y: 10 }}
             animate={{
                 opacity: 1,
                 scale: 1,
+                y: 0,
             }}
             exit={{
                 opacity: 0,
-                scale: 0,
+                scale: 0.9,
+                y: 10,
                 transition: {
                     duration: 0.2,
                 },
@@ -58,11 +65,17 @@ const EmojiComponent: EmojiComponentT = ({ pushToContent, onClose }) => {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="searchbar"
-                placeholder="Search Emoji"
+                placeholder="Search Emojis"
             />
-            <Suspense fallback="Loading">
-                <RenderAllEmojis pushToContent={pushToContent} query={query} />
-            </Suspense>
+            <div className="emoji-list-container" style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                {showEmojis ? (
+                    <Suspense fallback={<div className="loading-emojis" style={{ textAlign: 'center', padding: '20px', color: 'rgba(255,255,255,0.3)' }}>Loading...</div>}>
+                        <RenderAllEmojis pushToContent={pushToContent} query={query} />
+                    </Suspense>
+                ) : (
+                    <div style={{ textAlign: 'center', padding: '20px', color: 'rgba(255,255,255,0.3)' }}>Loading...</div>
+                )}
+            </div>
         </motion.div>
     );
 };
