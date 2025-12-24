@@ -58,7 +58,14 @@ func (*conversationRepo) GetUserConversations(userID string) ([]models.GroupConv
 	ctx, cancel := context.WithTimeout(context.Background(), config.DatabaseTimeLimit)
 	defer cancel()
 
-	filter := bson.M{"participants.userId": userID}
+	filter := bson.M{
+		"participants": bson.M{
+			"$elemMatch": bson.M{
+				"userId": userID,
+				"leftAt": bson.M{"$exists": false},
+			},
+		},
+	}
 	cursor, err := models.ConversationCollection.Find(ctx, filter)
 	if err != nil {
 		fmt.Println("Error finding conversations:", err)
@@ -80,8 +87,17 @@ func (*conversationRepo) GetUserConversations(userID string) ([]models.GroupConv
 	return conversations, nil
 }
 
-func (*conversationRepo) DeleteConversation() {
-	// Delete a conversation
+func (*conversationRepo) DeleteConversation(conversationID string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), config.DatabaseTimeLimit)
+	defer cancel()
+
+	convID, err := primitive.ObjectIDFromHex(conversationID)
+	if err != nil {
+		return err
+	}
+
+	_, err = models.ConversationCollection.DeleteOne(ctx, bson.M{"_id": convID})
+	return err
 }
 
 func (*conversationRepo) AddParticipantToConversation(conversationID string, userID string) error {
@@ -112,6 +128,32 @@ func (*conversationRepo) AddParticipantToConversation(conversationID string, use
 
 	return nil
 
+}
+
+func (*conversationRepo) LeaveConversation(conversationID string, userID string) error {
+	fmt.Printf("Repo: LeaveConversation called for conv: %s, user: %s\n", conversationID, userID)
+	ctx, cancel := context.WithTimeout(context.Background(), config.DatabaseTimeLimit)
+	defer cancel()
+
+	convID, err := primitive.ObjectIDFromHex(conversationID)
+	if err != nil {
+		fmt.Println("Repo: LeaveConversation: Invalid conversationID:", err)
+		return err
+	}
+
+	filter := bson.M{"_id": convID, "participants.userId": userID}
+	update := bson.M{
+		"$set": bson.M{"participants.$.leftAt": time.Now()},
+	}
+
+	result, err := models.ConversationCollection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		fmt.Println("Repo: LeaveConversation: DB Update error:", err)
+		return err
+	}
+	fmt.Printf("Repo: LeaveConversation: Update result: %+v\n", result)
+
+	return nil
 }
 
 func (*conversationRepo) IsUserInConversation(conversationID string, userID string) bool {

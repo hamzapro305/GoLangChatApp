@@ -17,15 +17,23 @@ type SelectedChatT = {
     chatInfo: boolean
 }
 
+type DeleteChatProgress = {
+    conversationId: string;
+    deletedCount: number;
+    totalCount: number;
+    isDeleting: boolean;
+};
 
 export type ChatSliceT = {
     conversations: SingleChatT[];
     selectedChat: SelectedChatT | null;
+    deleteChatProgress: DeleteChatProgress | null;
 };
 
 const initialState: ChatSliceT = {
     conversations: [],
     selectedChat: null,
+    deleteChatProgress: null,
 };
 
 export const Slice = createSlice({
@@ -167,6 +175,21 @@ export const Slice = createSlice({
                     }
                 }
             })
+        },
+        setDeleteProgress: (state, { payload }: PayloadAction<{ conversationId: string, deletedCount: number, totalCount: number }>) => {
+            state.deleteChatProgress = {
+                conversationId: payload.conversationId,
+                deletedCount: payload.deletedCount,
+                totalCount: payload.totalCount,
+                isDeleting: true
+            };
+        },
+        chatDeleted: (state, { payload }: PayloadAction<{ conversationId: string }>) => {
+            state.conversations = state.conversations.filter(c => c.conversation.id !== payload.conversationId);
+            if (state.selectedChat?.id === payload.conversationId) {
+                state.selectedChat = null;
+            }
+            state.deleteChatProgress = null;
         }
     },
 });

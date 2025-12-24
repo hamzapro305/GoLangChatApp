@@ -7,4 +7,5 @@ import (
 
 func SetupConversationRoutes(conversation fiber.Router) {
 	conversation.Post("/get", controllers.ConversationController.GetConversation)
+	conversation.Post("/leave", controllers.ConversationController.LeaveConversation)
 }

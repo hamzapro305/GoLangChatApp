@@ -1,7 +1,7 @@
 "use client";
 
-import { FC } from "react";
-import { motion } from "motion/react";
+import { FC, useState, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks.js";
 import useToken from "@/Hooks/useToken.js";
 import { ModalVarsVarsActions } from "@/Redux/slices/ModalVars.js";
@@ -11,12 +11,35 @@ import UserService from "@/utils/UserService.js";
 import { SimpleConversation } from "@/@types/chat.js";
 import { useAnyUser } from "@/Hooks/useUser.js";
 import { User } from "@/Redux/slices/GlobalVars.js";
+import DeleteChatModal from "./DeleteChatModal.js";
 
 const Sidebar = () => {
     const conversations = useAppSelector((s) => s.Chat.conversations);
     const selectedChat = useAppSelector((s) => s.Chat.selectedChat);
+    const ws = useAppSelector((s) => s.GlobalVars.ws);
+    const deleteChatProgress = useAppSelector((s) => s.Chat.deleteChatProgress);
+
+    const [contextMenu, setContextMenu] = useState<{ x: number; y: number; id: string } | null>(null);
+
     const [token, _] = useToken();
     const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        const handleClick = () => setContextMenu(null);
+        window.addEventListener("click", handleClick);
+        return () => window.removeEventListener("click", handleClick);
+    }, []);
+
+    const handleDeleteChat = () => {
+        if (contextMenu && ws) {
+            const data = JSON.stringify({
+                type: "delete_conversation",
+                conversationId: contextMenu.id,
+            });
+            ws.send(data);
+            setContextMenu(null);
+        }
+    };
     const CreateConv = () => {
         dispatch(ModalVarsVarsActions.setCreateConversation(true));
     };
@@ -71,6 +94,10 @@ const Sidebar = () => {
                             className={`conv ${isSelectedChat ? "active" : ""}`}
                             key={conv.conversation.id}
                             onClick={() => SelectChat(conv)}
+                            onContextMenu={(e: React.MouseEvent) => {
+                                e.preventDefault();
+                                setContextMenu({ x: e.clientX, y: e.clientY, id: conv.conversation.id });
+                            }}
                         >
                             <RenderConversationName
                                 key={conv.conversation.id}
@@ -100,6 +127,42 @@ const Sidebar = () => {
                     );
                 })}
             </div>
+
+            {contextMenu && (
+                <div
+                    style={{
+                        position: "fixed",
+                        top: contextMenu.y,
+                        left: contextMenu.x,
+                        background: "#2a2a2a",
+                        padding: "0.5rem 1rem",
+                        borderRadius: "0.5rem",
+                        cursor: "pointer",
+                        zIndex: 1000,
+                        border: "1px solid rgba(255, 255, 255, 0.1)",
+                        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                        color: "#ef4444",
+                        fontSize: "0.9rem",
+                        fontWeight: "500"
+                    }}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteChat();
+                    }}
+                >
+                    Delete Chat
+                </div>
+            )}
+
+            <AnimatePresence>
+                {deleteChatProgress && (
+                    <DeleteChatModal
+                        deletedCount={deleteChatProgress.deletedCount}
+                        totalCount={deleteChatProgress.totalCount}
+                        isOpen={!!deleteChatProgress}
+                    />
+                )}
+            </AnimatePresence>
         </div>
     );
 };

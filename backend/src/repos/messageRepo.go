@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"github.com/hamzapro305/GoLangChatApp/src/config"
 	"github.com/hamzapro305/GoLangChatApp/src/models"
 	"go.mongodb.org/mongo-driver/bson"
@@ -47,4 +49,12 @@ func (*messageRepo) GetConversationMessages(conversationId string) ([]models.Mes
 	}
 
 	return messages, nil
+}
+
+func (*messageRepo) DeleteMessage(messageID primitive.ObjectID) error {
+	ctx, cancel := context.WithTimeout(context.Background(), config.DatabaseTimeLimit)
+	defer cancel()
+
+	_, err := models.MessageCollection.DeleteOne(ctx, bson.M{"_id": messageID})
+	return err
 }

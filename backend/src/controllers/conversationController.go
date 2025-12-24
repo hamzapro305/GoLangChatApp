@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/hamzapro305/GoLangChatApp/src/services"
@@ -99,5 +101,62 @@ func (*conversationController) GetConversation(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"userConversations": convs,
+	})
+}
+
+type deleteConversationBody struct {
+	ConversationID string `json:"conversationId"`
+}
+
+func (*conversationController) DeleteConversation(
+	c *websocket.Conn,
+	userClaims services.UserClaims,
+	message []byte,
+) {
+	body, parseError := utils.ParseWebsocketMessage[deleteConversationBody](message)
+	if parseError != nil {
+		fmt.Println("Error parsing delete conversation message:", parseError)
+		c.WriteJSON(parseError)
+		return
+	}
+
+	fmt.Println("ConversationController: Calling DeleteConversationWithProgress for ID:", body.ConversationID)
+	services.ConversationService.DeleteConversationWithProgress(c, body.ConversationID)
+}
+
+type leaveConversationBody struct {
+	ConversationID string `json:"conversationId"`
+}
+
+func (*conversationController) LeaveConversation(c *fiber.Ctx) error {
+	fmt.Println("LeaveConversation called")
+	body, parseError := utils.ParseBody[leaveConversationBody](c)
+	if parseError != nil {
+		fmt.Println("LeaveConversation: ParseBody error:", parseError)
+		return parseError
+	}
+	fmt.Printf("LeaveConversation: Bodyparsed: %+v\n", body)
+
+	userClaims, err := services.JwtService.GetClaims(c)
+	if err != nil {
+		fmt.Println("LeaveConversation: GetClaims error:", err)
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Unauthorized user",
+		})
+	}
+	fmt.Printf("LeaveConversation: UserID from claims: %s\n", userClaims.UserID)
+
+	err = services.ConversationService.LeaveConversation(body.ConversationID, userClaims.UserID)
+	if err != nil {
+		fmt.Println("LeaveConversation: Service error:", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Could not leave conversation",
+		})
+	}
+
+	fmt.Println("LeaveConversation: Success")
+	return c.JSON(fiber.Map{
+		"message":        "Successfully left conversation",
+		"conversationId": body.ConversationID,
 	})
 }

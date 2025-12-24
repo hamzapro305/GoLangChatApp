@@ -12,6 +12,7 @@ type Message struct {
 	ConversationID string             `bson:"conversationId" json:"conversationId"`
 	SenderID       string             `bson:"senderId" json:"senderId"`
 	Content        string             `bson:"content" json:"content"`
+	AttachmentUrl  string             `bson:"attachmentUrl" json:"attachmentUrl"`
 	Type           string             `bson:"type" json:"type"` // e.g., "text", "image", "file"
 	CreatedAt      time.Time          `bson:"createdAt" json:"createdAt"`
 }

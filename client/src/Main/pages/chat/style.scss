@@ -29,61 +29,80 @@
             font-family: $font;
         }
 
-        nav {
-            ul {
-                display: flex;
-                gap: 40px;
-
-                li {
-                    list-style: none;
-                    font-family: $font;
-                    font-weight: 500;
-                    color: $text-secondary;
-                    cursor: pointer;
-                    transition: color 0.3s ease;
-                    position: relative;
-
-                    &:hover {
-                        color: $text-primary;
-                    }
-
-                    &.active {
-                        color: $text-primary;
-
-                        &::after {
-                            content: "";
-                            position: absolute;
-                            bottom: -25px;
-                            left: 0;
-                            width: 100%;
-                            height: 3px;
-                            @include background();
-                            border-radius: 10px;
-                        }
-                    }
-                }
-            }
-        }
 
         .user-profile {
             display: flex;
             gap: 12px;
             align-items: center;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 6px 16px;
-            border-radius: 50px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+            padding: 8px 18px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
 
-            .pp img {
-                width: 35px;
-                height: 35px;
-                border-radius: 50%;
-                border: 2px solid $purple;
+            &:hover {
+                background: rgba(255, 255, 255, 0.06);
+                border-color: rgba(255, 255, 255, 0.15);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+                .arrow {
+                    transform: translateY(2px);
+                }
             }
 
-            .name {
-                font-weight: 600;
-                font-size: 0.9rem;
+            .pp {
+                position: relative;
+                width: 38px;
+                height: 38px;
+
+                img {
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 12px;
+                    border: 1.5px solid rgba(124, 58, 237, 0.5);
+                    object-fit: cover;
+                }
+
+                .status-indicator {
+                    position: absolute;
+                    bottom: -2px;
+                    right: -2px;
+                    width: 12px;
+                    height: 12px;
+                    background: #10b981;
+                    border: 2px solid $bg-dark;
+                    border-radius: 50%;
+                }
+            }
+
+            .info {
+                display: flex;
+                flex-direction: column;
+                gap: 1px;
+
+                .name {
+                    font-weight: 600;
+                    font-size: 0.92rem;
+                    color: $text-primary;
+                }
+
+                .status {
+                    font-size: 0.72rem;
+                    color: $text-secondary;
+                    font-weight: 500;
+                }
+            }
+
+            .arrow {
+                color: $text-secondary;
+                font-size: 1.1rem;
+                display: flex;
+                align-items: center;
+                transition: transform 0.3s ease;
+                margin-left: 4px;
             }
         }
     }
@@ -1167,4 +1186,21 @@
             }
         }
     }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

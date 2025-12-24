@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+
 	"github.com/gofiber/contrib/websocket"
 	"github.com/hamzapro305/GoLangChatApp/src/services"
 	"github.com/hamzapro305/GoLangChatApp/src/utils"
@@ -37,8 +39,9 @@ func (*webSocketMessageHandler) WebSocketMessageHandler(
 		TypingController.SetUserStartedTyping(c, userClaims, message)
 	case "user_stopped_typing":
 		TypingController.SetUserStoppedTyping(c, userClaims, message)
-	case "add_participant_to_conversation":
-		ParticipantController.AddParticipantToConversation(c, userClaims, message)
+	case "delete_conversation":
+		fmt.Println("WS Controller: received delete_conversation")
+		ConversationController.DeleteConversation(c, userClaims, message)
 	default:
 		// c.WriteJSON(map[string]interface{}{
 		// 	"type":    "Error",

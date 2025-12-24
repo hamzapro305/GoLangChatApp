@@ -31,5 +31,7 @@ func main() {
 	routes.SetupRoutes(app)
 	app.Static("/uploads", "./uploads")
 
-	app.Listen(":3001")
+	if err := app.Listen(":3001"); err != nil {
+		fmt.Printf("Error starting server: %v\n", err)
+	}
 }

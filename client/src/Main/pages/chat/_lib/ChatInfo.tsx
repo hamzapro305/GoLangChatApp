@@ -7,9 +7,14 @@ import UserService from "@/utils/UserService.js";
 import { User } from "@/Redux/slices/GlobalVars.js";
 import { useAnyUser } from "@/Hooks/useUser.js";
 import { MdGroup, MdNotifications, MdBlock, MdDelete } from "react-icons/md";
+import { useState } from "react";
+import apiClient from "@/utils/Axios.js";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import useToken from "@/Hooks/useToken.js";
 
 const ChatInfo = () => {
     const { selectedChat, conversations } = useAppSelector((s) => s.Chat);
+    const ws = useAppSelector((s) => s.GlobalVars.ws);
     const dispatch = useAppDispatch();
 
     const selectedConv = conversations.find((conv) => {
@@ -18,6 +23,34 @@ const ChatInfo = () => {
 
     const closeInfo = () => {
         dispatch(ChatActions.setSelectedChat({ chatInfo: false }));
+    };
+
+    const [token] = useToken();
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const deleteChat = async () => {
+        if (!selectedChat?.id) return;
+
+        try {
+            setIsDeleting(true);
+
+            await apiClient.post("/conversation/leave",
+                { conversationId: selectedChat.id },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            dispatch(ChatActions.chatDeleted({ conversationId: selectedChat.id }));
+            dispatch(ChatActions.setSelectedChat(null));
+        } catch (error: any) {
+            console.error("Error leaving conversation:", error);
+            if (error.response) {
+                console.error("Error response data:", error.response.data);
+                console.error("Error response status:", error.response.status);
+            }
+            alert("Failed to delete chat. Please try again.");
+        } finally {
+            setIsDeleting(false);
+        }
     };
 
     if (!selectedConv) return null;
@@ -63,9 +96,19 @@ const ChatInfo = () => {
                             <MdBlock size={22} />
                             <span>Block Contact</span>
                         </div>
-                        <div className="item">
-                            <MdDelete size={22} />
-                            <span>Delete Chat</span>
+                        <div
+                            className={`item ${isDeleting ? "loading" : ""}`}
+                            onClick={!isDeleting ? deleteChat : undefined}
+                            style={{ cursor: isDeleting ? "not-allowed" : "pointer", opacity: isDeleting ? 0.6 : 1 }}
+                        >
+                            <div className={isDeleting ? "spin" : ""}>
+                                {isDeleting ? (
+                                    <AiOutlineLoading3Quarters size={22} />
+                                ) : (
+                                    <MdDelete size={22} />
+                                )}
+                            </div>
+                            <span>{isDeleting ? "Deleting..." : "Delete Chat"}</span>
                         </div>
                     </div>
                 </div>

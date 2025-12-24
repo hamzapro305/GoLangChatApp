@@ -5,6 +5,7 @@ import (
 	"mime/multipart"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -38,4 +39,25 @@ func (*storageRepo) UploadFile(file *multipart.FileHeader, saveFunc func(*multip
 	// Return file URL
 	fileUrl := fmt.Sprintf("http://localhost:3001/uploads/%s", fileName)
 	return fileUrl, nil
+}
+
+func (*storageRepo) DeleteFile(fileUrl string) error {
+	fmt.Println("StorageRepo: DeleteFile called for:", fileUrl)
+	// Extract filename from URL
+	// URL format: http://localhost:3001/uploads/filename.ext
+	parts := strings.Split(fileUrl, "/")
+	if len(parts) == 0 {
+		return fmt.Errorf("invalid file URL")
+	}
+	fileName := parts[len(parts)-1]
+	filePath := filepath.Join("./uploads", fileName)
+	fmt.Println("StorageRepo: Attempting to remove file at:", filePath)
+
+	err := os.Remove(filePath)
+	if err != nil && !os.IsNotExist(err) {
+		fmt.Println("StorageRepo: Failed to delete file:", err)
+		return fmt.Errorf("failed to delete file: %v", err)
+	}
+	fmt.Println("StorageRepo: File deleted successfully")
+	return nil
 }
