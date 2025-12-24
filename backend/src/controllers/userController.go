@@ -75,15 +75,50 @@ func (*userController) UploadUserProfile(c *fiber.Ctx) error {
 	defer src.Close()
 
 	return nil
+}
 
-	// // Generate unique filename
-	// fileName := fmt.Sprintf("profiles/%d-%s", time.Now().Unix(), file.Filename)
+type updateNameBody struct {
+	Name string `json:"name"`
+}
 
-	// // Upload to Firebase Storage
-	// downloadURL, err := config.StorageClient.uploadToFirebase(src, fileName)
-	// if err != nil {
-	// 	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to upload"})
-	// }
+func (*userController) UpdateName(c *fiber.Ctx) error {
+	body, err := utils.ParseBody[updateNameBody](c)
+	if err != nil {
+		return err
+	}
 
-	// return c.JSON(fiber.Map{"url": downloadURL})
+	claims, err := services.JwtService.GetClaims(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Unauthorized"})
+	}
+
+	err = services.UserService.UpdateUserName(claims.UserID, body.Name)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to update name"})
+	}
+
+	return c.JSON(fiber.Map{"message": "Name updated successfully"})
+}
+
+type updatePasswordBody struct {
+	Password string `json:"password"`
+}
+
+func (*userController) UpdatePassword(c *fiber.Ctx) error {
+	body, err := utils.ParseBody[updatePasswordBody](c)
+	if err != nil {
+		return err
+	}
+
+	claims, err := services.JwtService.GetClaims(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Unauthorized"})
+	}
+
+	err = services.UserService.UpdatePassword(claims.UserID, body.Password)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to update password"})
+	}
+
+	return c.JSON(fiber.Map{"message": "Password updated successfully"})
 }

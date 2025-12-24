@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useState, forwardRef } from "react";
 import { ChatNewMessage as ChatNewMessageT } from "@/@types/chat.js";
 import { motion } from "motion/react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
@@ -12,7 +12,7 @@ type Props = {
     Message: ChatNewMessageT;
 };
 
-const ChatNewMessage: FC<Props> = ({ Message }) => {
+const ChatNewMessage = forwardRef<HTMLDivElement, Props>(({ Message }, ref) => {
     const user = useAppSelector((s) => s.GlobalVars.user);
     const { selectedChat, conversations } = useAppSelector((s) => s.Chat);
     const isMine = user?.id === Message.senderId;
@@ -39,6 +39,7 @@ const ChatNewMessage: FC<Props> = ({ Message }) => {
 
     return (
         <motion.div
+            ref={ref}
             className={`msg ${isMine ? "mine" : ""}`}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -102,6 +103,6 @@ const ChatNewMessage: FC<Props> = ({ Message }) => {
             </motion.div>
         </motion.div>
     );
-};
+});
 
 export default ChatNewMessage;

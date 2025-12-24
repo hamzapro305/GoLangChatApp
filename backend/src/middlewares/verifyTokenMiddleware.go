@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -26,7 +25,6 @@ func ProtectedRoute() fiber.Handler {
 		// Verify the token using VerifyToken function
 		claims, err := services.JwtService.VerifyToken(tokenString)
 		if err != nil {
-			fmt.Printf("ProtectedRoute: Invalid token [%s]: %v\n", tokenString, err)
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"error": "Invalid or expired token",
 			})

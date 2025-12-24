@@ -88,5 +88,36 @@ func (*userRepo) CreateUser(user models.User) error {
 
 	_, err := models.UserCollection.InsertOne(ctx, user)
 	return err
+}
 
+func (*userRepo) UpdateUserName(userID string, newName string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), config.DatabaseTimeLimit)
+	defer cancel()
+
+	objID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": objID}
+	update := bson.M{"$set": bson.M{"name": newName}}
+
+	_, err = models.UserCollection.UpdateOne(ctx, filter, update)
+	return err
+}
+
+func (*userRepo) UpdatePassword(userID string, hashedPassword []byte) error {
+	ctx, cancel := context.WithTimeout(context.Background(), config.DatabaseTimeLimit)
+	defer cancel()
+
+	objID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": objID}
+	update := bson.M{"$set": bson.M{"password": hashedPassword}}
+
+	_, err = models.UserCollection.UpdateOne(ctx, filter, update)
+	return err
 }

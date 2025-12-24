@@ -1,30 +1,277 @@
 @use "@/sass/global_req" as *;
 
 .userProfile-modal {
-    @include glassmorphism();
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: 1000;
-    color: white;
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
 
     .profile-settings {
         width: 100%;
         height: 100%;
         display: grid;
-        grid-template-columns: 300px 1fr;
+        grid-template-columns: 1fr 2fr;
+        max-width: 1200px;
+        max-height: 800px;
+        @include glassmorphism();
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 
         .settings-sidebar {
-            background-color: rgba(255, 255, 255, 0.03);
-            border-right: 1px solid $glass-border;
-            padding: 40px 20px;
+            background-color: rgba(255, 255, 255, 0.02);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 60px 20px 40px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+
+            .sidebar-header {
+                font-size: 0.75rem;
+                font-weight: 800;
+                color: $text-secondary;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                margin-bottom: 8px;
+            }
+
+            .sidebar-item {
+                padding: 10px 16px;
+                border-radius: 8px;
+                font-size: 0.95rem;
+                font-weight: 500;
+                color: $text-secondary;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+
+                &:hover {
+                    background: rgba(255, 255, 255, 0.05);
+                    color: $text-primary;
+                }
+
+                &.active {
+                    background: rgba(255, 255, 255, 0.1);
+                    color: white;
+                }
+
+                &.logout {
+                    margin-top: auto;
+                    color: #ef4444;
+
+                    &:hover {
+                        background: rgba(239, 68, 68, 0.1);
+                        color: #f87171;
+                    }
+                }
+            }
         }
 
         .panel {
-            padding: 40px;
-            background-color: $bg-dark;
+            background-color: rgba(15, 23, 42, 0.5);
+            padding: 60px 80px;
+            overflow-y: auto;
+            position: relative;
+
+            .close-btn {
+                position: absolute;
+                top: 30px;
+                right: 30px;
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                color: $text-secondary;
+
+                &:hover {
+                    background: rgba(255, 255, 255, 0.1);
+                    color: white;
+                    transform: rotate(90deg);
+                }
+            }
+
+            h2 {
+                font-size: 1.5rem;
+                font-weight: 700;
+                margin-bottom: 32px;
+            }
+
+            .user-card {
+                background: rgba(255, 255, 255, 0.03);
+                border: 1px solid rgba(255, 255, 255, 0.05);
+                border-radius: 16px;
+                padding: 24px;
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+
+                .profile-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 20px;
+
+                    .avatar-container {
+                        position: relative;
+                        width: 80px;
+                        height: 80px;
+
+                        img {
+                            width: 100%;
+                            height: 100%;
+                            border-radius: 20px;
+                            object-fit: cover;
+                            border: 2px solid $purple;
+                        }
+
+                        .edit-overlay {
+                            position: absolute;
+                            inset: 0;
+                            border-radius: 20px;
+                            background: rgba(0, 0, 0, 0.4);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            opacity: 0;
+                            transition: opacity 0.2s ease;
+                            cursor: pointer;
+
+                            &:hover {
+                                opacity: 1;
+                            }
+                        }
+                    }
+
+                    .names {
+                        .full-name {
+                            font-size: 1.25rem;
+                            font-weight: 700;
+                        }
+
+                        .email {
+                            font-size: 0.9rem;
+                            color: $text-secondary;
+                        }
+                    }
+                }
+
+                .card-section {
+                    border-top: 1px solid rgba(255, 255, 255, 0.05);
+                    padding-top: 20px;
+
+                    .label {
+                        font-size: 0.75rem;
+                        font-weight: 800;
+                        color: $text-secondary;
+                        text-transform: uppercase;
+                        margin-bottom: 8px;
+                    }
+
+                    .value-row {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+
+                        .value {
+                            font-weight: 500;
+                        }
+
+                        .immutable-badge {
+                            font-size: 0.7rem;
+                            background: rgba(255, 255, 255, 0.1);
+                            padding: 4px 10px;
+                            border-radius: 4px;
+                            color: $text-secondary;
+                            font-weight: 600;
+                            text-transform: uppercase;
+                        }
+
+                        .edit-input-group {
+                            display: flex;
+                            align-items: center;
+                            gap: 12px;
+                            flex: 1;
+
+                            input {
+                                flex: 1;
+                                background: rgba(0, 0, 0, 0.2);
+                                border: 1px solid rgba(255, 255, 255, 0.1);
+                                padding: 8px 12px;
+                                border-radius: 6px;
+                                color: white;
+                                font-size: 0.9rem;
+                                outline: none;
+
+                                &:focus {
+                                    border-color: $purple;
+                                }
+                            }
+
+                            .actions {
+                                display: flex;
+                                gap: 8px;
+
+                                button {
+                                    width: 32px;
+                                    height: 32px;
+                                    padding: 0;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    border-radius: 6px;
+
+                                    &.confirm {
+                                        background: $purple;
+                                        color: white;
+
+                                        &:hover {
+                                            background: darken($purple, 10%);
+                                        }
+                                    }
+
+                                    &.cancel {
+                                        background: rgba(255, 255, 255, 0.1);
+                                        color: white;
+
+                                        &:hover {
+                                            background: rgba(255, 255, 255, 0.2);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        button {
+                            all: unset;
+                            background: rgba(255, 255, 255, 0.05);
+                            padding: 6px 16px;
+                            border-radius: 6px;
+                            font-size: 0.85rem;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: all 0.2s ease;
+
+                            &:hover {
+                                background: rgba(255, 255, 255, 0.1);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

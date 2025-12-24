@@ -73,3 +73,15 @@ func ValidateUser(email string, password string) (*models.User, error) {
 	// Return the user if everything is fine
 	return user, nil
 }
+
+func (*userService) UpdateUserName(userID string, newName string) error {
+	return repos.UserRepo.UpdateUserName(userID, newName)
+}
+
+func (*userService) UpdatePassword(userID string, newPassword string) error {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.MinCost)
+	if err != nil {
+		return err
+	}
+	return repos.UserRepo.UpdatePassword(userID, hashedPassword)
+}

@@ -129,32 +129,25 @@ type leaveConversationBody struct {
 }
 
 func (*conversationController) LeaveConversation(c *fiber.Ctx) error {
-	fmt.Println("LeaveConversation called")
 	body, parseError := utils.ParseBody[leaveConversationBody](c)
 	if parseError != nil {
-		fmt.Println("LeaveConversation: ParseBody error:", parseError)
 		return parseError
 	}
-	fmt.Printf("LeaveConversation: Bodyparsed: %+v\n", body)
 
 	userClaims, err := services.JwtService.GetClaims(c)
 	if err != nil {
-		fmt.Println("LeaveConversation: GetClaims error:", err)
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": "Unauthorized user",
 		})
 	}
-	fmt.Printf("LeaveConversation: UserID from claims: %s\n", userClaims.UserID)
 
 	err = services.ConversationService.LeaveConversation(body.ConversationID, userClaims.UserID)
 	if err != nil {
-		fmt.Println("LeaveConversation: Service error:", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Could not leave conversation",
 		})
 	}
 
-	fmt.Println("LeaveConversation: Success")
 	return c.JSON(fiber.Map{
 		"message":        "Successfully left conversation",
 		"conversationId": body.ConversationID,

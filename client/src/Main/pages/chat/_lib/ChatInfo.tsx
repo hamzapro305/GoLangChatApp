@@ -120,6 +120,12 @@ const ChatInfo = () => {
 const ChatProfileInfo = ({ selectedConv }: { selectedConv: any }) => {
     const CurrentUser = useAppSelector((s) => s.GlobalVars.user) as User;
 
+    const requiredParticipant = selectedConv.isGroup ? { userId: "" } : UserService.GetChatParticipant(
+        CurrentUser,
+        selectedConv as SimpleConversation
+    );
+    const queryUser = useAnyUser(requiredParticipant.userId);
+
     if (selectedConv.isGroup) {
         return (
             <div className="main-profile">
@@ -131,12 +137,6 @@ const ChatProfileInfo = ({ selectedConv }: { selectedConv: any }) => {
             </div>
         );
     }
-
-    const requiredParticipant = UserService.GetChatParticipant(
-        CurrentUser,
-        selectedConv as SimpleConversation
-    );
-    const queryUser = useAnyUser(requiredParticipant.userId);
 
     return (
         <div className="main-profile">

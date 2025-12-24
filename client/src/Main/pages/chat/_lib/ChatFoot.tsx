@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { MdOutlineEmojiEmotions, MdFormatUnderlined } from "react-icons/md";
 import { GrAttachment } from "react-icons/gr";
 import { AnimatePresence, motion } from "motion/react";
@@ -136,21 +136,23 @@ const ChatFoot = () => {
         }
     };
 
+    const extensions = useMemo(() => [
+        StarterKit,
+        Underline,
+        Link.configure({
+            openOnClick: false,
+            HTMLAttributes: {
+                rel: 'noopener noreferrer',
+                target: '_blank',
+            },
+        }),
+        Placeholder.configure({
+            placeholder: 'Type Message...',
+        }),
+    ], []);
+
     const editor = useEditor({
-        extensions: [
-            StarterKit,
-            Underline,
-            Link.configure({
-                openOnClick: false,
-                HTMLAttributes: {
-                    rel: 'noopener noreferrer',
-                    target: '_blank',
-                },
-            }),
-            Placeholder.configure({
-                placeholder: 'Type Message...',
-            }),
-        ],
+        extensions: extensions,
         content: '',
         onUpdate: ({ editor }) => {
             const html = editor.getHTML();

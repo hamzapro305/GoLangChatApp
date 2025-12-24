@@ -34,6 +34,9 @@ const AuthPage = () => {
         <div className="auth-page">
             <div className="auth-page-wrapper">
                 <div className="title">Chat App</div>
+                <div className="subtitle">
+                    {isLogin ? "Welcome back! Please login to your account." : "Join us! Create an account to start chatting."}
+                </div>
                 {isLogin ? (
                     <LoginForm setToken={setToken} />
                 ) : (
@@ -43,7 +46,7 @@ const AuthPage = () => {
                     className="change"
                     onClick={() => setIsLogin((p) => !p)}
                 >
-                    {isLogin ? "don't have account?" : "already have account?"}
+                    {isLogin ? "don't have account? register here" : "already have account? login here"}
                 </button>
             </div>
         </div>
@@ -54,8 +57,11 @@ type SetTokenT = FC<{ setToken: (token: string) => void }>;
 const LoginForm: SetTokenT = ({ setToken }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const SubmitLogin = async () => {
+        if (!email || !password) return Toast.ErrorToast("Please fill all fields");
+        setLoading(true);
         try {
             const data = await Auth.Login(email, password);
 
@@ -67,13 +73,16 @@ const LoginForm: SetTokenT = ({ setToken }) => {
             }
         } catch (error) {
             console.error("Unexpected error in SubmitLogin:", error);
+            Toast.ErrorToast("Something went wrong");
+        } finally {
+            setLoading(false);
         }
     };
     return (
         <div className="form">
             <input
                 type="email"
-                placeholder="Email"
+                placeholder="Email Address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
             />
@@ -83,8 +92,8 @@ const LoginForm: SetTokenT = ({ setToken }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
             />
-            <button className="btn-global" onClick={SubmitLogin}>
-                Login
+            <button className="btn-global" onClick={SubmitLogin} disabled={loading}>
+                {loading ? <div className="loader"></div> : "Login"}
             </button>
         </div>
     );
@@ -93,8 +102,11 @@ const RegisterForm: SetTokenT = ({ setToken }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [userName, setUserName] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const SubmitRegister = async () => {
+        if (!email || !password || !userName) return Toast.ErrorToast("Please fill all fields");
+        setLoading(true);
         try {
             const data = await Auth.Register(userName, email, password);
 
@@ -106,21 +118,24 @@ const RegisterForm: SetTokenT = ({ setToken }) => {
             }
         } catch (error) {
             console.error("Unexpected error in SubmitRegister:", error);
+            Toast.ErrorToast("Something went wrong");
+        } finally {
+            setLoading(false);
         }
     };
     return (
         <div className="form">
             <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-            />
-            <input
                 type="text"
-                placeholder="UserName"
+                placeholder="Username"
                 value={userName}
                 onChange={(e) => setUserName(e.target.value)}
+            />
+            <input
+                type="email"
+                placeholder="Email Address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
             />
             <input
                 type="password"
@@ -128,8 +143,8 @@ const RegisterForm: SetTokenT = ({ setToken }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
             />
-            <button className="btn-global" onClick={SubmitRegister}>
-                Register
+            <button className="btn-global" onClick={SubmitRegister} disabled={loading}>
+                {loading ? <div className="loader"></div> : "Register"}
             </button>
         </div>
     );

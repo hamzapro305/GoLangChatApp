@@ -131,13 +131,11 @@ func (*conversationRepo) AddParticipantToConversation(conversationID string, use
 }
 
 func (*conversationRepo) LeaveConversation(conversationID string, userID string) error {
-	fmt.Printf("Repo: LeaveConversation called for conv: %s, user: %s\n", conversationID, userID)
 	ctx, cancel := context.WithTimeout(context.Background(), config.DatabaseTimeLimit)
 	defer cancel()
 
 	convID, err := primitive.ObjectIDFromHex(conversationID)
 	if err != nil {
-		fmt.Println("Repo: LeaveConversation: Invalid conversationID:", err)
 		return err
 	}
 
@@ -146,14 +144,8 @@ func (*conversationRepo) LeaveConversation(conversationID string, userID string)
 		"$set": bson.M{"participants.$.leftAt": time.Now()},
 	}
 
-	result, err := models.ConversationCollection.UpdateOne(ctx, filter, update)
-	if err != nil {
-		fmt.Println("Repo: LeaveConversation: DB Update error:", err)
-		return err
-	}
-	fmt.Printf("Repo: LeaveConversation: Update result: %+v\n", result)
-
-	return nil
+	_, err = models.ConversationCollection.UpdateOne(ctx, filter, update)
+	return err
 }
 
 func (*conversationRepo) IsUserInConversation(conversationID string, userID string) bool {

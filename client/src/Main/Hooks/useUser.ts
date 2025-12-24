@@ -15,6 +15,7 @@ const useAnyUser = (userId: string) => {
             return UserService.fetchUserById(userId, token as string);
         },
         staleTime: Infinity,
+        enabled: !!userId,
         placeholderData: {
             createdAt: "",
             email: "User name",

@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useState, forwardRef } from "react";
 import { motion } from "motion/react";
 import { BiDotsVertical } from "react-icons/bi";
 import { MdDoneAll } from "react-icons/md";
@@ -12,7 +12,7 @@ type Props = {
     Message: ChatMessageType;
 };
 
-const ChatMessage: FC<Props> = ({ Message }) => {
+const ChatMessage = forwardRef<HTMLDivElement, Props>(({ Message }, ref) => {
     const user = useAppSelector((s) => s.GlobalVars.user);
     const { selectedChat, conversations } = useAppSelector((s) => s.Chat);
     const isMine = user?.id === Message.senderId;
@@ -34,6 +34,7 @@ const ChatMessage: FC<Props> = ({ Message }) => {
 
     return (
         <motion.div
+            ref={ref}
             className={`msg ${isMine ? "mine" : ""}`}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -111,6 +112,6 @@ const ChatMessage: FC<Props> = ({ Message }) => {
             </motion.div>
         </motion.div>
     );
-};
+});
 
 export default ChatMessage;
