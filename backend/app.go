@@ -20,13 +20,16 @@ func main() {
 	config.ConnectDB()
 	// config.InitFirebase()
 
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		BodyLimit: 100 * 1024 * 1024,
+	})
 
 	app.Use(cors.New())
 
 	middlewares.SetupMiddlewares(app)
 
 	routes.SetupRoutes(app)
+	app.Static("/uploads", "./uploads")
 
 	app.Listen(":3001")
 }

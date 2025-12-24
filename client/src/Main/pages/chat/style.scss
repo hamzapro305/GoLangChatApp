@@ -261,7 +261,7 @@
                 height: 100%;
                 min-height: 0;
                 width: 0;
-                overflow: hidden;
+                overflow: visible; // Allows footer menus to overlap body
 
                 .current-chat-head {
                     padding: 10px 24px;
@@ -422,6 +422,80 @@
                                 }
                             }
 
+                            .media-content {
+                                max-width: 300px;
+                                margin: 4px 0;
+
+                                &.image {
+                                    img {
+                                        width: 100%;
+                                        border-radius: 12px;
+                                        display: block;
+                                        transition: transform 0.3s ease;
+                                        cursor: zoom-in;
+
+                                        &:hover {
+                                            filter: brightness(1.1);
+                                        }
+                                    }
+                                }
+
+                                &.video {
+                                    video {
+                                        width: 100%;
+                                        border-radius: 12px;
+                                        display: block;
+                                        outline: none;
+                                    }
+                                }
+
+                                &.file {
+                                    .file-attachment {
+                                        padding: 12px;
+                                        background: rgba(255, 255, 255, 0.05);
+                                        border: 1px solid rgba(255, 255, 255, 0.1);
+                                        border-radius: 12px;
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 12px;
+                                        text-decoration: none;
+                                        color: inherit;
+                                        transition: all 0.2s ease;
+
+                                        &:hover {
+                                            background: rgba(255, 255, 255, 0.08);
+                                            border-color: rgba(255, 255, 255, 0.2);
+                                        }
+
+                                        .file-info {
+                                            display: flex;
+                                            flex-direction: column;
+                                            gap: 2px;
+                                            overflow: hidden;
+
+                                            .file-name {
+                                                font-size: 0.85rem;
+                                                font-weight: 600;
+                                                white-space: nowrap;
+                                                overflow: hidden;
+                                                text-overflow: ellipsis;
+                                                color: #e2e8f0;
+                                            }
+
+                                            .file-size {
+                                                font-size: 0.75rem;
+                                                color: $text-secondary;
+                                            }
+                                        }
+
+                                        svg {
+                                            color: $purple;
+                                            flex-shrink: 0;
+                                        }
+                                    }
+                                }
+                            }
+
                             .meta {
                                 display: flex;
                                 align-items: center;
@@ -430,7 +504,7 @@
                                 font-size: 0.65rem;
                                 opacity: 0.8;
                                 align-self: flex-end;
-                                margin-top: 2px;
+                                margin-top: 4px;
 
                                 .time {
                                     font-weight: 500;
@@ -471,6 +545,9 @@
 
                 .chat-foot {
                     padding: 10px 40px 30px 40px;
+                    overflow: visible;
+                    position: relative;
+                    z-index: 100;
 
                     .tiptap-container {
                         @include glassmorphism();
@@ -478,7 +555,7 @@
                         padding: 0;
                         display: flex;
                         flex-direction: column;
-                        overflow: hidden;
+                        overflow: visible;
                         border: 1px solid $glass-border;
                         transition: all 0.3s ease;
 
@@ -561,6 +638,7 @@
                                 display: flex;
                                 gap: 18px;
                                 color: $text-secondary;
+                                position: relative;
 
                                 .emoji,
                                 .attachment {
@@ -570,6 +648,73 @@
 
                                     &:hover {
                                         color: $purple;
+                                    }
+                                }
+
+                                .attachment-menu {
+                                    position: absolute;
+                                    bottom: calc(100% + 15px); // Better positioning above the footer
+                                    left: 0;
+                                    @include glassmorphism();
+                                    background: rgba(15, 23, 42, 0.98);
+                                    border: 1px solid rgba(255, 255, 255, 0.15);
+                                    padding: 12px;
+                                    border-radius: 20px;
+                                    display: flex;
+                                    flex-direction: column;
+                                    gap: 8px;
+                                    width: 190px;
+                                    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6);
+                                    z-index: 1000;
+                                    transform-origin: bottom left;
+                                    backdrop-filter: blur(20px);
+
+                                    .item {
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 15px;
+                                        padding: 10px 15px;
+                                        border-radius: 12px;
+                                        cursor: pointer;
+                                        transition: background 0.2s ease;
+
+                                        &:hover {
+                                            background: rgba(255, 255, 255, 0.05);
+
+                                            .icon {
+                                                transform: scale(1.1);
+                                            }
+                                        }
+
+                                        .icon {
+                                            width: 38px;
+                                            height: 38px;
+                                            border-radius: 50%;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            color: white;
+                                            font-size: 1.1rem;
+                                            transition: transform 0.2s ease;
+
+                                            &.photos {
+                                                background: linear-gradient(135deg, #7c3aed, #6d28d9);
+                                            }
+
+                                            &.video {
+                                                background: linear-gradient(135deg, #ec4899, #db2777);
+                                            }
+
+                                            &.docs {
+                                                background: linear-gradient(135deg, #3b82f6, #2563eb);
+                                            }
+                                        }
+
+                                        span {
+                                            font-size: 0.9rem;
+                                            font-weight: 500;
+                                            color: #e2e8f0;
+                                        }
                                     }
                                 }
                             }

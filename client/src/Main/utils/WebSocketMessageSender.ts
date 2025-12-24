@@ -5,6 +5,7 @@ export class WebSocketMessageSender {
             conversationId: string;
             content: string;
             tempId: string;
+            type?: string;
         }
     ) => {
         const data = JSON.stringify({
@@ -12,6 +13,7 @@ export class WebSocketMessageSender {
             conversationId: message.conversationId,
             content: message.content,
             tempId: message.tempId,
+            messageType: message.type || "text",
         });
         ws.send(data);
     };

@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/hamzapro305/GoLangChatApp/src/controllers"
 	"github.com/hamzapro305/GoLangChatApp/src/middlewares"
 )
 
@@ -27,6 +28,8 @@ func SetupRoutes(app *fiber.App) {
 	messageRoutes := v1.Group("/message")
 	messageRoutes.Use(middlewares.ProtectedRoute())
 	SetupMessageRoutes(messageRoutes)
+
+	v1.Post("/upload", middlewares.ProtectedRoute(), controllers.UploadController.UploadFile)
 
 	webSocketRoute(v1)
 	setupAuthRoutes(v1)

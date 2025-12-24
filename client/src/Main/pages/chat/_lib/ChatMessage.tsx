@@ -2,6 +2,7 @@ import { FC, useState } from "react";
 import { motion } from "motion/react";
 import { BiDotsVertical } from "react-icons/bi";
 import { MdDoneAll } from "react-icons/md";
+import { FaFileAlt } from "react-icons/fa";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks.js";
 import { useAnyUser } from "@/Hooks/useUser.js";
 import { ChatActions } from "@/Redux/slices/ChatSlice.js";
@@ -55,10 +56,38 @@ const ChatMessage: FC<Props> = ({ Message }) => {
                         {queryUser?.name}
                     </div>
                 )}
-                <div
-                    className="content rich-text"
-                    dangerouslySetInnerHTML={{ __html: Message.content }}
-                />
+                {Message.type === "image" ? (
+                    <div className="media-content image">
+                        <img
+                            src={Message.content}
+                            alt="attachment"
+                            style={{ maxWidth: "100%", borderRadius: "8px", display: "block" }}
+                        />
+                    </div>
+                ) : Message.type === "video" ? (
+                    <div className="media-content video">
+                        <video
+                            src={Message.content}
+                            controls
+                            style={{ maxWidth: "100%", borderRadius: "8px", display: "block" }}
+                        />
+                    </div>
+                ) : Message.type === "file" ? (
+                    <div className="media-content file">
+                        <a href={Message.content} target="_blank" rel="noreferrer" className="file-attachment">
+                            <FaFileAlt size={24} />
+                            <div className="file-info">
+                                <span className="file-name">Attachment</span>
+                                <span className="file-size">Click to download</span>
+                            </div>
+                        </a>
+                    </div>
+                ) : (
+                    <div
+                        className="content rich-text"
+                        dangerouslySetInnerHTML={{ __html: Message.content }}
+                    />
+                )}
 
                 <div className="meta">
                     <span className="time">10:00 AM</span>

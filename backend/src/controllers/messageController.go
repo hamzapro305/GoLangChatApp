@@ -35,6 +35,7 @@ func (*messageController) GetConversationMessages(c *fiber.Ctx) error {
 type createMessageBody struct {
 	ConversationID string `json:"conversationId"`
 	Content        string `json:"content"`
+	MessageType    string `json:"messageType"`
 	TempId         string `json:"tempId"`
 }
 
@@ -49,10 +50,16 @@ func (*messageController) CreateConversationMessages(
 		return
 	}
 
+	msgType := body.MessageType
+	if msgType == "" {
+		msgType = "text"
+	}
+
 	msg, err := services.MessageService.CreateMessage(
 		body.ConversationID,
 		userClaims.UserID,
 		body.Content,
+		msgType,
 	)
 	if err != nil {
 		c.WriteJSON(fiber.Map{

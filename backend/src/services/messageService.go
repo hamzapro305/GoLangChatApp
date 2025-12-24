@@ -16,12 +16,14 @@ func (*messageService) CreateMessage(
 	ConversationID string,
 	SenderID string,
 	Content string,
+	Type string,
 ) (*models.Message, error) {
 	var msg models.Message = models.Message{
 		ID:             primitive.NewObjectID(),
 		ConversationID: ConversationID,
 		SenderID:       SenderID,
 		Content:        Content,
+		Type:           Type,
 		CreatedAt:      time.Now(),
 	}
 	err := repos.MessageRepo.CreateMessage(msg)

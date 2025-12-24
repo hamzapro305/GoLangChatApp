@@ -26,6 +26,7 @@ type ChatMessage = {
     conversationId: string;
     senderId: string;
     content: string;
+    type?: "text" | "image" | "video" | "file";
     createdAt: string;
 };
 
@@ -35,6 +36,7 @@ type ChatNewMessage = {
     conversationId: string;
     senderId: string;
     content: string;
+    type?: "text" | "image" | "video" | "file";
 };
 
 export {

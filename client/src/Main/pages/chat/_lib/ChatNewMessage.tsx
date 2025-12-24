@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { RxCrossCircled } from "react-icons/rx";
 import { MdDoneAll } from "react-icons/md";
+import { FaFileAlt } from "react-icons/fa";
 import { useAppSelector } from "@/Redux/Hooks.js";
 import { useAnyUser } from "@/Hooks/useUser.js";
 
@@ -60,10 +61,37 @@ const ChatNewMessage: FC<Props> = ({ Message }) => {
                         {User?.name}
                     </div>
                 )}
-                <div
-                    className="content rich-text"
-                    dangerouslySetInnerHTML={{ __html: Message.content }}
-                />
+                {Message.type === "image" ? (
+                    <div className="media-content image">
+                        <img
+                            src={Message.content}
+                            alt="attachment"
+                            style={{ maxWidth: "100%", borderRadius: "8px", display: "block" }}
+                        />
+                    </div>
+                ) : Message.type === "video" ? (
+                    <div className="media-content video">
+                        <video
+                            src={Message.content}
+                            style={{ maxWidth: "100%", borderRadius: "8px", display: "block" }}
+                        />
+                    </div>
+                ) : Message.type === "file" ? (
+                    <div className="media-content file">
+                        <div className="file-attachment">
+                            <FaFileAlt size={24} />
+                            <div className="file-info">
+                                <span className="file-name">Attachment</span>
+                                <span className="file-size">Uploading...</span>
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    <div
+                        className="content rich-text"
+                        dangerouslySetInnerHTML={{ __html: Message.content }}
+                    />
+                )}
 
                 <div className="meta">
                     <span className="time">Just now</span>
