@@ -125,13 +125,13 @@ const ChatFoot = () => {
         }
     }, [editor, ws, selectedChat, user, dispatch]);
 
-    // Handle Enter to send
     useEffect(() => {
         if (editor) {
             editor.setOptions({
                 editorProps: {
                     handleKeyDown: (view, event) => {
-                        if (event.key === 'Enter' && !event.shiftKey) {
+                        if (event.code === 'Enter' && !event.shiftKey) {
+                            event.preventDefault(); // Crucial to prevent TipTap from adding a new line
                             SendMessage();
                             return true;
                         }

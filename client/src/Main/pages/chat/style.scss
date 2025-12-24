@@ -233,6 +233,9 @@
             position: relative;
             display: flex;
             flex-direction: column;
+            min-width: 0; // Prevent flex item from expanding beyond parent
+            min-height: 0;
+            overflow: hidden;
 
             .chat-unselected {
                 flex: 1;
@@ -254,6 +257,8 @@
                 display: flex;
                 flex-direction: column;
                 height: 100%;
+                min-height: 0;
+                overflow: hidden;
 
                 .current-chat-head {
                     padding: 16px 30px;
@@ -307,6 +312,8 @@
                     display: flex;
                     flex-direction: column;
                     gap: 12px;
+                    scroll-behavior: smooth; // Standard smooth scroll
+                    min-height: 0; // Crucial for flex child scroll
 
                     &::-webkit-scrollbar {
                         width: 6px;
@@ -319,7 +326,9 @@
 
                     .msg {
                         display: flex;
-                        margin-bottom: 8px;
+                        width: 100%;
+                        position: relative;
+                        margin-bottom: 4px;
 
                         &.mine {
                             justify-content: flex-end;
@@ -327,11 +336,16 @@
                             .msg-wrapper {
                                 @include nebula-gradient();
                                 color: white;
-                                border-bottom-right-radius: 4px;
+                                border-radius: 18px 18px 4px 18px;
 
-                                .name {
-                                    display: none;
+                                .meta {
+                                    color: rgba(255, 255, 255, 0.7);
                                 }
+                            }
+
+                            .message-actions {
+                                left: auto;
+                                right: calc(100% + 12px);
                             }
                         }
 
@@ -339,30 +353,109 @@
                             justify-content: flex-start;
 
                             .msg-wrapper {
-                                background: rgba(255, 255, 255, 0.05);
-                                border: 1px solid $glass-border;
-                                border-bottom-left-radius: 4px;
+                                @include glassmorphism();
+                                background: rgba(255, 255, 255, 0.08);
+                                border: 1px solid rgba(255, 255, 255, 0.1);
+                                color: white;
+                                border-radius: 18px 18px 18px 4px;
+                            }
+
+                            .message-actions {
+                                left: calc(100% + 12px);
+                                right: auto;
+                            }
+                        }
+
+                        .profile {
+                            width: 32px;
+                            height: 32px;
+                            flex-shrink: 0;
+                            align-self: flex-end;
+                            margin-bottom: 4px;
+                            margin-right: 8px;
+
+                            img {
+                                width: 100%;
+                                height: 100%;
+                                border-radius: 8px;
+                                object-fit: cover;
+                                border: 1px solid rgba(255, 255, 255, 0.1);
                             }
                         }
 
                         .msg-wrapper {
-                            max-width: 60%;
-                            padding: 12px 18px;
-                            border-radius: 18px;
+                            max-width: 70%;
+                            padding: 10px 14px;
                             position: relative;
-                            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-                            font-size: 0.95rem;
-                            line-height: 1.5;
+                            display: flex;
+                            flex-direction: column;
+                            gap: 2px;
+                            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 
-                            .profile {
-                                display: none; // Cleaner look without repeated avatars
+                            .sender-name {
+                                pointer-events: none;
                             }
 
-                            .status {
+                            .content {
+                                font-size: 0.92rem;
+                                line-height: 1.4;
+                                word-wrap: break-word;
+
+                                &.rich-text {
+                                    p {
+                                        margin: 0;
+                                    }
+
+                                    ul,
+                                    ol {
+                                        margin: 5px 0;
+                                        padding-left: 18px;
+                                    }
+                                }
+                            }
+
+                            .meta {
+                                display: flex;
+                                align-items: center;
+                                justify-content: flex-end;
+                                gap: 6px;
                                 font-size: 0.65rem;
-                                opacity: 0.6;
-                                margin-top: 4px;
-                                text-align: right;
+                                opacity: 0.8;
+                                align-self: flex-end;
+                                margin-top: 2px;
+
+                                .time {
+                                    font-weight: 500;
+                                }
+
+                                .status-icon {
+                                    display: flex;
+                                    align-items: center;
+                                    color: white;
+                                }
+                            }
+                        }
+
+                        .message-actions {
+                            position: absolute;
+                            top: 50%;
+                            transform: translateY(-50%);
+                            @include glassmorphism();
+                            width: 32px;
+                            height: 32px;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            cursor: pointer;
+                            color: $text-secondary;
+                            transition: all 0.2s ease;
+                            z-index: 10;
+                            border: 1px solid $glass-border;
+
+                            &:hover {
+                                color: white;
+                                background: rgba(255, 255, 255, 0.15);
                             }
                         }
                     }
@@ -483,25 +576,46 @@
         }
     }
 }
+
 // Global Rich Text Styling (used in Message Bubbles)
 .rich-text {
-    p { margin: 0; }
-    
-    b, strong { font-weight: 700; color: white; }
-    i, em { font-style: italic; }
-    u { text-decoration: underline; }
-    
-    ul, ol {
+    p {
+        margin: 0;
+    }
+
+    b,
+    strong {
+        font-weight: 700;
+        color: white;
+    }
+
+    i,
+    em {
+        font-style: italic;
+    }
+
+    u {
+        text-decoration: underline;
+    }
+
+    ul,
+    ol {
         margin: 8px 0;
         padding-left: 20px;
-        li { margin-bottom: 4px; }
+
+        li {
+            margin-bottom: 4px;
+        }
     }
-    
+
     a {
         color: #7c3aed;
         text-decoration: underline;
         opacity: 0.9;
-        &:hover { opacity: 1; }
+
+        &:hover {
+            opacity: 1;
+        }
     }
 
     code {

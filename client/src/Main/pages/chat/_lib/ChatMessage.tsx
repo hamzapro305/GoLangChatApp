@@ -10,13 +10,18 @@ import { ChatMessage as ChatMessageType } from "@/@types/chat.js";
 type Props = {
     Message: ChatMessageType;
 };
+
 const ChatMessage: FC<Props> = ({ Message }) => {
     const user = useAppSelector((s) => s.GlobalVars.user);
+    const { selectedChat, conversations } = useAppSelector((s) => s.Chat);
     const isMine = user?.id === Message.senderId;
     const [isHovering, setIsHovering] = useState(false);
 
     const dispatch = useAppDispatch();
     const queryUser = useAnyUser(Message.senderId);
+
+    const selectedConversation = conversations.find(c => c.conversation.id === selectedChat?.id)?.conversation;
+    const isGroup = selectedConversation?.isGroup;
 
     const OpenMessageOptions = () => {
         dispatch(
@@ -25,8 +30,6 @@ const ChatMessage: FC<Props> = ({ Message }) => {
             })
         );
     };
-
-    const msgXPositttion = isHovering ? 70 : 60;
 
     return (
         <motion.div
@@ -37,26 +40,40 @@ const ChatMessage: FC<Props> = ({ Message }) => {
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
         >
+            {!isMine && isGroup && (
+                <div className="profile">
+                    <img src={`https://api.dicebear.com/7.x/initials/svg?seed=${queryUser?.name || "U"}`} alt="" />
+                </div>
+            )}
             <motion.div
                 layout
                 className={`msg-wrapper ${isMine ? "mine" : ""}`}
-                whileHover={{ scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
             >
+                {!isMine && isGroup && (
+                    <div className="sender-name" style={{ fontSize: "0.75rem", fontWeight: "600", color: "#a78bfa", marginBottom: "2px" }}>
+                        {queryUser?.name}
+                    </div>
+                )}
                 <div
                     className="content rich-text"
                     dangerouslySetInnerHTML={{ __html: Message.content }}
                 />
-                <div className="status">
-                    <div className="icon">
-                        <MdDoneAll color={isMine ? "#fff" : "#10b981"} />
-                    </div>
+
+                <div className="meta">
+                    <span className="time">10:00 AM</span>
+                    {isMine && (
+                        <div className="status-icon">
+                            <MdDoneAll size={14} />
+                        </div>
+                    )}
                 </div>
+
                 {isHovering && (
                     <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="option-icon"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="message-actions"
                         onClick={OpenMessageOptions}
                     >
                         <BiDotsVertical />

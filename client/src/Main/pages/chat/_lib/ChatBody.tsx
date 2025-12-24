@@ -68,11 +68,13 @@ const ChatBody = () => {
         if (chatBodyRef.current) {
             chatBodyRef.current.scrollTo({
                 top: chatBodyRef.current.scrollHeight,
+                behavior: "auto", // Immediate scroll on load/change
             });
         }
     }, [
         GetSelectedConversationChat()?.messages.length,
         GetSelectedConversationChat()?.newMessages.length,
+        selectedChat?.id // Also scroll when changing chat
     ]);
 
     useEffect(() => {
@@ -89,28 +91,38 @@ const ChatBody = () => {
         return () => {
             window.removeEventListener("keydown", handleKeyPress);
         };
-    }, []);
+    }, [selectedChat, dispatch]);
 
     return (
-        <motion.div className="chat-body">
+        <motion.div
+            className="chat-body"
+            ref={chatBodyRef}
+            onScroll={handleScroll}
+            style={{
+                flex: 1,
+                overflowY: "auto",
+                display: "flex",
+                flexDirection: "column",
+                position: "relative"
+            }}
+        >
             {!isAtBottom && (
                 <div className="down-arrow-to-bottom" onClick={scrollToBottom}>
                     <CiCircleChevDown />
                 </div>
             )}
             <motion.div className="underline" style={{ scaleX }}></motion.div>
-            <div className="messages" ref={chatBodyRef}>
-                <AnimatePresence mode="sync" presenceAffectsLayout>
-                    {GetSelectedConversationChat()?.messages?.map((msg) => {
-                        return <ChatMessage Message={msg} key={msg.id} />;
-                    })}
-                    {GetSelectedConversationChatNewMessages()?.map((msg) => {
-                        return (
-                            <ChatNewMessage Message={msg} key={msg.tempId} />
-                        );
-                    })}
-                </AnimatePresence>
-            </div>
+
+            <AnimatePresence mode="popLayout" presenceAffectsLayout initial={false}>
+                {GetSelectedConversationChat()?.messages?.map((msg) => {
+                    return <ChatMessage Message={msg} key={msg.id} />;
+                })}
+                {GetSelectedConversationChatNewMessages()?.map((msg) => {
+                    return (
+                        <ChatNewMessage Message={msg} key={msg.tempId} />
+                    );
+                })}
+            </AnimatePresence>
         </motion.div>
     );
 };

@@ -4,6 +4,8 @@ import { GlobalVarsActions } from "@/Redux/slices/GlobalVars.js";
 import UserService from "@/utils/UserService.js";
 import React, { FC, useEffect } from "react";
 
+import GlobalLoading from "./GlobalLoading.js";
+
 type AuthCheckerT = FC<{ children: React.ReactNode }>;
 const AuthChecker: AuthCheckerT = ({ children }) => {
     const [token] = useToken();
@@ -32,7 +34,7 @@ const AuthChecker: AuthCheckerT = ({ children }) => {
         }
     }, [token]);
 
-    if (isLoading) return <div>Loading...</div>;
+    if (isLoading) return <GlobalLoading />;
 
     return children;
 };
