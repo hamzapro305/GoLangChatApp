@@ -11,7 +11,7 @@ type EmojiComponentT = FC<{
     onClose: () => void;
 }>;
 
-const EmojiComponent: EmojiComponentT = ({ pushToContent }) => {
+const EmojiComponent: EmojiComponentT = ({ pushToContent, onClose }) => {
     // const { emojiModal } = useAppSelector((s) => s.Chat);
     const [query, setQuery] = useState("");
 
@@ -19,11 +19,13 @@ const EmojiComponent: EmojiComponentT = ({ pushToContent }) => {
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as HTMLElement;
             if (
                 ref.current &&
-                !ref.current.contains(event.target as Node)
+                !ref.current.contains(target) &&
+                !target.closest(".emoji-toggle-btn")
             ) {
-                // onClose();
+                onClose();
             }
         };
 
@@ -31,7 +33,7 @@ const EmojiComponent: EmojiComponentT = ({ pushToContent }) => {
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, []);
+    }, [onClose]);
 
     return (
         <motion.div

@@ -122,7 +122,7 @@ const RenderConversationName: FC<{ chat: SingleChatT }> = ({ chat }) => {
             <div className="conv-wrapper">
                 <div className="profile">
                     <img
-                        src="https://www.shutterstock.com/image-vector/image-icon-600nw-211642900.jpg"
+                        src={`https://api.dicebear.com/7.x/initials/svg?seed=${chat.conversation.groupName}`}
                         alt=""
                     />
                 </div>
@@ -146,7 +146,7 @@ const RenderConversationName: FC<{ chat: SingleChatT }> = ({ chat }) => {
             <div className="conv-wrapper">
                 <div className="profile">
                     <img
-                        src="https://www.shutterstock.com/image-vector/image-icon-600nw-211642900.jpg"
+                        src={`https://api.dicebear.com/7.x/initials/svg?seed=${User?.name || "U"}`}
                         alt=""
                     />
                 </div>

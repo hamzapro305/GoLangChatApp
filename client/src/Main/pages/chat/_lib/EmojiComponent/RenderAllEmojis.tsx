@@ -1,32 +1,33 @@
 import AllEmojis from "@/utils/AllEmojis.js";
 import { motion } from "motion/react";
-import { FC } from "react";
+import { FC, useMemo, memo } from "react";
 
 type RenderAllEmojisT = FC<{
     query: string;
     pushToContent: (emoji: string) => void;
 }>;
-const RenderAllEmojis: RenderAllEmojisT = ({ pushToContent, query }) => {
+
+const RenderAllEmojis: RenderAllEmojisT = memo(({ pushToContent, query }) => {
+    const filteredEmojis = useMemo(() => {
+        const lowerQuery = query.toLowerCase();
+        return AllEmojis.filter((item) =>
+            item.name.toLowerCase().includes(lowerQuery)
+        );
+    }, [query]);
+
     return (
         <div className="emojis">
-            {AllEmojis.filter((item) => item.name.includes(query)).map(
-                (emoji) => {
-                    return (
-                        <motion.div
-                            className="emoji"
-                            key={emoji.emoji}
-                            onClick={() => pushToContent(emoji.emoji)}
-                            whileHover={{
-                                backgroundColor: "#6a309381",
-                            }}
-                        >
-                            {emoji.emoji}
-                        </motion.div>
-                    );
-                }
-            )}
+            {filteredEmojis.map((emoji) => (
+                <motion.div
+                    className="emoji"
+                    key={emoji.emoji}
+                    onClick={() => pushToContent(emoji.emoji)}
+                >
+                    {emoji.emoji}
+                </motion.div>
+            ))}
         </div>
     );
-};
+});
 
 export default RenderAllEmojis;

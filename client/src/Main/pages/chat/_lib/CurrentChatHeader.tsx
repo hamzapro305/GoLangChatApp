@@ -21,7 +21,7 @@ const CurrentChatHeader = () => {
                     <div className="user">
                         <div className="profile">
                             <img
-                                src="https://www.shutterstock.com/image-vector/image-icon-600nw-211642900.jpg"
+                                src={`https://api.dicebear.com/7.x/initials/svg?seed=${selectedConv.conversation.groupName}`}
                                 alt=""
                             />
                         </div>
@@ -87,7 +87,7 @@ const RenderConversationName: FC<{ conversation: SimpleConversation }> = ({
             <div className="user">
                 <div className="profile">
                     <img
-                        src="https://www.shutterstock.com/image-vector/image-icon-600nw-211642900.jpg"
+                        src={`https://api.dicebear.com/7.x/initials/svg?seed=${queryUser?.name || "U"}`}
                         alt=""
                     />
                 </div>

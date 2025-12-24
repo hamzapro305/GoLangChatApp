@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { MdOutlineEmojiEmotions } from "react-icons/md";
+import { MdOutlineEmojiEmotions, MdFormatUnderlined } from "react-icons/md";
 import { GrAttachment } from "react-icons/gr";
 import { AnimatePresence } from "motion/react";
 import { nanoid } from "@reduxjs/toolkit";
@@ -10,6 +10,8 @@ import useUser from "@/Hooks/useUser.js";
 import { ChatActions } from "@/Redux/slices/ChatSlice.js";
 import { ChatNewMessage } from "@/@types/chat.js";
 import { WebSocketMessageSender } from "@/utils/WebSocketMessageSender.js";
+import { GoBold, GoItalic, GoListUnordered } from "react-icons/go";
+import { IoSend } from "react-icons/io5";
 
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -150,38 +152,38 @@ const ChatFoot = () => {
                         onClick={() => editor?.chain().focus().toggleBold().run()}
                         className={editor?.isActive('bold') ? 'active' : ''}
                         title="Bold"
-                    ><b>B</b></button>
+                    ><GoBold /></button>
                     <button
                         onClick={() => editor?.chain().focus().toggleItalic().run()}
                         className={editor?.isActive('italic') ? 'active' : ''}
                         title="Italic"
-                    ><i>I</i></button>
+                    ><GoItalic /></button>
                     <button
                         onClick={() => editor?.chain().focus().toggleUnderline().run()}
                         className={editor?.isActive('underline') ? 'active' : ''}
                         title="Underline"
-                    ><u>U</u></button>
+                    ><MdFormatUnderlined /></button>
                     <button
                         onClick={() => editor?.chain().focus().toggleBulletList().run()}
                         className={editor?.isActive('bulletList') ? 'active' : ''}
                         title="Bullet List"
-                    >• List</button>
+                    ><GoListUnordered /></button>
                 </div>
 
                 <EditorContent editor={editor} className="tiptap-editor" />
 
                 <div className="options">
                     <div className="actions">
-                        <div className="emoji" onClick={toggleEmojiModal}>
+                        <div className="emoji emoji-toggle-btn" onClick={toggleEmojiModal}>
                             <MdOutlineEmojiEmotions />
                         </div>
                         <div className="attachment">
                             <GrAttachment />
                         </div>
                     </div>
-                    <button className="btn-global" onClick={SendMessage}>
-                        Submit
-                    </button>
+                    <div className="send-btn" onClick={SendMessage}>
+                        <IoSend size={20} />
+                    </div>
                 </div>
             </div>
             <AnimatePresence presenceAffectsLayout propagate mode="sync">
