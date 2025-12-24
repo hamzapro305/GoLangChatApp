@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"time"
 
 	"github.com/hamzapro305/GoLangChatApp/src/models"
@@ -17,6 +18,7 @@ func (*messageService) CreateMessage(
 	SenderID string,
 	Content string,
 	Type string,
+	ReplyTo string,
 ) (*models.Message, error) {
 	var msg models.Message = models.Message{
 		ID:             primitive.NewObjectID(),
@@ -25,6 +27,13 @@ func (*messageService) CreateMessage(
 		Content:        Content,
 		Type:           Type,
 		CreatedAt:      time.Now(),
+	}
+
+	if ReplyTo != "" {
+		replyToID, err := primitive.ObjectIDFromHex(ReplyTo)
+		if err == nil {
+			msg.ReplyTo = &replyToID
+		}
 	}
 	err := repos.MessageRepo.CreateMessage(msg)
 	if err != nil {
@@ -35,4 +44,22 @@ func (*messageService) CreateMessage(
 
 func (*messageService) GetConversationMessages(ConversationID string) ([]models.Message, error) {
 	return repos.MessageRepo.GetConversationMessages(ConversationID)
+}
+
+func (*messageService) DeleteMessage(messageID string, userID string) error {
+	msg, err := repos.MessageRepo.GetMessageById(messageID)
+	if err != nil {
+		return err
+	}
+
+	if msg.SenderID != userID {
+		return errors.New("unauthorized")
+	}
+
+	// Delete attachment if exists
+	if msg.AttachmentUrl != "" {
+		_ = repos.StorageRepo.DeleteFile(msg.AttachmentUrl)
+	}
+
+	return repos.MessageRepo.DeleteMessage(msg.ID)
 }

@@ -1,18 +1,22 @@
 import { FC, useState, forwardRef } from "react";
 import { ChatNewMessage as ChatNewMessageT } from "@/@types/chat.js";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { RxCrossCircled } from "react-icons/rx";
 import { MdDoneAll } from "react-icons/md";
 import { FaFileAlt } from "react-icons/fa";
-import { useAppSelector } from "@/Redux/Hooks.js";
+import { BiDotsVertical } from "react-icons/bi";
+import { useAppDispatch, useAppSelector } from "@/Redux/Hooks.js";
 import { useAnyUser } from "@/Hooks/useUser.js";
+import { ChatActions } from "@/Redux/slices/ChatSlice.js";
+import MessageOptions from "./MessageOptions/index.js";
 
 type Props = {
     Message: ChatNewMessageT;
 };
 
 const ChatNewMessage = forwardRef<HTMLDivElement, Props>(({ Message }, ref) => {
+    const dispatch = useAppDispatch();
     const user = useAppSelector((s) => s.GlobalVars.user);
     const { selectedChat, conversations } = useAppSelector((s) => s.Chat);
     const isMine = user?.id === Message.senderId;
@@ -21,6 +25,30 @@ const ChatNewMessage = forwardRef<HTMLDivElement, Props>(({ Message }, ref) => {
     const User = useAnyUser(Message.senderId);
     const selectedConversation = conversations.find(c => c.conversation.id === selectedChat?.id)?.conversation;
     const isGroup = selectedConversation?.isGroup;
+
+    const repliedMessage = Message.replyTo ? conversations
+        .find(c => c.conversation.id === selectedChat?.id)
+        ?.messages.find(m => m.id === Message.replyTo) : null;
+    const repliedUser = useAnyUser(repliedMessage?.senderId || "");
+
+    const OpenMessageOptions = () => {
+        dispatch(
+            ChatActions.setSelectedChat({
+                messageOptions: Message.tempId,
+            })
+        );
+    };
+
+    const scrollToMessage = (msgId: string) => {
+        const element = document.getElementById(`msg-${msgId}`);
+        if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "center" });
+            element.classList.add("highlight-flash");
+            setTimeout(() => {
+                element.classList.remove("highlight-flash");
+            }, 2000);
+        }
+    };
 
     const getStatusIcon = () => {
         switch (Message.status) {
@@ -40,6 +68,7 @@ const ChatNewMessage = forwardRef<HTMLDivElement, Props>(({ Message }, ref) => {
     return (
         <motion.div
             ref={ref}
+            id={`msg-${Message.tempId}`}
             className={`msg ${isMine ? "mine" : ""}`}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -57,6 +86,12 @@ const ChatNewMessage = forwardRef<HTMLDivElement, Props>(({ Message }, ref) => {
                 style={{ opacity: Message.status === "loading" ? 0.7 : 1 }}
                 transition={{ type: "spring", stiffness: 500, damping: 30 }}
             >
+                {repliedMessage && (
+                    <div className="replied-preview" onClick={() => scrollToMessage(repliedMessage.id)}>
+                        <span className="user-name">{repliedUser?.name || "Someone"}</span>
+                        <div className="preview-text" dangerouslySetInnerHTML={{ __html: repliedMessage.content }} />
+                    </div>
+                )}
                 {!isMine && isGroup && (
                     <div className="sender-name" style={{ fontSize: "0.75rem", fontWeight: "600", color: "#a78bfa", marginBottom: "2px" }}>
                         {User?.name}
@@ -67,14 +102,12 @@ const ChatNewMessage = forwardRef<HTMLDivElement, Props>(({ Message }, ref) => {
                         <img
                             src={Message.content}
                             alt="attachment"
-                            style={{ maxWidth: "100%", borderRadius: "8px", display: "block" }}
                         />
                     </div>
                 ) : Message.type === "video" ? (
                     <div className="media-content video">
                         <video
                             src={Message.content}
-                            style={{ maxWidth: "100%", borderRadius: "8px", display: "block" }}
                         />
                     </div>
                 ) : Message.type === "file" ? (
@@ -100,6 +133,18 @@ const ChatNewMessage = forwardRef<HTMLDivElement, Props>(({ Message }, ref) => {
                         {getStatusIcon()}
                     </div>
                 </div>
+
+                {isHovering && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="message-actions"
+                        onClick={OpenMessageOptions}
+                    >
+                        <BiDotsVertical />
+                    </motion.div>
+                )}
+
             </motion.div>
         </motion.div>
     );

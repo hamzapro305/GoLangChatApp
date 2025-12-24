@@ -1,3 +1,4 @@
+@use "sass:color";
 @use "@/sass/_global_req.scss" as *;
 
 .chat-page {
@@ -362,7 +363,7 @@
                         width: 100%;
                         height: 100%;
                         @include glassmorphism();
-                        background: rgba($bg-dark, 0.6);
+                        background: color.change($bg-dark, $alpha: 0.6);
                         display: flex;
                         align-items: center;
                         justify-content: center;
@@ -378,7 +379,7 @@
                             .spinner {
                                 width: 40px;
                                 height: 40px;
-                                border: 3px solid rgba($purple, 0.1);
+                                border: 3px solid color.change($purple, $alpha: 0.1);
                                 border-top-color: $purple;
                                 border-radius: 50%;
                                 animation: spin 0.8s linear infinite;
@@ -406,6 +407,10 @@
                                 color: white;
                                 border-radius: 16px 16px 4px 16px;
                                 max-width: 65%;
+
+                                &.highlight-flash {
+                                    animation: highlightFadeMine 2s ease-out;
+                                }
                             }
 
                             .message-actions {
@@ -422,6 +427,10 @@
                                 color: #e2e8f0;
                                 border-radius: 16px 16px 16px 4px;
                                 max-width: 65%;
+
+                                &.highlight-flash {
+                                    animation: highlightFadeOthers 2s ease-out;
+                                }
                             }
 
                             .message-actions {
@@ -456,6 +465,39 @@
                             gap: 2px;
                             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 
+                            .replied-preview {
+                                background: rgba(0, 0, 0, 0.2);
+                                padding: 6px 10px;
+                                border-radius: 8px;
+                                border-left: 3px solid #bc9bff;
+                                margin-bottom: 4px;
+                                font-size: 0.8rem;
+                                cursor: pointer;
+                                display: flex;
+                                flex-direction: column;
+                                gap: 2px;
+                                overflow: hidden;
+
+                                .user-name {
+                                    font-weight: 700;
+                                    color: #bc9bff;
+                                    font-size: 0.75rem;
+                                }
+
+                                .preview-text {
+                                    color: rgba(255, 255, 255, 0.7);
+                                    white-space: nowrap;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    max-width: 100%;
+
+                                    * {
+                                        margin: 0;
+                                        display: inline;
+                                    }
+                                }
+                            }
+
                             .sender-name {
                                 pointer-events: none;
                             }
@@ -479,33 +521,45 @@
                             }
 
                             .media-content {
-                                max-width: 300px;
                                 margin: 4px 0;
+                                border-radius: 12px;
+                                overflow: hidden;
+                                background: rgba(255, 255, 255, 0.05);
 
-                                &.image {
-                                    img {
+                                &.image,
+                                &.video {
+                                    width: 320px;
+                                    max-width: 100%;
+                                    aspect-ratio: 4 / 3;
+                                    position: relative;
+
+                                    img,
+                                    video {
                                         width: 100%;
-                                        border-radius: 12px;
+                                        height: 100%;
+                                        object-fit: cover;
                                         display: block;
+                                        border-radius: 12px;
                                         transition: transform 0.3s ease;
+                                    }
+
+                                    &.image img {
                                         cursor: zoom-in;
 
                                         &:hover {
                                             filter: brightness(1.1);
                                         }
                                     }
-                                }
 
-                                &.video {
-                                    video {
-                                        width: 100%;
-                                        border-radius: 12px;
-                                        display: block;
+                                    &.video video {
                                         outline: none;
                                     }
                                 }
 
                                 &.file {
+                                    width: 320px;
+                                    max-width: 100%;
+
                                     .file-attachment {
                                         padding: 12px;
                                         background: rgba(255, 255, 255, 0.05);
@@ -604,6 +658,71 @@
                     overflow: visible;
                     position: relative;
                     z-index: 100;
+
+                    .reply-bar {
+                        @include glassmorphism();
+                        margin-bottom: 10px;
+                        border-radius: 12px;
+                        padding: 10px 15px;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        gap: 15px;
+                        border-left: 4px solid $purple;
+                        overflow: hidden;
+
+                        .reply-content {
+                            display: flex;
+                            gap: 10px;
+                            flex: 1;
+                            overflow: hidden;
+
+                            .reply-info {
+                                display: flex;
+                                flex-direction: column;
+                                gap: 2px;
+                                overflow: hidden;
+
+                                .reply-user {
+                                    font-size: 0.75rem;
+                                    font-weight: 600;
+                                    color: $purple;
+                                }
+
+                                .reply-text {
+                                    font-size: 0.85rem;
+                                    color: $text-secondary;
+                                    white-space: nowrap;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    max-width: 100%;
+
+                                    * {
+                                        margin: 0;
+                                        display: inline;
+                                    }
+                                }
+                            }
+                        }
+
+                        .close-reply {
+                            background: transparent;
+                            border: none;
+                            color: $text-secondary;
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            padding: 5px;
+                            border-radius: 50%;
+                            transition: all 0.2s ease;
+
+                            &:hover {
+                                background: rgba(255, 255, 255, 0.1);
+                                color: white;
+                            }
+                        }
+                    }
 
                     .tiptap-container {
                         @include glassmorphism();
@@ -1240,4 +1359,28 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+@keyframes highlightFadeMine {
+    0% {
+        background: color.adjust(#7c3aed, $lightness: 20%);
+        box-shadow: 0 0 20px color.change(#7c3aed, $alpha: 0.5);
+    }
+
+    100% {
+        background: linear-gradient(135deg, #7c3aed, #6d28d9);
+        box-shadow: none;
+    }
+}
+
+@keyframes highlightFadeOthers {
+    0% {
+        background: rgba(255, 255, 255, 0.3);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+
+    100% {
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: none;
+    }
 }

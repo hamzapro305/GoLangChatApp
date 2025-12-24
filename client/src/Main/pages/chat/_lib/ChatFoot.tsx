@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { MdOutlineEmojiEmotions, MdFormatUnderlined } from "react-icons/md";
+import { MdOutlineEmojiEmotions, MdFormatUnderlined, MdClose } from "react-icons/md";
 import { GrAttachment } from "react-icons/gr";
 import { AnimatePresence, motion } from "motion/react";
 import { nanoid } from "@reduxjs/toolkit";
@@ -259,8 +259,10 @@ const ChatFoot = () => {
                 content: htmlContent,
                 conversationId: selectedChat.id,
                 tempId: message.tempId,
+                replyTo: selectedChat.replyingTo?.id || "",
             });
             editor.commands.clearContent();
+            dispatch(ChatActions.setSelectedChat({ replyingTo: null }));
         }
     }, [editor, ws, selectedChat, user, dispatch]);
 
@@ -283,6 +285,27 @@ const ChatFoot = () => {
 
     return (
         <div className="chat-foot">
+            <AnimatePresence>
+                {selectedChat?.replyingTo && (
+                    <motion.div
+                        className="reply-bar"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                    >
+                        <div className="reply-content">
+                            <div className="reply-indicator" />
+                            <div className="reply-info">
+                                <span className="reply-user">Replying to {selectedChat.replyingTo.senderId === user?.id ? "yourself" : "someone"}</span>
+                                <div className="reply-text" dangerouslySetInnerHTML={{ __html: selectedChat.replyingTo.content }} />
+                            </div>
+                        </div>
+                        <button className="close-reply" onClick={() => dispatch(ChatActions.setSelectedChat({ replyingTo: null }))}>
+                            <MdClose />
+                        </button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
             <div className="box tiptap-container">
                 <div className="rich-toolbar">
                     <button

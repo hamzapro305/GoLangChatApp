@@ -27,6 +27,7 @@ type ChatMessage = {
     senderId: string;
     content: string;
     type?: "text" | "image" | "video" | "file";
+    replyTo?: string;
     createdAt: string;
 };
 
@@ -37,6 +38,7 @@ type ChatNewMessage = {
     senderId: string;
     content: string;
     type?: "text" | "image" | "video" | "file";
+    replyTo?: string;
 };
 
 export {

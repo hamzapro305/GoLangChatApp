@@ -14,6 +14,8 @@ type SelectedChatT = {
     id: string
     emojiModal: boolean
     messageOptions: string | null
+    replyingTo: ChatMessage | null
+    forwardingMessage: ChatMessage | null
     chatInfo: boolean
     loading: boolean
 }
@@ -192,6 +194,12 @@ export const Slice = createSlice({
                 state.selectedChat = null;
             }
             state.deleteChatProgress = null;
+        },
+        deleteMessage: (state, { payload }: PayloadAction<{ conversationId: string, messageId: string }>) => {
+            const conv = state.conversations.find(c => c.conversation.id === payload.conversationId);
+            if (conv) {
+                conv.messages = conv.messages.filter(m => m.id !== payload.messageId);
+            }
         }
     },
 });

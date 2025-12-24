@@ -7,4 +7,5 @@ import (
 
 func SetupMessageRoutes(messageRoutes fiber.Router) {
 	messageRoutes.Post("/get", controllers.MessageContrller.GetConversationMessages)
+	messageRoutes.Delete("/:messageId", controllers.MessageContrller.DeleteMessage)
 }

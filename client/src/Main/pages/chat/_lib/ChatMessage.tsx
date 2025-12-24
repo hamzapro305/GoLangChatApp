@@ -1,5 +1,6 @@
 import { FC, useState, forwardRef } from "react";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
+import MessageOptions from "./MessageOptions/index.js";
 import { BiDotsVertical } from "react-icons/bi";
 import { MdDoneAll } from "react-icons/md";
 import { FaFileAlt } from "react-icons/fa";
@@ -24,6 +25,11 @@ const ChatMessage = forwardRef<HTMLDivElement, Props>(({ Message }, ref) => {
     const selectedConversation = conversations.find(c => c.conversation.id === selectedChat?.id)?.conversation;
     const isGroup = selectedConversation?.isGroup;
 
+    const repliedMessage = Message.replyTo ? conversations
+        .find(c => c.conversation.id === selectedChat?.id)
+        ?.messages.find(m => m.id === Message.replyTo) : null;
+    const repliedUser = useAnyUser(repliedMessage?.senderId || "");
+
     const OpenMessageOptions = () => {
         dispatch(
             ChatActions.setSelectedChat({
@@ -32,9 +38,21 @@ const ChatMessage = forwardRef<HTMLDivElement, Props>(({ Message }, ref) => {
         );
     };
 
+    const scrollToMessage = (msgId: string) => {
+        const element = document.getElementById(`msg-${msgId}`);
+        if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "center" });
+            element.classList.add("highlight-flash");
+            setTimeout(() => {
+                element.classList.remove("highlight-flash");
+            }, 2000);
+        }
+    };
+
     return (
         <motion.div
             ref={ref}
+            id={`msg-${Message.id}`}
             className={`msg ${isMine ? "mine" : ""}`}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -52,6 +70,12 @@ const ChatMessage = forwardRef<HTMLDivElement, Props>(({ Message }, ref) => {
                 className={`msg-wrapper ${isMine ? "mine" : ""}`}
                 transition={{ type: "spring", stiffness: 500, damping: 30 }}
             >
+                {repliedMessage && (
+                    <div className="replied-preview" onClick={() => scrollToMessage(repliedMessage.id)}>
+                        <span className="user-name">{repliedUser?.name || "Someone"}</span>
+                        <div className="preview-text" dangerouslySetInnerHTML={{ __html: repliedMessage.content }} />
+                    </div>
+                )}
                 {!isMine && isGroup && (
                     <div className="sender-name" style={{ fontSize: "0.75rem", fontWeight: "600", color: "#a78bfa", marginBottom: "2px" }}>
                         {queryUser?.name}
@@ -62,7 +86,6 @@ const ChatMessage = forwardRef<HTMLDivElement, Props>(({ Message }, ref) => {
                         <img
                             src={Message.content}
                             alt="attachment"
-                            style={{ maxWidth: "100%", borderRadius: "8px", display: "block" }}
                         />
                     </div>
                 ) : Message.type === "video" ? (
@@ -70,7 +93,6 @@ const ChatMessage = forwardRef<HTMLDivElement, Props>(({ Message }, ref) => {
                         <video
                             src={Message.content}
                             controls
-                            style={{ maxWidth: "100%", borderRadius: "8px", display: "block" }}
                         />
                     </div>
                 ) : Message.type === "file" ? (
@@ -109,6 +131,7 @@ const ChatMessage = forwardRef<HTMLDivElement, Props>(({ Message }, ref) => {
                         <BiDotsVertical />
                     </motion.div>
                 )}
+
             </motion.div>
         </motion.div>
     );

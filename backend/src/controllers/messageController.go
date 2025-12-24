@@ -37,6 +37,7 @@ type createMessageBody struct {
 	Content        string `json:"content"`
 	MessageType    string `json:"messageType"`
 	TempId         string `json:"tempId"`
+	ReplyTo        string `json:"replyTo"`
 }
 
 func (*messageController) CreateConversationMessages(
@@ -60,6 +61,7 @@ func (*messageController) CreateConversationMessages(
 		userClaims.UserID,
 		body.Content,
 		msgType,
+		body.ReplyTo,
 	)
 	if err != nil {
 		c.WriteJSON(fiber.Map{
@@ -76,5 +78,21 @@ func (*messageController) CreateConversationMessages(
 		"message":        msg,
 		"tempId":         body.TempId,
 		"conversationId": body.ConversationID,
+	})
+}
+
+func (*messageController) DeleteMessage(c *fiber.Ctx) error {
+	messageID := c.Params("messageId")
+	userClaims := c.Locals("user").(services.UserClaims)
+
+	err := services.MessageService.DeleteMessage(messageID, userClaims.UserID)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Message deleted",
 	})
 }

@@ -58,3 +58,21 @@ func (*messageRepo) DeleteMessage(messageID primitive.ObjectID) error {
 	_, err := models.MessageCollection.DeleteOne(ctx, bson.M{"_id": messageID})
 	return err
 }
+
+func (*messageRepo) GetMessageById(messageID string) (*models.Message, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), config.DatabaseTimeLimit)
+	defer cancel()
+
+	objID, err := primitive.ObjectIDFromHex(messageID)
+	if err != nil {
+		return nil, err
+	}
+
+	var message models.Message
+	err = models.MessageCollection.FindOne(ctx, bson.M{"_id": objID}).Decode(&message)
+	if err != nil {
+		return nil, err
+	}
+
+	return &message, nil
+}
