@@ -51,6 +51,7 @@ const Sidebar = () => {
                     emojiModal: false,
                     messageOptions: null,
                     chatInfo: false,
+                    loading: !chat.isMessageFetched, // Only show loader if messages aren't fetched
                 })
             );
             dispatch(ChatActions.readMessages(chat.conversation.id));
@@ -68,8 +69,11 @@ const Sidebar = () => {
                                 chat.conversation.id
                             )
                         );
+                        dispatch(ChatActions.setSelectedChat({ loading: false }));
                     }
-                );
+                ).catch(() => {
+                    dispatch(ChatActions.setSelectedChat({ loading: false }));
+                });
             }
         }
     };

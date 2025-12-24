@@ -344,7 +344,6 @@
                     display: flex;
                     flex-direction: column;
                     gap: 12px;
-                    scroll-behavior: smooth; // Standard smooth scroll
                     min-height: 0; // Crucial for flex child scroll
 
                     &::-webkit-scrollbar {
@@ -354,6 +353,44 @@
                     &::-webkit-scrollbar-thumb {
                         background: rgba(255, 255, 255, 0.05);
                         border-radius: 10px;
+                    }
+
+                    .chat-loading-overlay {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        @include glassmorphism();
+                        background: rgba($bg-dark, 0.6);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 500;
+                        backdrop-filter: blur(15px);
+
+                        .loader-content {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            gap: 15px;
+
+                            .spinner {
+                                width: 40px;
+                                height: 40px;
+                                border: 3px solid rgba($purple, 0.1);
+                                border-top-color: $purple;
+                                border-radius: 50%;
+                                animation: spin 0.8s linear infinite;
+                            }
+
+                            span {
+                                font-size: 0.9rem;
+                                font-weight: 500;
+                                color: $text-secondary;
+                                letter-spacing: 0.5px;
+                            }
+                        }
                     }
 
                     .msg {

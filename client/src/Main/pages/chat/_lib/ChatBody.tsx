@@ -1,7 +1,7 @@
 import { AnimatePresence, motion, useScroll, useSpring } from "motion/react";
 import ChatMessage from "./ChatMessage.js";
 import { CiCircleChevDown } from "react-icons/ci";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useLayoutEffect } from "react";
 import ChatNewMessage from "./ChatNewMessage.js";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks.js";
 import { ChatActions } from "@/Redux/slices/ChatSlice.js";
@@ -11,11 +11,11 @@ const ChatBody = () => {
     const [isAtBottom, setIsAtBottom] = useState(true);
     const dispatch = useAppDispatch();
 
-    const scrollToBottom = () => {
+    const scrollToBottom = (behavior: ScrollBehavior = "smooth") => {
         if (chatBodyRef.current) {
             chatBodyRef.current.scrollTo({
                 top: chatBodyRef.current.scrollHeight,
-                behavior: "smooth",
+                behavior: behavior,
             });
         }
     };
@@ -64,18 +64,25 @@ const ChatBody = () => {
         }
     }, []);
 
-    useEffect(() => {
+    // Instant scroll on load/change
+    useLayoutEffect(() => {
         if (chatBodyRef.current) {
             chatBodyRef.current.scrollTo({
                 top: chatBodyRef.current.scrollHeight,
-                behavior: "auto", // Immediate scroll on load/change
+                behavior: "auto",
             });
         }
     }, [
+        selectedChat?.id,
         GetSelectedConversationChat()?.messages.length,
-        GetSelectedConversationChat()?.newMessages.length,
-        selectedChat?.id // Also scroll when changing chat
     ]);
+
+    // Smooth scroll for NEW messages if we are at bottom
+    useEffect(() => {
+        if (isAtBottom && GetSelectedConversationChat()?.newMessages.length) {
+            scrollToBottom("smooth");
+        }
+    }, [GetSelectedConversationChat()?.newMessages.length]);
 
     useEffect(() => {
         const handleKeyPress = (event: KeyboardEvent) => {
@@ -106,8 +113,24 @@ const ChatBody = () => {
                 position: "relative"
             }}
         >
+            <AnimatePresence>
+                {selectedChat?.loading && (
+                    <motion.div
+                        className="chat-loading-overlay"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                    >
+                        <div className="loader-content">
+                            <div className="spinner"></div>
+                            <span>Loading Messages...</span>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {!isAtBottom && (
-                <div className="down-arrow-to-bottom" onClick={scrollToBottom}>
+                <div className="down-arrow-to-bottom" onClick={() => scrollToBottom("smooth")}>
                     <CiCircleChevDown />
                 </div>
             )}

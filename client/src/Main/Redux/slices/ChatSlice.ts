@@ -15,6 +15,7 @@ type SelectedChatT = {
     emojiModal: boolean
     messageOptions: string | null
     chatInfo: boolean
+    loading: boolean
 }
 
 type DeleteChatProgress = {
@@ -61,6 +62,7 @@ export const Slice = createSlice({
             }
             else {
                 state.selectedChat = {
+                    loading: false, // Default value
                     ...state.selectedChat,
                     ...payload
                 } as SelectedChatT;

@@ -27,7 +27,7 @@ const ChatFoot = () => {
     const dispatch = useAppDispatch();
     const { selectedChat } = useAppSelector((s) => s.Chat);
     const ws = useAppSelector((s) => s.GlobalVars.ws);
-    const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
+    const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [isTyping, setIsTyping] = useState(false);
     const [showAttachmentMenu, setShowAttachmentMenu] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -158,16 +158,22 @@ const ChatFoot = () => {
             const html = editor.getHTML();
             if (html !== '<p></p>') {
                 setIsTyping(true);
-                if (typingTimeout) clearTimeout(typingTimeout);
-                const timeout = setTimeout(() => {
+                if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+                typingTimeoutRef.current = setTimeout(() => {
                     setIsTyping(false);
                 }, 2000);
-                setTypingTimeout(timeout);
             } else {
                 setIsTyping(false);
             }
         },
-    });
+    }, []); // Only create on mount, we handle chat changes via effect
+
+    // Clear content when switching chats
+    useEffect(() => {
+        if (editor && selectedChat?.id) {
+            editor.commands.clearContent();
+        }
+    }, [selectedChat?.id, editor]);
 
     const TypingIndicator = useCallback((isTypingValue: boolean) => {
         if (!ws || !selectedChat) return;
@@ -188,9 +194,9 @@ const ChatFoot = () => {
 
     useEffect(() => {
         return () => {
-            if (typingTimeout) clearTimeout(typingTimeout);
+            if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
         };
-    }, [typingTimeout]);
+    }, []);
 
     useEffect(() => {
         TypingIndicator(isTyping);
