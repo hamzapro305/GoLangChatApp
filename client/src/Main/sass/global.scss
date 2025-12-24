@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@use "./_global_req" as *;
 
 * {
     margin: 0;
@@ -6,71 +6,47 @@
     box-sizing: border-box;
 }
 
+body {
+    background-color: $bg-dark;
+    color: $text-primary;
+    font-family: $font;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 .btn-global {
-    appearance: button;
-    background-color: #4d4ae8;
-    background-image: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.15),
-        rgba(255, 255, 255, 0)
-    );
-    border: 1px solid #4d4ae8;
-    border-radius: 0.4rem;
-    box-shadow: rgba(255, 255, 255, 0.15) 0 1px 0 inset,
-        rgba(46, 54, 80, 0.075) 0 1px 1px;
-    box-sizing: border-box;
+    appearance: none;
+    @include background();
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
     color: #ffffff;
     cursor: pointer;
     display: inline-block;
-    font-family: Inter, sans-serif;
-    font-size: 1rem;
-    font-weight: 500;
+    font-family: $font;
+    font-size: 0.95rem;
+    font-weight: 600;
     line-height: 1.5;
-    margin: 0;
-    padding: 0.5rem 1rem;
+    padding: 0.6rem 1.5rem;
     text-align: center;
-    text-transform: none;
-    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
-        border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     user-select: none;
-    -webkit-user-select: none;
-    touch-action: manipulation;
-    vertical-align: middle;
-
-    &:focus:not(:focus-visible),
-    &:focus {
-        outline: 0;
-    }
 
     &:hover {
-        background-color: #3733e5;
-        border-color: #3733e5;
-    }
-
-    &:focus {
-        background-color: #413fc5;
-        border-color: #3e3bba;
-        box-shadow: rgba(255, 255, 255, 0.15) 0 1px 0 inset,
-            rgba(46, 54, 80, 0.075) 0 1px 1px,
-            rgba(104, 101, 235, 0.5) 0 0 0 0.2rem;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
+        filter: brightness(1.1);
     }
 
     &:active {
-        background-color: #3e3bba;
-        background-image: none;
-        border-color: #3a38ae;
-        box-shadow: rgba(46, 54, 80, 0.125) 0 3px 5px inset;
-    }
-
-    &:active:focus {
-        box-shadow: rgba(46, 54, 80, 0.125) 0 3px 5px inset,
-            rgba(104, 101, 235, 0.5) 0 0 0 0.2rem;
+        transform: translateY(0);
+        box-shadow: 0 4px 8px rgba(124, 58, 237, 0.3);
     }
 
     &:disabled {
-        background-image: none;
-        box-shadow: none;
-        opacity: 0.65;
-        pointer-events: none;
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
     }
 }

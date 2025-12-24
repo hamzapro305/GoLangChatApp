@@ -1,24 +1,30 @@
 @use "@/sass/global_req" as *;
 
 .userProfile-modal {
-    background-color: white;
+    @include glassmorphism();
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
+    z-index: 1000;
+    color: white;
+
     .profile-settings {
         width: 100%;
         height: 100%;
-
         display: grid;
-        grid-template-columns: .5fr 1fr;
+        grid-template-columns: 300px 1fr;
 
         .settings-sidebar {
-            background-color: rgb(224, 224, 224);
+            background-color: rgba(255, 255, 255, 0.03);
+            border-right: 1px solid $glass-border;
+            padding: 40px 20px;
         }
-        .panel {
 
+        .panel {
+            padding: 40px;
+            background-color: $bg-dark;
         }
     }
 }

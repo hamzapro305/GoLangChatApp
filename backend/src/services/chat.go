@@ -144,7 +144,7 @@ func (*conversationWebSocketService) SendMessageToParticipants(message []byte, p
 }
 
 func ConversationArrayTransformation(conversations []models.GroupConversation) []interface{} {
-	var convs []interface{}
+	convs := []interface{}{}
 	for _, conv := range conversations {
 		// Create a map to hold the common fields
 		convInfo := map[string]interface{}{

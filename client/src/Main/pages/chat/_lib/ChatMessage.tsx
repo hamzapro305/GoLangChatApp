@@ -31,47 +31,36 @@ const ChatMessage: FC<Props> = ({ Message }) => {
     return (
         <motion.div
             className={`msg ${isMine ? "mine" : ""}`}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
-            animate={{
-                background: isHovering ? "#6a309344" : "#6a309300",
-                transition: {
-                    duration: 0.1,
-                },
-            }}
         >
             <motion.div
-                whileInView={{
-                    x: isMine ? -msgXPositttion : msgXPositttion,
-                    opacity: 1,
-                    scale: 1,
-                    transition: {
-                        duration: 0.4,
-                        damping: 100,
-                        bounce: 10,
-                    },
-                }}
-                initial={{ opacity: 0, x: isMine ? 20 : -20, scale: 0 }}
-                viewport={{ once: true }}
+                layout
                 className={`msg-wrapper ${isMine ? "mine" : ""}`}
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
             >
-                <div className="content">{Message.content}</div>
-                <div className="profile">
-                    <img
-                        src="https://www.shutterstock.com/image-vector/image-icon-600nw-211642900.jpg"
-                        alt=""
-                    />
-                </div>
-                <div className="name">{queryUser?.name}</div>
+                <div
+                    className="content rich-text"
+                    dangerouslySetInnerHTML={{ __html: Message.content }}
+                />
                 <div className="status">
                     <div className="icon">
-                        <MdDoneAll color="blue"  />
+                        <MdDoneAll color={isMine ? "#fff" : "#10b981"} />
                     </div>
                 </div>
                 {isHovering && (
-                    <div className="option-icon" onClick={OpenMessageOptions}>
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="option-icon"
+                        onClick={OpenMessageOptions}
+                    >
                         <BiDotsVertical />
-                    </div>
+                    </motion.div>
                 )}
             </motion.div>
         </motion.div>

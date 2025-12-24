@@ -59,11 +59,15 @@ const Sidebar = () => {
                 </div>
             </div>
             <div className="conversations">
-                {conversations?.map((conv) => {
+                {conversations?.map((conv, index) => {
                     const isSelectedChat =
                         selectedChat?.id == conv.conversation.id;
                     return (
-                        <div
+                        <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                            whileHover={{ x: 4 }}
                             className={`conv ${isSelectedChat ? "active" : ""}`}
                             key={conv.conversation.id}
                             onClick={() => SelectChat(conv)}
@@ -74,8 +78,17 @@ const Sidebar = () => {
                             />
                             {isSelectedChat && (
                                 <motion.div
-                                    layoutId="active-conversation-indicator"
+                                    layoutId="active-pill"
                                     className="active-indicator"
+                                    style={{
+                                        position: "absolute",
+                                        left: 0,
+                                        top: "20%",
+                                        height: "60%",
+                                        width: "4px",
+                                        borderRadius: "0 4px 4px 0",
+                                        background: "linear-gradient(to bottom, #7c3aed, #db2777)"
+                                    }}
                                 />
                             )}
                             {conv.unReadMessages.length > 0 && (
@@ -83,7 +96,7 @@ const Sidebar = () => {
                                     {conv.unReadMessages.length}
                                 </div>
                             )}
-                        </div>
+                        </motion.div>
                     );
                 })}
             </div>

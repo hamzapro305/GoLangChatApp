@@ -25,12 +25,13 @@ const Styling = {
     position: "fixed",
     top: 0,
     left: 0,
-    backgroundColor: "#000000AA",
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    backdropFilter: "blur(8px)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
-    zIndex: 100,
+    zIndex: 1000,
     height: "100vh",
 };
 

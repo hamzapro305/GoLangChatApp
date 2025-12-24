@@ -1,13 +1,31 @@
 $font: "Poppins", sans-serif;
 $maxW: 1400px;
-$purple: #6a3093;
-$pink: #a044ff;
+$purple: #7c3aed; // Slightly more vibrant
+$pink: #db2777;   // Slightly more vibrant
+$bg-dark: #0f172a; // Deep slate
+$bg-sidebar: #1e293b;
+$text-primary: #f8fafc;
+$text-secondary: #94a3b8;
+$glass-bg: rgba(255, 255, 255, 0.05);
+$glass-border: rgba(255, 255, 255, 0.1);
 
 @mixin background() {
+    background: linear-gradient(135deg, $purple, $pink);
+}
 
-    background: $purple;
-    background: -webkit-linear-gradient(to right, $purple, $pink);
-    background: linear-gradient(to right, $purple, $pink);
+@mixin nebula-gradient() {
+    background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+}
+
+@mixin glassmorphism() {
+    background: $glass-bg;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid $glass-border;
+}
+
+@mixin card-shadow() {
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 }
 
 // Breakpoints Structure

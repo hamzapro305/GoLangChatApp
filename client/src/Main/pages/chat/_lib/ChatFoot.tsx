@@ -1,4 +1,4 @@
-import { KeyboardEvent, useEffect, useMemo, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
 import { GrAttachment } from "react-icons/gr";
 import { AnimatePresence } from "motion/react";
@@ -11,8 +11,13 @@ import { ChatActions } from "@/Redux/slices/ChatSlice.js";
 import { ChatNewMessage } from "@/@types/chat.js";
 import { WebSocketMessageSender } from "@/utils/WebSocketMessageSender.js";
 
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import Placeholder from '@tiptap/extension-placeholder';
+import Underline from '@tiptap/extension-underline';
+import Link from '@tiptap/extension-link';
+
 const ChatFoot = () => {
-    const [content, setContent] = useState("");
     const dispatch = useAppDispatch();
     const { selectedChat } = useAppSelector((s) => s.Chat);
     const ws = useAppSelector((s) => s.GlobalVars.ws);
@@ -20,26 +25,40 @@ const ChatFoot = () => {
     const [isTyping, setIsTyping] = useState(false);
     const user = useUser();
 
-    const handleTyping = (content: string) => {
+    const editor = useEditor({
+        extensions: [
+            StarterKit,
+            Underline,
+            Link.configure({
+                openOnClick: false,
+                HTMLAttributes: {
+                    rel: 'noopener noreferrer',
+                    target: '_blank',
+                },
+            }),
+            Placeholder.configure({
+                placeholder: 'Type Message...',
+            }),
+        ],
+        content: '',
+        onUpdate: ({ editor }) => {
+            const html = editor.getHTML();
+            if (html !== '<p></p>') {
+                setIsTyping(true);
+                if (typingTimeout) clearTimeout(typingTimeout);
+                const timeout = setTimeout(() => {
+                    setIsTyping(false);
+                }, 2000);
+                setTypingTimeout(timeout);
+            } else {
+                setIsTyping(false);
+            }
+        },
+    });
+
+    const TypingIndicator = useCallback((isTypingValue: boolean) => {
         if (!ws || !selectedChat) return;
-        setContent(content);
-        setIsTyping(true);
-
-        // Pehle se existing timeout clear kar do
-        if (typingTimeout) clearTimeout(typingTimeout);
-
-        // Naya timeout set karo, jo 2 sec baad "Not Typing" karega
-        const timeout = setTimeout(() => {
-            console.log("Sending that is not typing");
-            setIsTyping(false);
-        }, 2000);
-
-        setTypingTimeout(timeout);
-    };
-
-    const TypingIndicator = (isTyping: boolean) => {
-        if (!ws || !selectedChat) return;
-        if (isTyping) {
+        if (isTypingValue) {
             WebSocketMessageSender.userTypingStatus(
                 ws,
                 selectedChat.id,
@@ -52,7 +71,7 @@ const ChatFoot = () => {
                 "user_stopped_typing"
             );
         }
-    };
+    }, [ws, selectedChat]);
 
     useEffect(() => {
         return () => {
@@ -62,9 +81,7 @@ const ChatFoot = () => {
 
     useEffect(() => {
         TypingIndicator(isTyping);
-    }, [isTyping]);
-
-    const lineCount = useMemo(() => content.split("\n").length, [content]);
+    }, [isTyping, TypingIndicator]);
 
     const toggleEmojiModal = () => {
         if (selectedChat) {
@@ -77,15 +94,18 @@ const ChatFoot = () => {
     };
 
     const pushToContent = (myString: string) => {
-        setContent((p) => (p += myString));
+        editor?.commands.insertContent(myString);
     };
 
-    const SendMessage = () => {
-        if (!content) return;
+    const SendMessage = useCallback(() => {
+        if (!editor) return;
+        const htmlContent = editor.getHTML();
+        if (!htmlContent || htmlContent === '<p></p>') return;
+
         if (ws && selectedChat && user) {
             let message: ChatNewMessage = {
                 conversationId: selectedChat.id,
-                content: content,
+                content: htmlContent,
                 tempId: nanoid(10),
                 status: "loading",
                 senderId: user.id,
@@ -97,30 +117,59 @@ const ChatFoot = () => {
                 })
             );
             WebSocketMessageSender.createNewMessage(ws, {
-                content,
+                content: htmlContent,
                 conversationId: selectedChat.id,
                 tempId: message.tempId,
             });
-            setContent("");
+            editor.commands.clearContent();
         }
-    };
-    const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
-        if (event.key === "Enter" && !event.shiftKey) {
-            event.preventDefault(); // Prevents new line
-            SendMessage();
+    }, [editor, ws, selectedChat, user, dispatch]);
+
+    // Handle Enter to send
+    useEffect(() => {
+        if (editor) {
+            editor.setOptions({
+                editorProps: {
+                    handleKeyDown: (view, event) => {
+                        if (event.key === 'Enter' && !event.shiftKey) {
+                            SendMessage();
+                            return true;
+                        }
+                        return false;
+                    },
+                },
+            });
         }
-    };
+    }, [editor, SendMessage]);
 
     return (
         <div className="chat-foot">
-            <div className="box">
-                <textarea
-                    value={content}
-                    onChange={(e) => handleTyping(e.target.value)}
-                    rows={lineCount > 10 ? 10 : lineCount}
-                    placeholder="Type Message"
-                    onKeyDownCapture={handleKeyDown}
-                />
+            <div className="box tiptap-container">
+                <div className="rich-toolbar">
+                    <button
+                        onClick={() => editor?.chain().focus().toggleBold().run()}
+                        className={editor?.isActive('bold') ? 'active' : ''}
+                        title="Bold"
+                    ><b>B</b></button>
+                    <button
+                        onClick={() => editor?.chain().focus().toggleItalic().run()}
+                        className={editor?.isActive('italic') ? 'active' : ''}
+                        title="Italic"
+                    ><i>I</i></button>
+                    <button
+                        onClick={() => editor?.chain().focus().toggleUnderline().run()}
+                        className={editor?.isActive('underline') ? 'active' : ''}
+                        title="Underline"
+                    ><u>U</u></button>
+                    <button
+                        onClick={() => editor?.chain().focus().toggleBulletList().run()}
+                        className={editor?.isActive('bulletList') ? 'active' : ''}
+                        title="Bullet List"
+                    >• List</button>
+                </div>
+
+                <EditorContent editor={editor} className="tiptap-editor" />
+
                 <div className="options">
                     <div className="actions">
                         <div className="emoji" onClick={toggleEmojiModal}>

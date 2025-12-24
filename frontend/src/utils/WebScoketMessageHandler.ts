@@ -105,7 +105,7 @@ export class WebSocketInComingMessageHanlder {
         console.log("Sync Conversation Message", message);
         dispatch(
             ChatActions.setAllConversations(
-                message.conversations.map((conv) => ({
+                (message.conversations ?? []).map((conv) => ({
                     conversation: conv ?? [],
                     messages: [],
                     unReadMessages: [],

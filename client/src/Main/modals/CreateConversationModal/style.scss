@@ -1,67 +1,148 @@
 @use "@/sass/global_req" as *;
 
 .CreateConverationModal {
-    background: white;
+    @include glassmorphism();
+    @include card-shadow();
     height: auto;
-    max-width: 600px;
-    width: 100%;
+    max-width: 500px;
+    width: 90%;
     z-index: 1011;
-    border-radius: 20px;
-    padding: 20px;
+    border-radius: 24px;
+    padding: 30px;
     display: flex;
     flex-direction: column;
+    color: white;
+
     &-wrapper {
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 24px;
+
         .heading {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #000;
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, $purple, $pink);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
             font-family: $font;
         }
+
         .isGroupChat {
             font-family: $font;
-            padding: 10px 20px;
-            background-color: rgba(167, 167, 167, 0.623);
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid $glass-border;
             align-self: flex-start;
-            border-radius: 0.2rem;
+            border-radius: 12px;
             cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.1);
+            }
+
             &.active {
                 @include background();
-                color: white;
+                border-color: transparent;
+                box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
             }
         }
+
         input {
-            padding: 10px 20px;
-            border: none;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid $glass-border;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 14px;
+            font-family: $font;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+
+            &:focus {
+                outline: none;
+                border-color: $purple;
+            }
         }
+
         .users {
             display: flex;
             flex-direction: column;
-            gap: 3px;
+            gap: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 4px;
+
+            &::-webkit-scrollbar {
+                width: 5px;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 10px;
+            }
+
             .user {
-                padding: 10px;
+                padding: 12px;
                 display: flex;
                 align-items: center;
-                gap: 10px;
+                gap: 15px;
                 font-family: $font;
-                text-transform: capitalize;
-                img {
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 50%;
+                border-radius: 14px;
+                transition: all 0.2s ease;
+                cursor: pointer;
+                background: rgba(255, 255, 255, 0.02);
+                border: 1px solid transparent;
+
+                &:hover {
+                    background: rgba(255, 255, 255, 0.05);
                 }
+
+                img {
+                    width: 42px;
+                    height: 42px;
+                    border-radius: 12px;
+                    object-fit: cover;
+                }
+
+                .name {
+                    font-weight: 500;
+                }
+
                 &.selected {
-                    @include background();
-                    color: white;
-                    border-radius: 0.2rem;
+                    background: rgba(124, 58, 237, 0.15);
+                    border: 1px solid rgba(124, 58, 237, 0.3);
+
+                    .name {
+                        color: white;
+                        font-weight: 600;
+                    }
                 }
             }
         }
+
         .submit {
-            align-self: flex-end;
-            padding: 10px 20px;
+            @include background();
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+
+            &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
+            }
+
+            &:active {
+                transform: translateY(0);
+            }
         }
     }
 }
