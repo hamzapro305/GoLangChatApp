@@ -26,6 +26,7 @@ type ChatMessage = {
     conversationId: string;
     senderId: string;
     content: string;
+    attachmentUrl?: string;
     type?: "text" | "image" | "video" | "file";
     replyTo?: string;
     createdAt: string;
@@ -37,6 +38,7 @@ type ChatNewMessage = {
     conversationId: string;
     senderId: string;
     content: string;
+    attachmentUrl?: string;
     type?: "text" | "image" | "video" | "file";
     replyTo?: string;
 };

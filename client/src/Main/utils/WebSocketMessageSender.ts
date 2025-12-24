@@ -4,6 +4,7 @@ export class WebSocketMessageSender {
         message: {
             conversationId: string;
             content: string;
+            attachmentUrl?: string;
             tempId: string;
             type?: string;
             replyTo?: string;
@@ -13,6 +14,7 @@ export class WebSocketMessageSender {
             type: "create_message",
             conversationId: message.conversationId,
             content: message.content,
+            attachmentUrl: message.attachmentUrl || "",
             tempId: message.tempId,
             messageType: message.type || "text",
             replyTo: message.replyTo || "",

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { RxCrossCircled } from "react-icons/rx";
 import { MdDoneAll } from "react-icons/md";
-import { FaFileAlt } from "react-icons/fa";
+import { FaFileAlt, FaVideo, FaImage } from "react-icons/fa";
 import { BiDotsVertical } from "react-icons/bi";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks.js";
 import { useAnyUser } from "@/Hooks/useUser.js";
@@ -89,7 +89,24 @@ const ChatNewMessage = forwardRef<HTMLDivElement, Props>(({ Message }, ref) => {
                 {repliedMessage && (
                     <div className="replied-preview" onClick={() => scrollToMessage(repliedMessage.id)}>
                         <span className="user-name">{repliedUser?.name || "Someone"}</span>
-                        <div className="preview-text" dangerouslySetInnerHTML={{ __html: repliedMessage.content }} />
+                        <div className="preview-content-row">
+                            {(repliedMessage.type === "image" || (repliedMessage.attachmentUrl && repliedMessage.type === "image")) && (
+                                <div className="reply-media-thumb">
+                                    <img src={repliedMessage.attachmentUrl || repliedMessage.content} alt="Reply Thumb" />
+                                </div>
+                            )}
+                            {repliedMessage.type === "video" && <div className="reply-icon-wrapper"><FaVideo /></div>}
+                            {repliedMessage.type === "file" && <div className="reply-icon-wrapper"><FaFileAlt /></div>}
+
+                            <div className="preview-text" dangerouslySetInnerHTML={{
+                                __html: (repliedMessage.attachmentUrl ? repliedMessage.content : (
+                                    repliedMessage.type === "image" ? "Photo" :
+                                        repliedMessage.type === "video" ? "Video" :
+                                            repliedMessage.type === "file" ? "Document" :
+                                                repliedMessage.content
+                                )) || "Media"
+                            }} />
+                        </div>
                     </div>
                 )}
                 {!isMine && isGroup && (
@@ -97,33 +114,42 @@ const ChatNewMessage = forwardRef<HTMLDivElement, Props>(({ Message }, ref) => {
                         {User?.name}
                     </div>
                 )}
-                {Message.type === "image" ? (
-                    <div className="media-content image">
-                        <img
-                            src={Message.content}
-                            alt="attachment"
-                        />
-                    </div>
-                ) : Message.type === "video" ? (
-                    <div className="media-content video">
-                        <video
-                            src={Message.content}
-                        />
-                    </div>
-                ) : Message.type === "file" ? (
-                    <div className="media-content file">
-                        <div className="file-attachment">
-                            <FaFileAlt size={24} />
-                            <div className="file-info">
-                                <span className="file-name">Attachment</span>
-                                <span className="file-size">Uploading...</span>
+                {/* Attachment Rendering */}
+                {(Message.attachmentUrl || (Message.type !== "text" && Message.content)) && (
+                    <>
+                        {Message.type === "image" ? (
+                            <div className="media-content image">
+                                <img
+                                    src={Message.attachmentUrl || Message.content}
+                                    alt="attachment"
+                                />
                             </div>
-                        </div>
-                    </div>
-                ) : (
+                        ) : Message.type === "video" ? (
+                            <div className="media-content video">
+                                <video
+                                    src={Message.attachmentUrl || Message.content}
+                                />
+                            </div>
+                        ) : (
+                            <div className="media-content file">
+                                <div className="file-attachment">
+                                    <FaFileAlt size={24} />
+                                    <div className="file-info">
+                                        <span className="file-name">Attachment</span>
+                                        <span className="file-size">Uploading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </>
+                )}
+
+                {/* Text Content / Caption */}
+                {(Message.type === "text" || (Message.attachmentUrl && Message.content)) && (
                     <div
                         className="content rich-text"
                         dangerouslySetInnerHTML={{ __html: Message.content }}
+                        style={(Message.attachmentUrl || (Message.type !== "text" && Message.content)) ? { marginTop: "8px" } : {}}
                     />
                 )}
 

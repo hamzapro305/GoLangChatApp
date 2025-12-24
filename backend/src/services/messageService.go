@@ -19,12 +19,14 @@ func (*messageService) CreateMessage(
 	Content string,
 	Type string,
 	ReplyTo string,
+	AttachmentUrl string,
 ) (*models.Message, error) {
 	var msg models.Message = models.Message{
 		ID:             primitive.NewObjectID(),
 		ConversationID: ConversationID,
 		SenderID:       SenderID,
 		Content:        Content,
+		AttachmentUrl:  AttachmentUrl,
 		Type:           Type,
 		CreatedAt:      time.Now(),
 	}

@@ -75,15 +75,18 @@ const ChatFoot = () => {
         // Reset state immediately
         setSelectedFile(null);
         setPreviewUrl("");
+        setShowAttachmentMenu(false);
 
         // Optimistic UI update
         const tempMessage: ChatNewMessage = {
             conversationId: selectedChat.id,
-            content: localUrl,
+            content: caption,
+            attachmentUrl: localUrl,
             tempId: tempId,
             status: "loading",
             senderId: user.id,
-            type: type,
+            type: type as any,
+            replyTo: selectedChat.replyingTo?.id,
         };
 
         dispatch(
@@ -93,6 +96,11 @@ const ChatFoot = () => {
             })
         );
 
+        // Clear reply state if any
+        if (selectedChat.replyingTo) {
+            dispatch(ChatActions.setSelectedChat({ replyingTo: null }));
+        }
+
         const formData = new FormData();
         formData.append("file", file);
 
@@ -100,7 +108,7 @@ const ChatFoot = () => {
             const tokenWithQuotes = localStorage.getItem("token");
             const token = tokenWithQuotes ? JSON.parse(tokenWithQuotes) : "";
 
-            const res = await axios.post("http://localhost:3001/api/v1/upload", formData, {
+            const res = await axios.post(`http://${window.location.hostname}:3001/api/v1/upload`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "multipart/form-data",
@@ -110,19 +118,12 @@ const ChatFoot = () => {
             if (res.data.url) {
                 WebSocketMessageSender.createNewMessage(ws, {
                     conversationId: selectedChat.id,
-                    content: res.data.url,
+                    content: caption,
+                    attachmentUrl: res.data.url,
                     tempId: tempId,
                     type: type,
+                    replyTo: tempMessage.replyTo,
                 });
-
-                // If there's a caption, send it as a separate message
-                if (caption.trim()) {
-                    WebSocketMessageSender.createNewMessage(ws, {
-                        content: `<p>${caption}</p>`,
-                        conversationId: selectedChat.id,
-                        tempId: nanoid(10),
-                    });
-                }
             }
         } catch (error) {
             console.error("Upload failed", error);
