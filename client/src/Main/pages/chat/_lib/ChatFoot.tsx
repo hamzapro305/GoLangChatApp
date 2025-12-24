@@ -15,6 +15,7 @@ import { IoSend } from "react-icons/io5";
 import { FaImage, FaFileAlt, FaVideo } from "react-icons/fa";
 import { useRef } from "react";
 import axios from "axios";
+import MediaPreviewModal from "./MediaPreviewModal.js";
 
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -29,6 +30,8 @@ const ChatFoot = () => {
     const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
     const [isTyping, setIsTyping] = useState(false);
     const [showAttachmentMenu, setShowAttachmentMenu] = useState(false);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string>("");
     const fileInputRef = useRef<HTMLInputElement>(null);
     const user = useUser();
 
@@ -49,13 +52,29 @@ const ChatFoot = () => {
         setShowAttachmentMenu(false);
     };
 
-    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file || !selectedChat || !ws || !user) return;
 
+        const url = URL.createObjectURL(file);
+        setSelectedFile(file);
+        setPreviewUrl(url);
+
+        // Reset input value so same file can be selected again
+        e.target.value = "";
+    };
+
+    const handleSendMedia = async (caption: string) => {
+        if (!selectedFile || !selectedChat || !ws || !user) return;
+
+        const file = selectedFile;
         const tempId = nanoid(10);
         const type = file.type.startsWith("image/") ? "image" : file.type.startsWith("video/") ? "video" : "file";
-        const localUrl = URL.createObjectURL(file);
+        const localUrl = previewUrl;
+
+        // Reset state immediately
+        setSelectedFile(null);
+        setPreviewUrl("");
 
         // Optimistic UI update
         const tempMessage: ChatNewMessage = {
@@ -95,6 +114,15 @@ const ChatFoot = () => {
                     tempId: tempId,
                     type: type,
                 });
+
+                // If there's a caption, send it as a separate message
+                if (caption.trim()) {
+                    WebSocketMessageSender.createNewMessage(ws, {
+                        content: `<p>${caption}</p>`,
+                        conversationId: selectedChat.id,
+                        tempId: nanoid(10),
+                    });
+                }
             }
         } catch (error) {
             console.error("Upload failed", error);
@@ -326,6 +354,20 @@ const ChatFoot = () => {
                     />
                 )}
                 {selectedChat?.messageOptions && <MessageOptions />}
+            </AnimatePresence>
+
+            <AnimatePresence>
+                {selectedFile && (
+                    <MediaPreviewModal
+                        file={selectedFile}
+                        localUrl={previewUrl}
+                        onClose={() => {
+                            setSelectedFile(null);
+                            setPreviewUrl("");
+                        }}
+                        onSend={handleSendMedia}
+                    />
+                )}
             </AnimatePresence>
         </div>
     );
