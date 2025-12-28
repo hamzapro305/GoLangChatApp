@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type User struct {
@@ -15,5 +14,3 @@ type User struct {
 	CreatedAt  time.Time          `bson:"createdAt" json:"createdAt"`
 	ProfilePic string             `bson:"profilePic" json:"profilePic"`
 }
-
-var UserCollection *mongo.Collection

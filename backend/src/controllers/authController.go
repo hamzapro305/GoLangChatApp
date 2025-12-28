@@ -23,21 +23,14 @@ func (*authController) Register(c *fiber.Ctx) error {
 		return parseError
 	}
 
-	_, err := services.UserService.GetUser(body.Email)
-	if err == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "User already exists",
-		})
-	}
-
 	newUser, err := services.UserService.AddUser(body.Name, body.Email, body.Password)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Could not create user",
+			"error": err.Error(),
 		})
 	}
 
-	token, err := services.JwtService.CreateToken(body.Email, body.Password, newUser)
+	token, err := services.JwtService.CreateToken(body.Email, newUser)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Could not login",
@@ -63,7 +56,7 @@ func (*authController) Login(c *fiber.Ctx) error {
 		})
 	}
 
-	token, err := services.JwtService.CreateToken(body.Email, body.Password, user)
+	token, err := services.JwtService.CreateToken(body.Email, user)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Could not login",

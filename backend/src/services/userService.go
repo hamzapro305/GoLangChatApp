@@ -1,13 +1,8 @@
 package services
 
 import (
-	"fmt"
-	"time"
-
 	"github.com/hamzapro305/GoLangChatApp/src/models"
-	"github.com/hamzapro305/GoLangChatApp/src/repos"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"golang.org/x/crypto/bcrypt"
+	"github.com/hamzapro305/GoLangChatApp/src/utils"
 )
 
 type userService struct{}
@@ -15,73 +10,71 @@ type userService struct{}
 var UserService = &userService{}
 
 func (*userService) AddUser(name string, email string, password string) (*models.User, error) {
-	// encrupt pass
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
-	if err != nil {
-		panic(err)
+	var result struct {
+		User models.User `json:"user"`
 	}
 
-	// Add user to database
-	newUser := models.User{
-		ID:        primitive.NewObjectID(),
-		Email:     email,
-		Password:  hashedPassword,
-		Name:      name,
-		CreatedAt: time.Now(),
+	body := map[string]string{
+		"name":     name,
+		"email":    email,
+		"password": password,
 	}
-	err = repos.UserRepo.CreateUser(newUser)
-	return &newUser, err
+
+	err := utils.AuthServiceClient.Post("/users", body, &result)
+	return &result.User, err
 }
 
 func (*userService) GetUser(email string) (*models.User, error) {
-	user, err := repos.UserRepo.GetUserByEmail(email)
-	if err != nil {
-		return nil, fmt.Errorf("user not found")
+	var result struct {
+		User models.User `json:"user"`
 	}
-	return user, nil
+
+	err := utils.AuthServiceClient.Get("/users/email/"+email, &result)
+	return &result.User, err
 }
 
 func (*userService) GetUserById(id string) (*models.User, error) {
-	user, err := repos.UserRepo.GetUserById(id)
-	if err != nil {
-		return nil, fmt.Errorf("user not found")
+	var result struct {
+		User models.User `json:"user"`
 	}
-	return user, nil
+
+	err := utils.AuthServiceClient.Get("/users/"+id, &result)
+	return &result.User, err
 }
 
 func (*userService) GetAllUsers() ([]models.User, error) {
-	users, err := repos.UserRepo.GetAllUsers()
-	if err != nil {
-		return nil, err
+	var result struct {
+		Users []models.User `json:"users"`
 	}
-	return users, nil
+
+	err := utils.AuthServiceClient.Get("/users", &result)
+	return result.Users, err
 }
 
 func ValidateUser(email string, password string) (*models.User, error) {
-	// Fetch user by email
-	user, err := UserService.GetUser(email)
-	if err != nil {
-		return nil, fmt.Errorf("user not found") // Return an error, not an HTTP response
+	var result struct {
+		User models.User `json:"user"`
 	}
 
-	// Compare hashed password
-	err = bcrypt.CompareHashAndPassword(user.Password, []byte(password))
-	if err != nil {
-		return nil, fmt.Errorf("password incorrect") // Return an error, not an HTTP response
+	body := map[string]string{
+		"email":    email,
+		"password": password,
 	}
 
-	// Return the user if everything is fine
-	return user, nil
+	err := utils.AuthServiceClient.Post("/auth/validate", body, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result.User, nil
 }
 
 func (*userService) UpdateUserName(userID string, newName string) error {
-	return repos.UserRepo.UpdateUserName(userID, newName)
+	body := map[string]string{"name": newName}
+	return utils.AuthServiceClient.Post("/users/"+userID+"/update-name", body, nil)
 }
 
 func (*userService) UpdatePassword(userID string, newPassword string) error {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.MinCost)
-	if err != nil {
-		return err
-	}
-	return repos.UserRepo.UpdatePassword(userID, hashedPassword)
+	body := map[string]string{"password": newPassword}
+	return utils.AuthServiceClient.Post("/users/"+userID+"/update-password", body, nil)
 }

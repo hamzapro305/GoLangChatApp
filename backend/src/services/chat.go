@@ -7,7 +7,6 @@ import (
 
 	"github.com/gofiber/contrib/websocket"
 	"github.com/hamzapro305/GoLangChatApp/src/models"
-	"github.com/hamzapro305/GoLangChatApp/src/repos"
 )
 
 type conversationWebSocketService struct{}
@@ -96,7 +95,7 @@ func (*conversationWebSocketService) SendNewMessageInConversationMessage(msg mod
 
 // Send initial conversation data to the user
 func (*conversationWebSocketService) SyncUserConversations(userID string, userConnection *UserConnection) {
-	conversations, err := repos.ConversationRepo.GetUserConversations(userID)
+	conversations, err := ConversationService.GetUserConversation(userID)
 	if err != nil {
 		log.Println("Error fetching user conversations:", err)
 		return
@@ -146,18 +145,17 @@ func (*conversationWebSocketService) SendMessageToParticipants(message []byte, p
 func ConversationArrayTransformation(conversations []models.GroupConversation) []interface{} {
 	convs := []interface{}{}
 	for _, conv := range conversations {
-		// Create a map to hold the common fields
 		convInfo := map[string]interface{}{
 			"id":           conv.ID,
 			"participants": conv.Participants,
 			"createdAt":    conv.CreatedAt,
-			"leader":       conv.Leader,
+			"leaderId":     conv.Leader,
 			"isGroup":      conv.IsGroup,
+			"groupImage":   conv.GroupImage,
 		}
 
-		// Add GroupName only if it's a group conversation
 		if conv.IsGroup {
-			convInfo["groupName"] = conv.GroupName // `bson:"groupName" json:"groupName"`
+			convInfo["groupName"] = conv.GroupName
 		}
 
 		convs = append(convs, convInfo)

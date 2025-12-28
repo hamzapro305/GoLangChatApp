@@ -34,7 +34,7 @@ func (*webSocketMessageHandler) WebSocketMessageHandler(
 	case "create_group_conversation":
 		ConversationController.CreateGroupConversation(c, userClaims, message)
 	case "create_message":
-		MessageContrller.CreateConversationMessages(c, userClaims, message)
+		MessageController.CreateConversationMessages(c, userClaims, message)
 	case "user_started_typing":
 		TypingController.SetUserStartedTyping(c, userClaims, message)
 	case "user_stopped_typing":

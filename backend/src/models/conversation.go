@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Conversation struct {
@@ -30,7 +29,3 @@ type Participant struct {
 	JoinedAt time.Time `bson:"joinedAt" json:"joinedAt"`
 	LeftAt   time.Time `bson:"leftAt,omitempty" json:"leftAt,omitempty"`
 }
-
-var ConversationCollection *mongo.Collection
-
-var ParticipantCollection *mongo.Collection

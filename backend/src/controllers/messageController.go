@@ -9,7 +9,7 @@ import (
 
 type messageController struct{}
 
-var MessageContrller = &messageController{}
+var MessageController = &messageController{}
 
 type getConversationMessagesBody struct {
 	ConversationID string `json:"conversationId"`
@@ -85,9 +85,14 @@ func (*messageController) CreateConversationMessages(
 
 func (*messageController) DeleteMessage(c *fiber.Ctx) error {
 	messageID := c.Params("messageId")
-	userClaims := c.Locals("user").(services.UserClaims)
+	userClaims, err := services.JwtService.GetClaims(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Unauthorized",
+		})
+	}
 
-	err := services.MessageService.DeleteMessage(messageID, userClaims.UserID)
+	err = services.MessageService.DeleteMessage(messageID, userClaims.UserID)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": err.Error(),

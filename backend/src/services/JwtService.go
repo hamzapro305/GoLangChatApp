@@ -68,13 +68,11 @@ func (*jwtService) GetSocketClaims(c *websocket.Conn) (UserClaims, error) {
 	}, nil
 }
 
-// CreateToken generates a JWT token with custom claims
-func (*jwtService) CreateToken(email string, password string, user *models.User) (string, error) {
+func (*jwtService) CreateToken(email string, user *models.User) (string, error) {
 	claims := jwt.MapClaims{
-		"userId":   user.ID.Hex(),
-		"email":    email,
-		"password": password,
-		"exp":      time.Now().Add(time.Hour * 24).Unix(),
+		"userId": user.ID.Hex(),
+		"email":  email,
+		"exp":    time.Now().Add(time.Hour * 24).Unix(),
 	}
 
 	// Create token using the claims

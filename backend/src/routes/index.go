@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/proxy"
 	"github.com/hamzapro305/GoLangChatApp/src/controllers"
 	"github.com/hamzapro305/GoLangChatApp/src/middlewares"
 )
@@ -9,6 +10,11 @@ import (
 func SetupRoutes(app *fiber.App) {
 	api := app.Group("/api")
 	v1 := api.Group("/v1")
+
+	// Agent Proxy
+	v1.All("/agents/*", proxy.Balancer(proxy.Config{
+		Servers: []string{"http://localhost:8000"},
+	}))
 
 	// Auth Routes
 	auth := v1.Group("/auth")
@@ -32,5 +38,4 @@ func SetupRoutes(app *fiber.App) {
 	v1.Post("/upload", middlewares.ProtectedRoute(), controllers.UploadController.UploadFile)
 
 	webSocketRoute(v1)
-	setupAuthRoutes(v1)
 }

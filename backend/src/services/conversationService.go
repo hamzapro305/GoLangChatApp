@@ -2,13 +2,11 @@ package services
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/hamzapro305/GoLangChatApp/src/models"
-	"github.com/hamzapro305/GoLangChatApp/src/repos"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/hamzapro305/GoLangChatApp/src/utils"
 )
 
 type conversationService struct{}
@@ -17,23 +15,18 @@ type conversationService struct{}
 var ConversationService = &conversationService{}
 
 func (*conversationService) CreateConversation(participantIDs []string, createdBy string) (models.Conversation, error) {
-	var participants []models.Participant
-	for _, userID := range participantIDs {
-		participants = append(participants, models.Participant{
-			UserID:   userID,
-			JoinedAt: time.Now(),
-		})
+	var result struct {
+		Conversation models.Conversation `json:"conversation"`
 	}
 
-	conv := models.Conversation{
-		ID:           primitive.NewObjectID(),
-		Participants: participants,
-		CreatedAt:    time.Now(),
-		Leader:       createdBy,
-		IsGroup:      false,
+	body := map[string]interface{}{
+		"participants": participantIDs,
+		"createdBy":    createdBy,
+		"isGroup":      false,
 	}
 
-	return conv, repos.ConversationRepo.CreateConversation(conv)
+	err := utils.ChatServiceClient.Post("/conversations", body, &result)
+	return result.Conversation, err
 }
 
 func (*conversationService) CreateGroupConversation(
@@ -41,41 +34,49 @@ func (*conversationService) CreateGroupConversation(
 	createdBy string,
 	groupName string,
 ) (models.GroupConversation, error) {
-	var participants []models.Participant
-	for _, userID := range participantIDs {
-		participants = append(participants, models.Participant{
-			UserID:   userID,
-			JoinedAt: time.Now(),
-		})
+	var result struct {
+		Conversation models.GroupConversation `json:"conversation"`
 	}
 
-	conv := models.GroupConversation{
-		ID:           primitive.NewObjectID(),
-		Participants: participants,
-		GroupName:    groupName,
-		CreatedAt:    time.Now(),
-		Leader:       createdBy,
-		IsGroup:      true,
+	body := map[string]interface{}{
+		"participants": participantIDs,
+		"createdBy":    createdBy,
+		"groupName":    groupName,
+		"isGroup":      true,
 	}
 
-	return conv, repos.ConversationRepo.CreateGroupConversation(conv)
+	err := utils.ChatServiceClient.Post("/conversations", body, &result)
+	return result.Conversation, err
 }
 
 func (*conversationService) GetUserConversation(userId string) ([]models.GroupConversation, error) {
-	return repos.ConversationRepo.GetUserConversations(userId)
+	var result struct {
+		Conversations []models.GroupConversation `json:"userConversations"`
+	}
+
+	err := utils.ChatServiceClient.Get("/conversations/user/"+userId, &result)
+	return result.Conversations, err
 }
 
 func (*conversationService) GetConversationById(conversationId string) (*models.GroupConversation, error) {
-	return repos.ConversationRepo.GetConversationById(conversationId)
+	var result struct {
+		Conversation models.GroupConversation `json:"conversation"`
+	}
+
+	err := utils.ChatServiceClient.Get("/conversations/"+conversationId, &result)
+	return &result.Conversation, err
 }
 
 func (*conversationService) AddParticipantToConversation(convId string, userId string) error {
-	return repos.ConversationRepo.AddParticipantToConversation(convId, userId)
+	body := map[string]string{"userId": userId}
+	return utils.ChatServiceClient.Post("/conversations/"+convId+"/participants", body, nil)
 }
 
 func (*conversationService) DeleteConversationWithProgress(c *websocket.Conn, conversationId string) {
 	fmt.Println("Starting DeleteConversationWithProgress for:", conversationId)
-	messages, err := repos.MessageRepo.GetConversationMessages(conversationId)
+
+	// 1. Get messages from messaging-service
+	messages, err := MessageService.GetConversationMessages(conversationId)
 	if err != nil {
 		fmt.Println("Error fetching messages:", err)
 		c.WriteJSON(fiber.Map{
@@ -88,40 +89,24 @@ func (*conversationService) DeleteConversationWithProgress(c *websocket.Conn, co
 	total := len(messages)
 	fmt.Println("Found", total, "messages to delete")
 	for i, msg := range messages {
-		// 1. Delete attachment if exists
-		if msg.AttachmentUrl != "" {
-			fmt.Println("Deleting attachment:", msg.AttachmentUrl)
-			err := repos.StorageRepo.DeleteFile(msg.AttachmentUrl)
-			if err != nil {
-				fmt.Println("Error deleting file:", err)
-			}
+		// 2. Delete message via messaging-service
+		err := MessageService.DeleteMessage(msg.ID.Hex(), msg.SenderID) // Assuming msg.ID is primitive.ObjectID
+		if err != nil {
+			fmt.Println("Error deleting message:", err)
 		}
-
-		// 2. Delete message from DB
-		_ = repos.MessageRepo.DeleteMessage(msg.ID)
 
 		// 3. Send progress update
-		if i%5 == 0 || i == total-1 { // limit updates slightly if needed, but for now every update is fine
-			progress := fiber.Map{
-				"type":           "delete_progress",
-				"deletedCount":   i + 1,
-				"totalCount":     total,
-				"conversationId": conversationId,
-			}
-			fmt.Println("Sending progress:", progress)
-			c.WriteJSON(progress)
-		} else {
-			c.WriteJSON(fiber.Map{
-				"type":           "delete_progress",
-				"deletedCount":   i + 1,
-				"totalCount":     total,
-				"conversationId": conversationId,
-			})
+		progress := fiber.Map{
+			"type":           "delete_progress",
+			"deletedCount":   i + 1,
+			"totalCount":     total,
+			"conversationId": conversationId,
 		}
+		c.WriteJSON(progress)
 	}
 
-	// 4. Delete Conversation
-	err = repos.ConversationRepo.DeleteConversation(conversationId)
+	// 4. Delete Conversation via chat-service
+	err = utils.ChatServiceClient.Post("/conversations/delete/"+conversationId, nil, nil)
 	if err != nil {
 		fmt.Println("Error deleting conversation:", err)
 		c.WriteJSON(fiber.Map{
@@ -138,6 +123,8 @@ func (*conversationService) DeleteConversationWithProgress(c *websocket.Conn, co
 		"conversationId": conversationId,
 	})
 }
+
 func (*conversationService) LeaveConversation(conversationId string, userId string) error {
-	return repos.ConversationRepo.LeaveConversation(conversationId, userId)
+	body := map[string]string{"userId": userId}
+	return utils.ChatServiceClient.Post("/conversations/"+conversationId+"/leave", body, nil)
 }

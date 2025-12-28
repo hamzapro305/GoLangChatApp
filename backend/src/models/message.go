@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Message struct {
@@ -17,5 +16,3 @@ type Message struct {
 	ReplyTo        *primitive.ObjectID `bson:"replyTo,omitempty" json:"replyTo,omitempty"`
 	CreatedAt      time.Time           `bson:"createdAt" json:"createdAt"`
 }
-
-var MessageCollection *mongo.Collection

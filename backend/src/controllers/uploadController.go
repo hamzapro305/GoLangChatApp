@@ -1,8 +1,11 @@
 package controllers
 
 import (
+	"fmt"
+	"path/filepath"
+	"time"
+
 	"github.com/gofiber/fiber/v2"
-	"github.com/hamzapro305/GoLangChatApp/src/repos"
 )
 
 type uploadController struct{}
@@ -17,13 +20,19 @@ func (*uploadController) UploadFile(c *fiber.Ctx) error {
 		})
 	}
 
-	// Use StorageRepo to handle the upload
-	fileUrl, err := repos.StorageRepo.UploadFile(file, c.SaveFile)
-	if err != nil {
+	// Create a unique filename
+	filename := fmt.Sprintf("%d-%s", time.Now().Unix(), file.Filename)
+	savePath := filepath.Join("./uploads", filename)
+
+	// Save file to root/uploads
+	if err := c.SaveFile(file, savePath); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err.Error(),
+			"error": "Failed to save file",
 		})
 	}
+
+	// Assuming the server is running on localhost:3001 and serves /uploads
+	fileUrl := fmt.Sprintf("/uploads/%s", filename)
 
 	// Return file URL
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
