@@ -1,24 +1,20 @@
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from fastapi import APIRouter, HTTPException, Form
 from app.agents.registry import registry
 
 router = APIRouter()
-
-class ChatRequest(BaseModel):
-    message: str
 
 @router.get("/agents")
 async def list_agents():
     return {"agents": registry.list_agents()}
 
 @router.post("/agents/{agent_id}/chat")
-async def chat_with_agent(agent_id: str, request: ChatRequest):
+async def chat_with_agent(agent_id: str, message: str = Form(...)):
     agent = registry.get_agent(agent_id)
     if not agent:
         raise HTTPException(status_code=404, detail=f"Agent '{agent_id}' not found")
     
     try:
-        response = await agent.process(request.message)
+        response = await agent.process(message)
         return {
             "agent_id": agent_id,
             "response": response

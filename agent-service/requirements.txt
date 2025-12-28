@@ -8,3 +8,4 @@ google-generativeai
 langchain
 langchain-google-genai
 pydantic-settings
+python-multipart
