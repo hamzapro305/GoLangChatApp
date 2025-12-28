@@ -7,7 +7,7 @@ import { Conversation, ConversationSchema } from './schemas/conversation.schema'
 
 @Module({
   imports: [
-    MongooseModule.forRoot(process.env.MONGODB_URI || 'mongodb://admin:admin@localhost:27017/conversation-db'),
+    MongooseModule.forRoot(process.env.MONGODB_URI_CHAT || 'mongodb://admin:admin@localhost:27017/conversation-db'),
     MongooseModule.forFeature([{ name: Conversation.name, schema: ConversationSchema }]),
   ],
   controllers: [AppController],

@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -16,7 +17,14 @@ type jwtService struct{}
 
 var JwtService = &jwtService{}
 
-var secretKey = []byte("I Want Something Just Like this Todo do do do dooo!")
+var secretKey = []byte(getJwtSecret())
+
+func getJwtSecret() string {
+	if secret := os.Getenv("JWT_SECRET"); secret != "" {
+		return secret
+	}
+	return "I Want Something Just Like this Todo do do do dooo!"
+}
 
 type UserClaims struct {
 	Email  string `json:"email"`

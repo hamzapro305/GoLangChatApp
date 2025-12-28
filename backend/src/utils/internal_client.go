@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -60,10 +61,17 @@ func (s *InternalServiceClient) Get(path string, result interface{}) error {
 	return json.NewDecoder(resp.Body).Decode(result)
 }
 
+func getEnv(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
+}
+
 // Global clients for internal services
 var (
-	AuthServiceClient      = NewInternalServiceClient("http://localhost:3002")
-	ChatServiceClient      = NewInternalServiceClient("http://localhost:3003")
-	MessagingServiceClient = NewInternalServiceClient("http://localhost:3004")
-	AgentServiceClient     = NewInternalServiceClient("http://localhost:8000")
+	AuthServiceClient      = NewInternalServiceClient(getEnv("AUTH_SERVICE_URL", "http://localhost:3002"))
+	ChatServiceClient      = NewInternalServiceClient(getEnv("CHAT_SERVICE_URL", "http://localhost:3003"))
+	MessagingServiceClient = NewInternalServiceClient(getEnv("MESSAGING_SERVICE_URL", "http://localhost:3004"))
+	AgentServiceClient     = NewInternalServiceClient(getEnv("AGENT_SERVICE_URL", "http://localhost:8000"))
 )

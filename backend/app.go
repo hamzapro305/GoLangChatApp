@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -17,17 +19,21 @@ func main() {
 	}
 
 	app := fiber.New(fiber.Config{
-		BodyLimit: 100 * 1024 * 1024,
+		BodyLimit: 10 * 1024 * 1024,
 	})
 
 	app.Use(cors.New())
 
 	middlewares.SetupMiddlewares(app)
 
+	// Setup Routes
 	routes.SetupRoutes(app)
 	app.Static("/uploads", "./uploads")
 
-	if err := app.Listen(":3001"); err != nil {
-		fmt.Printf("Error starting server: %v\n", err)
+	port := os.Getenv("GATEWAY_PORT")
+	if port == "" {
+		port = "3001"
 	}
+
+	log.Fatal(app.Listen(":" + port))
 }
