@@ -1,14 +1,14 @@
 import os
 import logging
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Union
 from pydantic import BaseModel, Field
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.prompts import ChatPromptTemplate
+import requests
 from pymongo import MongoClient
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from dotenv import load_dotenv
 from app.agents.base import BaseAgent
+import json
 
 load_dotenv()
 
@@ -39,59 +39,60 @@ class PsychologicalInsightsAgent(BaseAgent):
             description="Analyzes conversation patterns to provide comprehensive psychological insights and diagnoses"
         )
         
-        api_key = os.getenv("GEMINI_API_KEY")
-        if not api_key:
+        self.api_key = os.getenv("GEMINI_API_KEY")
+        if not self.api_key:
             raise ValueError("GEMINI_API_KEY not found in environment variables")
         
-        mongodb_uri = os.getenv("MONGODB_URI", "mongodb://admin:admin@localhost:27017/")
+        mongodb_uri = os.getenv("MONGODB_URI", "mongodb://localhost:27017/")
         
         # Initialize MongoDB connection
         try:
             self.mongo_client = MongoClient(mongodb_uri)
+            # Match backend database name
             self.db = self.mongo_client["conversation-db"]
             self.messages_collection = self.db["messages"]
-            logger.info("[RAG] ✓ Connected to MongoDB")
+            logger.info("[Psychological Agent] ✓ Connected to MongoDB")
         except Exception as e:
-            logger.error(f"[RAG] ✗ MongoDB connection error: {str(e)}")
+            logger.error(f"[Psychological Agent] ✗ MongoDB connection error: {str(e)}")
             raise
+
+    def _call_gemini_api(self, prompt: str) -> str:
+        """Call Gemini API directly via REST"""
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={self.api_key}"
         
-        # Initialize LLM
-        self.llm = ChatGoogleGenerativeAI(
-            model="gemini-2.0-flash-exp",
-            google_api_key=api_key,
-            temperature=0.3,
-        )
+        payload = {
+            "contents": [{
+                "parts": [{
+                    "text": prompt
+                }]
+            }],
+            "generationConfig": {
+                "temperature": 0.3,
+                "maxOutputTokens": 2048
+            }
+        }
         
-        # Configure structured output
-        self.structured_llm = self.llm.with_structured_output(PsychologicalInsight)
+        headers = {
+            "Content-Type": "application/json"
+        }
         
-        # Define prompt template
-        self.prompt = ChatPromptTemplate.from_messages([
-            ("system", """You are an advanced psychological analysis AI with comprehensive diagnostic capabilities.
+        response = requests.post(url, json=payload, headers=headers)
+        
+        if response.status_code != 200:
+            logger.error(f"[Psychological Agent] Gemini API error: {response.status_code} - {response.text}")
+            raise Exception(f"Gemini API error: {response.status_code}")
+        
+        result = response.json()
+        try:
+            return result["candidates"][0]["content"]["parts"][0]["text"]
+        except (KeyError, IndexError):
+            logger.error(f"[Psychological Agent] Unexpected response structure: {result}")
+            raise Exception("Failed to parse Gemini API response")
 
-Analyze the provided conversation messages and generate detailed psychological insights, including:
-- Emotional patterns and triggers
-- Thinking patterns and cognitive styles
-- Behavioral indicators
-- Psychological diagnoses (depression, anxiety, personality traits, etc.)
-- Personal strengths
-- Areas for growth and development
-- Reflective questions for deeper self-understanding
-
-Be thorough in your analysis. Identify specific psychological conditions, mental health patterns, and personality traits based on the conversational evidence.
-
-IMPORTANT: Base your analysis strictly on the messages provided. Be specific and reference patterns you observe."""),
-            ("human", """Analyze these conversation messages and provide comprehensive psychological insights:
-
-{messages}
-
-Provide a thorough psychological analysis including diagnoses, patterns, and actionable insights.""")
-        ])
-    
     def get_messages_with_embeddings(self, conversation_id: str) -> List[Dict]:
         """Retrieve messages with ready embeddings from MongoDB"""
         try:
-            logger.info(f"[RAG] Analyzing conversation {conversation_id}...")
+            logger.info(f"[Psychological Agent] Analyzing conversation {conversation_id}...")
             
             messages = list(self.messages_collection.find({
                 "conversationId": conversation_id,
@@ -99,31 +100,26 @@ Provide a thorough psychological analysis including diagnoses, patterns, and act
                 "type": "text"
             }))
             
-            logger.info(f"[RAG] Found {len(messages)} messages with embeddings ready")
+            logger.info(f"[Psychological Agent] Found {len(messages)} messages with embeddings ready")
             return messages
         except Exception as e:
-            logger.error(f"[RAG] ✗ Error fetching messages: {str(e)}")
+            logger.error(f"[Psychological Agent] ✗ Error fetching messages: {str(e)}")
             raise
     
     def perform_vector_search(self, messages: List[Dict], query_text: str = None, top_k: int = 50) -> List[Dict]:
         """Perform vector similarity search on messages"""
         try:
-            logger.info("[RAG] Performing vector search...")
-            
             if not messages:
                 return []
             
-            # If no specific query, return all messages (for full conversation analysis)
+            # If no specific query, return most recent
             if not query_text:
-                logger.info(f"[RAG] Retrieved all {len(messages)} messages for analysis")
-                return messages[:top_k]  # Limit to top_k most recent
+                return messages[:top_k]
             
-            # Generate query embedding (future enhancement)
-            # For now, return all messages
-            logger.info(f"[RAG] Retrieved {min(len(messages), top_k)} most relevant messages")
+            # For now, return all since we are doing full analysis
             return messages[:top_k]
         except Exception as e:
-            logger.error(f"[RAG] ✗ Error in vector search: {str(e)}")
+            logger.error(f"[Psychological Agent] ✗ Error in vector search: {str(e)}")
             raise
     
     async def process(self, conversation_id: str) -> Dict[str, Any]:
@@ -136,7 +132,7 @@ Provide a thorough psychological analysis including diagnoses, patterns, and act
             messages = self.get_messages_with_embeddings(conversation_id)
             
             if len(messages) < 3:
-                logger.warning(f"[RAG] Insufficient data: only {len(messages)} messages")
+                logger.warning(f"[Psychological Agent] Insufficient data: only {len(messages)} messages")
                 return {
                     "error": "Insufficient conversational data to generate reliable psychological insights.",
                     "message_count": len(messages),
@@ -146,31 +142,59 @@ Provide a thorough psychological analysis including diagnoses, patterns, and act
             # Perform vector search (retrieve relevant messages)
             relevant_messages = self.perform_vector_search(messages)
             
-            logger.info(f"[RAG] Retrieved {len(relevant_messages)} most relevant messages")
-            
             # Format messages for analysis
             formatted_messages = "\n\n".join([
                 f"Message {i+1}: {msg.get('content', '')}"
                 for i, msg in enumerate(relevant_messages)
             ])
             
-            logger.info("[RAG] Generating psychological insights...")
+            logger.info("[Psychological Agent] Generating psychological insights with REST API...")
             
-            # Generate insights using LLM
-            chain = self.prompt | self.structured_llm
-            result = await chain.ainvoke({"messages": formatted_messages})
+            prompt = f"""You are an advanced psychological analysis AI with comprehensive diagnostic capabilities.
+
+Analyze the following conversation messages and generate detailed psychological insights.
+
+MESSAGES:
+{formatted_messages}
+
+Return your response as a JSON object with these exact keys:
+- summary: string (Brief summary of analysis)
+- emotional_patterns: array of strings
+- thinking_patterns: array of strings
+- behavioral_indicators: array of strings
+- diagnoses: array of strings (Psychological diagnoses based on conversation)
+- strengths: array of strings
+- areas_of_growth: array of strings
+- suggested_reflections: array of strings
+- confidence_level: string (low, medium, or high)
+- ethical_note: string (Ethical disclaimer)
+
+Be thorough and specific."""
+
+            response_text = self._call_gemini_api(prompt)
             
-            duration = (time.time() - start_time) * 1000
-            logger.info(f"[RAG] ✓ Analysis complete in {duration:.0f}ms")
-            
-            # Convert to dict
-            insights = result.dict()
-            insights["messages_analyzed"] = len(relevant_messages)
-            
-            return insights
+            # Parse JSON response
+            try:
+                clean_text = response_text.strip()
+                if clean_text.startswith("```json"):
+                    clean_text = clean_text[7:]
+                if clean_text.startswith("```"):
+                    clean_text = clean_text[3:]
+                if clean_text.endswith("```"):
+                    clean_text = clean_text[:-3]
+                clean_text = clean_text.strip()
+                
+                insights = json.loads(clean_text)
+                insights["messages_analyzed"] = len(relevant_messages)
+                
+                duration = (time.time() - start_time) * 1000
+                logger.info(f"[Psychological Agent] ✓ Analysis complete in {duration:.0f}ms")
+                
+                return insights
+            except json.JSONDecodeError as e:
+                logger.error(f"[Psychological Agent] JSON parse failed: {e}")
+                return {"error": "Failed to parse AI response", "raw_response": response_text}
             
         except Exception as e:
-            duration = (time.time() - start_time) * 1000
-            logger.error(f"[RAG] ✗ Error: {str(e)}")
-            logger.error(f"[RAG] Failed after {duration:.0f}ms")
+            logger.error(f"[Psychological Agent] ✗ Error: {str(e)}")
             return {"error": f"Analysis failed: {str(e)}"}

@@ -9,6 +9,10 @@ import "./style.scss";
 type Agent = {
     name: string;
     description: string;
+    detailedDescription: string;
+    icon: string;
+    color: string;
+    gradient: string;
 };
 
 type Props = {
@@ -17,9 +21,27 @@ type Props = {
     conversationId: string;
 };
 
+// Constant agents - no API fetch needed
+const AGENTS: Agent[] = [
+    {
+        name: "psychological_insights",
+        description: "Deep Psychological Analysis",
+        detailedDescription: "Analyze conversation patterns to extract psychological insights, emotional states, thinking patterns, diagnoses, strengths, and areas of growth",
+        icon: "brain",
+        color: "purple",
+        gradient: "from-purple-600 to-pink-600"
+    },
+    {
+        name: "notes_creator",
+        description: "Structured Note Generation",
+        detailedDescription: "Extract structured notes including summary, key points, action items, decisions made, and participant insights from your conversation",
+        icon: "notes",
+        color: "blue",
+        gradient: "from-blue-600 to-cyan-600"
+    }
+];
+
 const AgentsSidebar: FC<Props> = ({ isOpen, onClose, conversationId }) => {
-    const [agents, setAgents] = useState<Agent[]>([]);
-    const [loading, setLoading] = useState(true);
     const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
     const [processing, setProcessing] = useState(false);
     const [result, setResult] = useState<any>(null);
@@ -27,25 +49,11 @@ const AgentsSidebar: FC<Props> = ({ isOpen, onClose, conversationId }) => {
 
     useEffect(() => {
         if (isOpen) {
-            fetchAgents();
             setResult(null);
             setError(null);
             setSelectedAgent(null);
         }
     }, [isOpen]);
-
-    const fetchAgents = async () => {
-        try {
-            setLoading(true);
-            const res = await axios.get(`http://${window.location.hostname}:8001/agents`);
-            setAgents(res.data.agents || []);
-        } catch (error) {
-            console.error("Failed to fetch agents:", error);
-            setAgents([]);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleAgentClick = async (agentName: string) => {
         if (processing) return;
@@ -57,47 +65,49 @@ const AgentsSidebar: FC<Props> = ({ isOpen, onClose, conversationId }) => {
 
         try {
             if (agentName === "psychological_insights") {
+                // Call psychological insights agent
                 const res = await axios.post(
-                    `http://${window.location.hostname}:8001/agents/psychological_insights/analyze`,
+                    `http://${window.location.hostname}:8000/api/v1/agents/psychological_insights/analyze`,
                     { conversation_id: conversationId },
                     { headers: { "Content-Type": "application/json" } }
                 );
-                setResult(res.data);
+
+                if (res.data.error) {
+                    setError(res.data.error);
+                } else {
+                    setResult(res.data);
+                }
             } else if (agentName === "notes_creator") {
-                // Get messages for notes creator
-                const messagesRes = await axios.get(`http://${window.location.hostname}:3001/api/v1/message/${conversationId}`);
-                const messages = messagesRes.data.messages || [];
-                const messagesText = messages.map((m: any) => m.content).join("\n");
-
-                const formData = new FormData();
-                formData.append("message", messagesText);
-
+                // Call notes creator agent with conversation_id
                 const res = await axios.post(
-                    `http://${window.location.hostname}:8001/agents/notes_creator/chat`,
-                    formData
+                    `http://${window.location.hostname}:8000/api/v1/agents/notes_creator/analyze`,
+                    { conversation_id: conversationId },
+                    { headers: { "Content-Type": "application/json" } }
                 );
-                setResult(res.data.response);
+
+                if (res.data.error) {
+                    setError(res.data.error);
+                } else {
+                    setResult(res.data);
+                }
             }
         } catch (error: any) {
             console.error("Agent processing failed:", error);
-            setError(error.response?.data?.detail || "Failed to process. Please try again.");
+            setError(error.response?.data?.detail || error.response?.data?.message || "Failed to process. Please try again.");
         } finally {
             setProcessing(false);
         }
     };
 
-    const getAgentIcon = (name: string) => {
-        if (name === "psychological_insights") {
+    const getAgentIcon = (agent: Agent) => {
+        if (agent.icon === "brain") {
             return <RiBrainFill size={32} />;
         }
         return <FaStickyNote size={28} />;
     };
 
-    const getAgentColor = (name: string) => {
-        if (name === "psychological_insights") {
-            return "from-purple-600 to-pink-600";
-        }
-        return "from-blue-600 to-cyan-600";
+    const getAgentColor = (agent: Agent) => {
+        return agent.gradient;
     };
 
     return (
@@ -135,74 +145,71 @@ const AgentsSidebar: FC<Props> = ({ isOpen, onClose, conversationId }) => {
 
                         {/* Content */}
                         <div className="sidebar-content">
-                            {loading ? (
-                                <div className="loading-state">
+                            <div className="agents-grid">
+                                {AGENTS.map((agent) => {
+                                    const displayName = agent.name.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase());
+                                    const isSelected = selectedAgent === agent.name;
+
+                                    return (
+                                        <motion.div
+                                            key={agent.name}
+                                            className={`agent-card ${isSelected ? "selected" : ""} ${agent.color}`}
+                                            onClick={() => handleAgentClick(agent.name)}
+                                            whileHover={{ scale: 1.02, y: -4 }}
+                                            whileTap={{ scale: 0.98 }}
+                                        >
+                                            <div className={`agent-icon-wrapper bg-gradient-to-br ${agent.gradient}`}>
+                                                {getAgentIcon(agent)}
+                                            </div>
+                                            <div className="agent-details">
+                                                <h3>{displayName}</h3>
+                                                <p className="short-desc">{agent.description}</p>
+                                                <p className="detailed-desc">{agent.detailedDescription}</p>
+                                            </div>
+                                            {isSelected && (
+                                                <motion.div
+                                                    className="selected-badge"
+                                                    initial={{ scale: 0 }}
+                                                    animate={{ scale: 1 }}
+                                                >
+                                                    <IoCheckmarkCircle />
+                                                </motion.div>
+                                            )}
+                                        </motion.div>
+                                    );
+                                })}
+                            </div>
+
+                            {processing && (
+                                <motion.div
+                                    className="processing-state"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                >
                                     <div className="spinner-large"></div>
-                                    <p>Loading AI agents...</p>
-                                </div>
-                            ) : (
-                                <>
-                                    <div className="agents-grid">
-                                        {agents.map((agent) => (
-                                            <motion.div
-                                                key={agent.name}
-                                                className={`agent-card ${selectedAgent === agent.name ? "selected" : ""}`}
-                                                onClick={() => handleAgentClick(agent.name)}
-                                                whileHover={{ scale: 1.02, y: -4 }}
-                                                whileTap={{ scale: 0.98 }}
-                                            >
-                                                <div className={`agent-icon-wrapper bg-gradient-to-br ${getAgentColor(agent.name)}`}>
-                                                    {getAgentIcon(agent.name)}
-                                                </div>
-                                                <div className="agent-details">
-                                                    <h3>{agent.name.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}</h3>
-                                                    <p>{agent.description}</p>
-                                                </div>
-                                                {selectedAgent === agent.name && (
-                                                    <motion.div
-                                                        className="selected-badge"
-                                                        initial={{ scale: 0 }}
-                                                        animate={{ scale: 1 }}
-                                                    >
-                                                        <IoCheckmarkCircle />
-                                                    </motion.div>
-                                                )}
-                                            </motion.div>
-                                        ))}
-                                    </div>
+                                    <h3>Processing with AI...</h3>
+                                    <p>Analyzing your conversation, please wait...</p>
+                                </motion.div>
+                            )}
 
-                                    {processing && (
-                                        <motion.div
-                                            className="processing-state"
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                        >
-                                            <div className="spinner-large"></div>
-                                            <h3>Processing with AI...</h3>
-                                            <p>Analyzing your conversation, please wait...</p>
-                                        </motion.div>
-                                    )}
+                            {error && !processing && (
+                                <motion.div
+                                    className="error-state"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                >
+                                    <div className="error-icon">⚠️</div>
+                                    <h3>Processing Failed</h3>
+                                    <p>{error}</p>
+                                </motion.div>
+                            )}
 
-                                    {error && !processing && (
-                                        <motion.div
-                                            className="error-state"
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                        >
-                                            <div className="error-icon">⚠️</div>
-                                            <h3>Processing Failed</h3>
-                                            <p>{error}</p>
-                                        </motion.div>
-                                    )}
+                            {result && !processing && !error && selectedAgent === "psychological_insights" && (
+                                <PsychologicalInsightsResult result={result} />
+                            )}
 
-                                    {result && !processing && !error && selectedAgent === "psychological_insights" && (
-                                        <PsychologicalInsightsResult result={result} />
-                                    )}
-
-                                    {result && !processing && !error && selectedAgent === "notes_creator" && (
-                                        <NotesCreatorResult result={result} />
-                                    )}
-                                </>
+                            {result && !processing && !error && selectedAgent === "notes_creator" && (
+                                <NotesCreatorResult result={result} />
                             )}
                         </div>
                     </motion.div>

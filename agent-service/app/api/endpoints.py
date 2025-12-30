@@ -40,3 +40,18 @@ async def analyze_conversation(request: AnalyzeConversationRequest):
         return insights
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/agents/notes_creator/analyze")
+async def create_notes(request: AnalyzeConversationRequest):
+    """
+    Analyze a conversation and generate structured notes
+    """
+    agent = registry.get_agent("notes_creator")
+    if not agent:
+        raise HTTPException(status_code=404, detail="Notes Creator Agent not found")
+    
+    try:
+        notes = await agent.process(request.conversation_id)
+        return notes
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
