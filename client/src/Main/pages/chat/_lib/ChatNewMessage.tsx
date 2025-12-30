@@ -90,7 +90,7 @@ const ChatNewMessage = forwardRef<HTMLDivElement, Props>(({ Message }, ref) => {
                     <div className="replied-preview" onClick={() => scrollToMessage(repliedMessage.id)}>
                         <span className="user-name">{repliedUser?.name || "Someone"}</span>
                         <div className="preview-content-row">
-                            {(repliedMessage.type === "image" || (repliedMessage.attachmentUrl && repliedMessage.type === "image")) && (
+                            {repliedMessage.type === "image" && (
                                 <div className="reply-media-thumb">
                                     <img src={repliedMessage.attachmentUrl || repliedMessage.content} alt="Reply Thumb" />
                                 </div>
@@ -115,7 +115,7 @@ const ChatNewMessage = forwardRef<HTMLDivElement, Props>(({ Message }, ref) => {
                     </div>
                 )}
                 {/* Attachment Rendering */}
-                {(Message.attachmentUrl || (Message.type !== "text" && Message.content)) && (
+                {(Message.attachmentUrl && Message.attachmentUrl.trim() !== "" && Message.type && Message.type !== "text") && (
                     <>
                         {Message.type === "image" ? (
                             <div className="media-content image">
@@ -145,11 +145,11 @@ const ChatNewMessage = forwardRef<HTMLDivElement, Props>(({ Message }, ref) => {
                 )}
 
                 {/* Text Content / Caption */}
-                {(Message.type === "text" || (Message.attachmentUrl && Message.content)) && (
+                {(!Message.type || Message.type === "text" || (Message.attachmentUrl && Message.content)) && (
                     <div
                         className="content rich-text"
                         dangerouslySetInnerHTML={{ __html: Message.content }}
-                        style={(Message.attachmentUrl || (Message.type !== "text" && Message.content)) ? { marginTop: "8px" } : {}}
+                        style={(Message.attachmentUrl && Message.attachmentUrl.trim() !== "" && Message.type && Message.type !== "text") ? { marginTop: "8px" } : {}}
                     />
                 )}
 

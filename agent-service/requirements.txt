@@ -9,3 +9,6 @@ langchain
 langchain-google-genai
 pydantic-settings
 python-multipart
+pymongo
+numpy
+scikit-learn

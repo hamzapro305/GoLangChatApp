@@ -1,6 +1,7 @@
 from typing import Dict, Type
 from app.agents.base import BaseAgent
 from app.agents.notes_creator import NotesCreatorAgent
+from app.agents.psychological_insights_agent import PsychologicalInsightsAgent
 
 class AgentRegistry:
     _agents: Dict[str, BaseAgent] = {}
@@ -27,3 +28,8 @@ try:
     registry.register_agent(NotesCreatorAgent())
 except Exception as e:
     print(f"Warning: Could not register NotesCreatorAgent: {e}")
+
+try:
+    registry.register_agent(PsychologicalInsightsAgent())
+except Exception as e:
+    print(f"Warning: Could not register PsychologicalInsightsAgent: {e}")
