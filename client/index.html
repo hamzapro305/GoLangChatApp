@@ -5,12 +5,180 @@
     <meta charset="UTF-8" />
     <meta http-equiv="Content-Security-Policy"
         content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' ws://localhost:3001 http://localhost:3001; img-src 'self' data: https: http://localhost:3001;" />
-    <title>Hello World!</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+        /* Minimal reset to avoid breaking the app */
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0f172a;
+        }
+
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0f172a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out, visibility 0.5s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        #splash-screen.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .logo-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .logo-nebula {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #7c3aed, #db2777);
+            border-radius: 24px;
+            transform: rotate(45deg);
+            animation: pulse-nebula 2s infinite ease-in-out;
+            box-shadow: 0 0 40px rgba(124, 58, 237, 0.4);
+        }
+
+        .logo-inner {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(4px);
+            border-radius: 12px;
+            transform: rotate(-45deg);
+            animation: rotate-inner 4s infinite linear;
+        }
+
+        .brand-name {
+            color: #f8fafc;
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            opacity: 0;
+            animation: fade-in 1s forwards 0.5s;
+        }
+
+        .loading-bar-container {
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 16px;
+        }
+
+        .loading-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #7c3aed, #db2777);
+            border-radius: 2px;
+            animation: loading-progress 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-nebula {
+
+            0%,
+            100% {
+                transform: rotate(45deg) scale(1);
+                box-shadow: 0 0 40px rgba(124, 58, 237, 0.4);
+            }
+
+            50% {
+                transform: rotate(45deg) scale(1.1);
+                box-shadow: 0 0 60px rgba(219, 39, 119, 0.6);
+            }
+        }
+
+        @keyframes rotate-inner {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes loading-progress {
+            0% {
+                width: 0%;
+                transform: translateX(-100%);
+            }
+
+            50% {
+                width: 100%;
+                transform: translateX(0);
+            }
+
+            100% {
+                width: 0%;
+                transform: translateX(100%);
+            }
+        }
+    </style>
+    <title>Lynx Chat</title>
 </head>
 
 <body>
+    <div id="splash-screen">
+        <div class="logo-container">
+            <div class="logo-nebula"></div>
+            <div class="logo-inner"></div>
+        </div>
+        <div class="brand-name">LYNX</div>
+        <div class="loading-bar-container">
+            <div class="loading-bar"></div>
+        </div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/renderer.ts"></script>
+    <script>
+        // Ensure the splash screen is removed after React takes over
+        window.addEventListener('load', () => {
+            const splash = document.getElementById('splash-screen');
+            if (splash) {
+                // Wait a bit to ensure React has started rendering
+                setTimeout(() => {
+                    splash.classList.add('fade-out');
+                    setTimeout(() => splash.remove(), 500);
+                }, 1000);
+            }
+        });
+    </script>
 </body>
 
 </html>
